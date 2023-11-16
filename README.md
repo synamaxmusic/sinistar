@@ -1,2 +1,2 @@
 # Sinistar
-A source code rewrite to the 1983 arcade game.
+A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
