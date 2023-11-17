@@ -20,7 +20,7 @@ This will generate a .p file that we can feed into p2bin:
 p2bin sinistar.p sinistar.bin
 ```
 
-Finally, split the .BIN into separate 1KB ROM files and rename those files to match with the MAME ROM set filenames:
+Finally, split the .BIN into separate 4KB ROM files and rename those files to match with the MAME ROM set filenames:
 
 Address|ROM #|MAME ROM set Filename
 | --- | --- | --- |
@@ -36,6 +36,22 @@ Address|ROM #|MAME ROM set Filename
 9000-DFFF| |(SPACE RESERVED FOR RAM)
 E000-EFFF|ROM 10|sinistar_rom_10-b_16-3004-62.4c
 F000-FFFF|ROM 11|sinistar_rom_11-b_16-3004-63.4a
+
+This is how you would do that in P2BIN:
+
+```sh
+p2bin sinistar.p sinistar_rom_1-b_16-3004-53.1d -r $0000-$0FFF
+p2bin sinistar.p sinistar_rom_2-b_16-3004-54.1c -r $1000-$1FFF
+p2bin sinistar.p sinistar_rom_3-b_16-3004-55.1a -r $2000-$2FFF
+p2bin sinistar.p sinistar_rom_4-b_16-3004-56.2d -r $3000-$3FFF
+p2bin sinistar.p sinistar_rom_5-b_16-3004-57.2c -r $4000-$4FFF
+p2bin sinistar.p sinistar_rom_6-b_16-3004-58.2a -r $5000-$5FFF
+p2bin sinistar.p sinistar_rom_7-b_16-3004-59.3d -r $6000-$6FFF
+p2bin sinistar.p sinistar_rom_8-b_16-3004-60.3c -r $7000-$7FFF
+p2bin sinistar.p sinistar_rom_9-b_16-3004-61.3a -r $8000-$8FFF
+p2bin sinistar.p sinistar_rom_10-b_16-3004-62.4c -r $E000-$EFFF
+p2bin sinistar.p sinistar_rom_11-b_16-3004-63.4a -r $F000-$FFFF
+```
 
 ## About the source code
 
