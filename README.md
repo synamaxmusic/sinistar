@@ -242,6 +242,18 @@ Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/c
           .IFNIDN   .IFNIDN <str1>,<str2> str1 and str2 are not 
                                           identical
 ```
+### Decimal numbers
+
+* ```RADIX 16``` is declared very early on and decimal numbers are defined by using ```.``` after the integer.
+```
+ 	NITURRET	EQU	8.	;* The number of warrior images
+	NIWORKER	EQU	16.	;* The number of worker images
+	NIPLSHOT	EQU	32.	;* The number of player shot images
+	NIWASHOT	EQU	32.	;* The number of warrior shot images
+	NISBOMB		EQU	3.	;* The number of sinibomb images
+```
+These periods have been removed and ```RADIX 10``` is used instead when needed.
+
 ### Common fixes
 
 * Exclusive OR ```!X``` are now just ```!```.
