@@ -49,46 +49,113 @@ Joust and Sinistar were the first two games developed by the new internal dev te
 
 ### Macros
 
-For those who don't know, a macro is sequence of instructions that can be inserted into the final code when called.  They can be very flexible and powerful in that they can generate many lines of code with just one reference.  Several important routines in Sinistar rely on macros for various tasks, like compressing the font sprites or parsing ASCII strings and converting them into Williams Electronics's pseudo codepage standard.  Another set of macros uses an internal stack to keep track of where sections of the ROM code begin and end. 
+For those who don't know, a macro is sequence of instructions that can be inserted into the final code when called.  They can be very flexible and powerful in that they can generate many lines of code with just one reference.  Several important routines in Sinistar rely on macros for various tasks, like compressing the font sprites or parsing ASCII strings and converting them into Williams Electronics's pseudo codepage standard.  Another set of macros called ```PUSHORG``` and ```PULLORG``` use an internal stack to keep track of where sections of the ROM code begin and end. 
 
-Macros do show up for Defender and Robotron, but there's not too many of them, and whenever they do show up, they are very simple and short.  Joust's source utilizes more complex macros with more parameters but they too consist of just several lines of code.  Meanwhile, Sinistar defines at least 33 macros in just one file alone, with some macros reaching 50+ lines of code.  The surprising complexity of some of these macros required several days of troubleshooting to get them working in this rewrite.
+Macros do show up for Defender and Robotron, but there's not too many of them, and whenever they do show up, they are very simple and short.  Joust's source utilizes more complex macros with more parameters but they too consist of just several lines of code.  Meanwhile, Sinistar defines at least 33 macros in just [one file alone](https://github.com/historicalsource/sinistar/blob/main/SAM/MACROS.SRC), with some macros reaching [50+ lines of code](https://github.com/historicalsource/sinistar/blob/main/WITT/TEXT.SRC).  The surprising complexity of some of these macros required several days of troubleshooting to get them working in this rewrite.
 
 ### Working with the BSO Assembler and VAX/VMS
 
-Like Joust, Sinistar was written on VAX/VMS workstations.  I'm not sure what assembler was used for Joust, but both codebases appear to use the same syntax and we know that Sinistar was written for a cross-assembler by the now-defunct Boston System Office (BSO).  It had support for several macro instructions that only a few 6809 assemblers still use today, such as IRP, IRPC and REPT.  This assembler is currently lost (which is one of the main reasons why this project was started in the first place).
+Like Joust, Sinistar was written on VAX/VMS workstations.  I'm not sure what assembler was used for Joust, but both codebases appear to use the same syntax and we know that Sinistar was written for a cross-assembler by the now-defunct Boston System Office (BSO).  It had support for several macro instructions that only a few 6809 assemblers still use today, such as ```IRP```, ```IRPC``` and ```REPT```.  This particular assembler is currently lost (which is one of the main reasons why this project was started in the first place).
 
-The BSO assembler also had a very limited symbol table size which made Sinistar's development extra difficult and as a result, additional precautions had to be made in order for the code to build properly.  For example, each of the four main software engineers (Sam Dicker, Richard Witt, Noah Falstein and R.J. Mical) had to generate their own files that listed all the EQUs, SETs, and symbols they used in their section of the game.  Extra care was taken to make sure all the symbols matched up with everyone else's library.  At the end of the toolchain, a batch script file written in VAX DCL language collected all of the source files and fed them into the assembler in a specific order.  It was a lot of work to make sure everything matched up but in the end, I'm really glad they were kinda forced to generate lists of EQUs and SETs because having all these symbol definitions has made a lot of this reverse engineering work much, much easier.  
+The BSO assembler also had a very limited symbol table size which made Sinistar's development extra difficult and as a result, additional precautions had to be made in order for the code to build properly.  For example, each of the four main software engineers (Sam Dicker, Richard Witt, Noah Falstein and R.J. Mical) had to generate their own files that listed every single ```EQU```, ```SET```, and symbol they used in their section of the game.  Extra care was taken to make sure all the symbols matched up with everyone else's library.  At the end of the toolchain, a batch script file written in VAX DCL language collected all of the source files and fed them into the assembler in a specific order.  It was a lot of work to make sure everything matched up but in the end, I'm really glad they were kinda forced to generate all these symbol definitions because it has made a lot of this reverse engineering work much, much easier.  
 
 ### Choosing a new assembler
 
-Even just taking a quick glance over the code, it quickly becomes apparent that we need an newer assembler that supports several specific kinds of macros or otherwise this project wouldn't be possible.  I decided to target the source code rewrite to work with [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html) because it supports a lot of those specific macro instructions previously mentioned and the syntax is very similar to what is in the original code so any rewrites are kept to a minimum.
+Even just taking a quick glance over the code, it quickly becomes apparent that we need an newer assembler that supports several different kinds of macros or otherwise this project wouldn't be possible.  I decided to target the source code rewrite to work with [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html) because it supports a lot of those specific macro instructions previously mentioned and the syntax is very similar to what is in the original code so any rewrites are kept to a minimum.
 
-Alan R. Baldwin's ASxxxx cross-assembler was also considered as it also supports the IRP, IRPC, and REPT macro instructions, but the amount of syntax changes needed in order for the code to build would be unfeasible. 
+[Alan R. Baldwin's ASxxxx cross-assembler](https://shop-pdp.net/ashtml/asxxxx.php) was also considered as it also supports the ```IRP```, ```IRPC``` and ```REPT``` macro instructions, but the amount of syntax changes needed in order for the code to build would be unfeasible. 
 
-Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as it does some things differently from other assemblers that I've come across and the documentation is rather daunting.  Unlike ASxxxx's manual, there's not many examples or concise instructions on how the assembler works, so this was where a lot of guesswork was needed.  In fact, I feel I learned more from looking at Sonic 1 and 2 disassemblies targeting {AS} than the manual itself.  Once I got the hang of the new syntax changes though, I started getting into the flow of things and was able to rewrite all of Sam Dicker's code in a week.
+Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as it does some things differently from other assemblers that I've come across and the documentation is rather daunting.  Unlike ASxxxx's manual, there's not many examples or concise instructions on how the assembler works, so this was where a lot of guesswork was needed.  In fact, I feel I learned more from looking at Sonic 1 and 2 disassemblies targeting {AS} than the manual itself.  Once I got the hang of the new syntax changes though, I started getting into the flow of things and was able to rewrite all of Sam Dicker's code in a week.  It was a rough start but I did get used to how {AS} operates and I'm happy with the results so far.
 
-## Changes Required
+## Changing the source code
 
-I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Sometimes I'll use double semi-colons to denote my comments from the original ones.
+I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Sometimes I'll use double semi-colons (```;;```) to denote my comments from the original ones.
 
-Because we're not using VMS to build this, I made a new file called, "MAKE.ASM", based off the original MAKE.COM batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling DEBUG features.
+Because we're not using VMS to build this, I made a new file called, "```MAKE.ASM```", based off the original MAKE.COM batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling DEBUG features.
 
 ### PUSHORG and PULLORG 
 
-The first two macros that I have commented out are PUSHORG/PULLORG.  They were used to hold various ORG addresses for the programmers as they worked on different sections of code.  I have replaced them with a regular ORG for PUSHORG.  If a symbol is next to PULLORG, then I add a new "SET *" instruction to mark the new address for that symbol:
+The first two macros that I have commented out are ```PUSHORG```/```PULLORG```.  They were used to hold various ```ORG``` addresses in an internal stack for the programmers as they worked on different sections of code.  Nearly all the code in the game uses these two macros to define the start and stop addresses for that code section.  ```PUSHORG``` is basically just a regular ```ORG``` instruction but is "pushing" the last address off the stack.  Conversely, ```PULLORG``` is saving that current address to the stack for a later ```PUSHORG```.  In this rewrite, a standard ```ORG``` instruction is used.  If a symbol is next to ```PULLORG```, then I add a new "```SET   *```" instruction to mark the new address for that symbol:
 
 ```
-	;PULLORG MESSAV
-MESSAV	SET	*
+	;PUSHORG ROMSAV
+	ORG	ROMSAV		;;Start code at last ROMSAV address
+
+	...
+
+	;PULLORG ROMSAV
+ROMSAV	SET	*		;;Set current address to ROMSAV
 ```
 
-When ORG MESSAV is called again, the new address that we just set up will be used.
+When ```ORG ROMSAV``` is called again at the beginning of the next assembly file, it will use the new address we previously assigned to ```ROMSAV```, essentially beginning where we previously left off in the ROM.
+
+### ROUTINE
+
+The ```ROUTINE``` macro basically handles multiple occurances of symbols.  If two symbols with the same name are defined, then a new symbol with a "Z" in front is created and a ```JMP``` instruction to the new symbol is inserted into the location of the old symbol.  For example the routine ```GAMOVER``` was first defined by Sam but at a later point in developement, the address for this symbol is used to immediately jump over to ```ZGAMOVER``` (defined by R.J.).  
+
+```
+* ROUTINE
+* first occurance	- creates symbol
+* second occurance	- types 'REPLACING' message
+* first occurance	- types 'DUP REPLACE' error message
+ROUTINE	MACRO	N1
+	BLIST
+	IFNDEF	N1
+N1
+	MESSG	"			CREATING N1"
+	ELSE
+	IFNDEF	ZN1
+ZN1
+	MESSG	"						REPLACING N1"
+	ELSE
+	LOCAL
+	MESSG	"DUP						REPLACE N1"
+	ENDIF	
+.$$	SET	*
+	ORG	N1
+	JMP	.$$
+	ORG	.$$
+	ENDIF
+	MLIST
+	ENDM
+```
+
+
+The problem with this macro is that it doesn't say when this symbol renaming occurs until actually building the code and the only evidence of it happening can be seen in the old ```EQU``` and ```SET``` files.  In this build, anytime a "Z" routine is encountered, a new patch will be inserted at the beginning of that routine to denote what is actually happening and why a ```JMP``` is at the location of the old symbol.
+
+### TEXT/PHRASE
+
+The ```TEXT``` and ```PHRASE``` macros are very important as they create the strings of text that are displayed on-screen throughout gameplay.  
+
+```
+	TEXT	4B,60
+	PHRASE	RED,68,GAME,OVER
+```
+
+To save space, every single word is assigned a Phrase Number and saved in a chunk of ROM called ```PHRSAV```.  Any duplicate words are then automatically eliminated as pre-defined words that are used over and over again just use one reference.  The ```TEXT``` macro assigns the screen position of the text while the ```PHRASE``` macro assigns which color and font size to use, as well as creating the strings of text.
+
+This macro was very difficult to troubleshoot and gave me a lot of headaches.  In order to get this to work with {AS}, I have to take part of the ```PHRASE``` macro code outside the macro itself and insert it at the end of the routine that initially called the macro.  This has to be done everytime new words are defined.  I think {AS} wasn't working earlier because the macro is using ```ORG``` and starts messing up the other branches inside the previous routine that called the macro.  This workaround is a slightly different way of doing it compared to what the devs did by having the macro do all the work, but this more manual workaround gets the job done regardless.
+
+Here's what this new code looks like and how it works:
+
+```
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ROMSAV	SET	*		;; Save the current address
+
+	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
+	FDB	_GAME		
+	FDB	_OVER
+
+PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
+				;; more phrases later
+
+	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+```
 
 ### Local labels
 
-{AS}  has some quirks with local labels so sometimes I had to make
-global labels in order for the code to build.  For example, here's what local
-labels look like for the BSO assembler:
+{AS}  has some quirks with local labels so I had to redo them.  For example, here's what local labels look like for the BSO assembler:
 
 ```
 1$	lda	lol
@@ -103,6 +170,10 @@ This is what this code would look like rewritten for {AS}:
 	jmp	.2S
 .2S	lda	lmao
 ```
+
+Sometimes, ```SECTION/ENDSECTION``` are used to make local sections of code, especially when there's lots of routines using local labels.
+
+Every once in a while I have to change local labels into global ones in order for the code to build at all, but I try to avoid this as much as possible.
 
 ### BSO Syntax
 
@@ -155,4 +226,9 @@ Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/c
           .IFNIDN   .IFNIDN <str1>,<str2> str1 and str2 are not 
                                           identical
 ```
+### Common fixes
 
+* Exclusive OR ```!X``` are now just ```!```.
+* Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
+* ```!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```-5```.
+* Several symbol appear in different files with slightly longer names, creating inconsistent symbols.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAV``` exclusively.
