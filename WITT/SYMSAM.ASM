@@ -30,6 +30,8 @@ TANGREY		EQU	$44
 WHITE		EQU	$11
 YELLOW		EQU	$FF
 
+	RADIX	10		;;(needed to add this)
 CIRCLE	EQU	256		;* There are 256 degrees in our circles.
 
 MAXBOMB	EQU	20		;* The max. num. of bombs the player can hold.
+	RADIX	16		;;(needed to add this)
