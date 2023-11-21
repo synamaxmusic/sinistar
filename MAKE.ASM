@@ -67,8 +67,8 @@
 ;  R   R  IIIII   CCCC  H   H
 ;
 
-
-
+	INCLUDE WITT/RICHS.ASM
+	;INCLUDE WITT/RICHS2.ASM
 
 ;===============================================================================
 ;
