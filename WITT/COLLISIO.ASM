@@ -6,7 +6,7 @@ KRCRYS	EQU	$6C70	;STUBS
 PREBOU	EQU	$6C79	;STUBS
 POSBOU	EQU	$6C76	;STUBS
 ADDVIB	EQU	$6C56	;STUBS
-SUBPART	EQU	$58B9	;SUBPART
+;SUBPART	EQU	$58B9	;SUBPART
 ;===============================================================================
 
 ;	SUBTTL	COLLISIONS
@@ -469,4 +469,4 @@ ROMSAV	SET	*
 
 	INCLUDE "../WITT/DEATH.ASM"	;* Player death routine
 ;	INCLVER	RICH,empty
-;	INCLUDE "../WITT/SUBPART.ASM"	;* Kill a part of the sinistar
+	INCLUDE "../WITT/SUBPART.ASM"	;* Kill a part of the sinistar
