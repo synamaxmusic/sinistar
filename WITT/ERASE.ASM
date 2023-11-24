@@ -17,9 +17,9 @@
 ;*
 ;*****
 ;	ROUTINE	Erase
-Erase	tst	MesgTim		;* If there are no messages and they have all
+Erase	tst	MesgTime	;* If there are no messages and they have all
 	blt	.1S		;*   been erased, then exit.
-	dec	MesgTim		;* If there was a message
+	dec	MesgTime	;* If there was a message
 	bge	.1S		;*   leave it alone one time
 	jsr	dispe		;*   and erase it the next.
 .1S	SLEEP	LOOP

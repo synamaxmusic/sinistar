@@ -21,7 +21,7 @@ tdispe	CMPA	TNPRIO		;do we have priority?
 ;	ROUTINE	dispe
 dispe	pshs	A,B,X		;* Save work registers
 	lda	#-1		;* Reset the message flag
-	sta	MesgTim		;*   to keep the Erase process sleeping.	;Fixme was: sta	MesgTime
+	sta	MesgTime	;*   to keep the Erase process sleeping.
 	lda	PMEMCTL
 	pshs	A
 	ANDA	#-$5		;Fixme was: anda #!N(4)
@@ -29,7 +29,7 @@ dispe	pshs	A,B,X		;* Save work registers
 	sta	MEMCTL
 	ldd	#$0741!$0404	;* 404 is for DMA bug				;Fixme was: ldd #$0741!X$0404
 	std	DHigh
-	ldb	ScoreAd								;Fixme was: ldb	ScoreAdr
+	ldb	ScoreAddr							;Fixme was: ldb ScoreAdr
 	lda	#$76
 	std	DSour 
 	std	DDest

@@ -28,7 +28,7 @@ Empty	tst	Bombs		;* If there are bombs in the bomb bay,
 	pshs	A,B,X,Y,CC	;* Save work registers
 	TEXT	$8A,$00		;* Warn player of empty bomb bay.
 	lda	#SDLOFF		;* <Normally the PHRASE macro is used here to		;;Fixme was: .$DLOFF
-	ldb	ScoreAd		;*  display the word, bu the TEXT MACRO is not		;;Fixme was: ScoreAddr
+	ldb	ScoreAddr	;*  display the word, bu the TEXT MACRO is not
 	tfr	D,X		;*  set up to handle two player switching yet.>
 	WORD	YELLOW,68,EMPTY 
 	puls	A,B,X,Y,CC	;* Restore work registers
@@ -62,7 +62,7 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 NOTEMPTY pshs	A,B,X,Y		;* Save work registers
 	TEXT	$8A,$00		;* Clear the message regarding an empty bomb bay
 	lda	#SDLOFF		;* <Normally the PHRASE macro is used here to		;;Fixme was: .$DLOFF
-	ldb	ScoreAd		;*  display the word, bu the TEXT MACRO is not		;;Fixme was: ScoreAddr
+	ldb	ScoreAddr	;*  display the word, bu the TEXT MACRO is not
 	tfr	D,X		;*  set up to handle two player switching yet.>
 	WORD	BLACK,68,EMPTY  
 	puls	A,B,X,Y		;* Restore work registers

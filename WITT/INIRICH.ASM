@@ -227,12 +227,12 @@ IEVBomb	sty	,X++		;* Save the new image pointer and descriptor.
 ;*
 	jsr	dispe		;* Erase the player message area
 ;*
-	clr	SiniSec		;* Sinistar sector flag.			;;Fixme was: clr SiniSector
+	clr	SiniSector	;* Sinistar sector flag.
 	clr	InWarp		;* Player is not warping.
 	clr	InBombs		;* No bombs are alive.
 ;*
-	clr	MesgTim		;* Mark no messages displayed			;;Fixme was: clr MesgTime
-	dec	MesgTim		;*   and the display already erased.		;;Fixme was: dec MesgTime
+	clr	MesgTime		;* Mark no messages displayed
+	dec	MesgTime		;*   and the display already erased.
 	New_Sleep	Task64,Erase	;* Start the message eraser.
 ;*
 	clr	ASCTime		;* Zero the wait time on pending animation.
@@ -246,7 +246,7 @@ ZAPSini	tst	KenChk
 	New_Sleep	Task1,.100S
 	bra	ADemo		;* Continue IniVect
 
-.100S	jsr	SubPiec								;;Fixme was: jsr SubPiece
+.100S	jsr	SubPiece
 	SLEEP	LOOP
 
 ;***
@@ -271,9 +271,9 @@ ADemo	tst	AMDemo		;*   if the system is not in demo mode
 ;*	a bomb display was very obvious, but did not allow much demonstration
 ;*	of the attack on the Sinistar.
 ;***
-.2S	jsr	AddBomb		;* Begin with sinibombs				;;Fixme was: jsr AddBombs
+.2S	jsr	AddBombs	;* Begin with sinibombs
 	inca			;*   in the bombbay for the demo attack.
-	cmpa	#(MaxBomb/2)	;* Note that half the bombbay is full so that	;;Fixme was: cmpa #(MaxBombs/2)
+	cmpa	#(MaxBombs/2)	;* Note that half the bombbay is full so that
 										;;(patched over in MICA/BOBFIXES.ASM)
 	blt	.2S		;*   crystal pickups are obviously making bombs.
 ;*
@@ -306,7 +306,7 @@ ADemo	tst	AMDemo		;*   if the system is not in demo mode
 ;	ROUTINE	CDTask
 CDTask	lda	NPlayer		;* During the credit display
 	clr	NPlayer		;*   DCREDITS must think this is player #0.
-	jsr	DCredit		;* Display the credits on each wake-up.		;;Fixme was: jsr DCredits
+	jsr	DCredits	;* Display the credits on each wake-up.
 	sta	NPlayer		;* Restore the actual player number (#1).
 	SLEEP	LOOP
 

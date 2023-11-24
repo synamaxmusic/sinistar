@@ -32,8 +32,8 @@ KABOOM	EQU	$6C6D	;STUBS
 ;*****
 ;	ROUTINE	subpart
 subpart	pshs	A,B,X,Y		;* Save work regsiters
-	ldd	PiecePt		;* If there are					;;Fixme was: ldd PiecePtr
-	cmpd	#PieceTb	;*   pieces left to the sinistar		;;Fixme was: cmpd #PieceTbl
+	ldd	PiecePtr	;* If there are
+	cmpd	#PieceTbl	;*   pieces left to the sinistar
 	bne	SUBPA2S		;*   then kill a piece off.			;;Fixme was: bne 2$ (Had to convert local
 										;;labels to global because of PHRASE macro)
 ;***
@@ -54,17 +54,17 @@ subpart	pshs	A,B,X,Y		;* Save work regsiters
 	inc	SinGrave	;* Mark the Sinistar dead.
 	jsr	KaBoom		;* Else, perform the expected kill
 	ldd	#$7000		;* Score
-	jsr	addscor		;*   15,000					;;Fixme was: jsr addscore
+	jsr	addscore	;*   15,000
 	ldd	#$8000		;*   points
-	jsr	addscor		;*   for finishing off the Sinistar!
+	jsr	addscore	;*   for finishing off the Sinistar!
 	bra	SUBPA99S	
 
-SUBPA2S	jsr	subpiec		;* Destroy a part of the sinistar		;;Fixme was: jsr subpiece
+SUBPA2S	jsr	subpiece	;* Destroy a part of the sinistar
 	SPEAK	8		;* Start a scream on each hit!
 ;***
 ;* Stun the Sinistar by zeroing its velocity.
 ;***
-	ldy	[SinInde]	;* Y -> Sinistar scanner workspace		;;Fixme was: [SinIndex]
+	ldy	[SinIndex]	;* Y -> Sinistar scanner workspace		
 	clra			;* Zero the velocity of the Sinistar ...
 	ldx	OSSCWSA,Y	;* If the Sinistar is not on screen
 	beq	SUBPA3S		;*   then there is no screen object to affect.
@@ -103,7 +103,7 @@ SUBPA4S	sta	PCRAM		;*   for exploding a piece of the sinistar!
 	PHRASE	GREY,35,SINIBOMB,ATTACK
 	PHRASE	GREY,35,DAMAGED,TARGET
 	ldd	#$500		;* Score points
-	jsr	addscor		;*   for destroying part of the Sinistar!
+	jsr	addscore	;*   for destroying part of the Sinistar!
 SUBPA99S puls	A,B,X,Y		;* Restore work registers
 	rts
 	

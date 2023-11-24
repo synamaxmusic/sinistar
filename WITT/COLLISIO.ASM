@@ -107,7 +107,7 @@ SINIBITE1 CLRD
 	FRANDOM	OSEED1,BYTE	;yes, give player a random angle
 	STA	PLYRANG
 	CLR 	INSTUN		;can't stun an eating sinistar
-	LDX	[SININDE]	;tell sinistar to attack full speed		;;Fixme was: [SININDEX]
+	LDX	[SININDEX]	;tell sinistar to attack full speed
 	LDA	OSPERS,X
 	ANDA	#~PSINIINHIBIT				;;Fixme was: #!NPSINIINHIBIT
 	STA	OSPERS,X
@@ -145,7 +145,7 @@ SINIBITE1 CLRD
 	ldu	OSChar,X	;*   cyrstal as if
 	jsr	[OKiVec,U]	;*   bringing it inside the ship.
 	ldd	#$200		;* Score a few points
-	jsr	addscor		;*   for collecting the crystal.		;;Fixme was: jsr addscore
+	jsr	addscore	;*   for collecting the crystal.
 	rts
 ;*****
 ;*
@@ -164,7 +164,7 @@ AddBomb	pshs	A,B,X,Y		;* Save work registers.
 	bne	.1S		;*   the "EMPTY" message in the bomb
 	jsr	NotEmpty	;*   display area must be erased.
 .1S	INCA			;* Add a bomb to the bomb bay.
-	cmpa	#MAXBOMB	;* If the bomb bay is not yet full,		;;Fixme was: cmpa #MAXBOMBS
+	cmpa	#MAXBOMBS	;* If the bomb bay is not yet full,
 	ble	ADDB2S	;*   then another bomb is manufactured.			;;Fixme was: ble .2S
 ;*
 	TUNE	QFulCr		;* Else, signal crystal pick up for warp engines
@@ -247,7 +247,7 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 	leax	,Y			;* Point to shot
 	jsr	KillObj			;* Kill it off too
 	ldd	#$150			;* Score points
-	jsr	addscor		;*   for killing the worker.		;;Fixme was: jsr addscore
+	jsr	addscore		;*   for killing the worker.
 	rts
 
 ;* shoot player
@@ -364,7 +364,7 @@ PreBoY	exg	X,Y		;* Swap objects
 	ldu	OSChar,X	;* Get charac. Descr.
 	jsr	[OKiVec,U]	;* Kill it.
 	ldd	#$150		;* Score points
-	jsr	addscor		;*   for killing the worker.			;;Fixme was: jsr addscore
+	jsr	addscore	;*   for killing the worker.
 	jsr	SBOMB1S
 	rts
 
@@ -378,7 +378,7 @@ PreBoY	exg	X,Y		;* Swap objects
 	ldu	OSChar,X	;* Get charac. Descr.
 	jsr	[OKiVec,U]	;* Do appropriate kill subroutine
 	ldd	#$500		;* Score points
-	jsr	addscor		;*   for killing the warrior.			;;Fixme was: jsr addscore
+	jsr	addscore	;*   for killing the warrior.
 SBOMB1S	DISPLAY	YELLOW
 	PHRASE	YELLOW,35,SINIBOMB
 	PHRASE	YELLOW,35,INTERCEPTED
@@ -435,7 +435,7 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 	leax	,Y		;* Point to shot
 	jsr	KillObj		;* Kill it off too
 	ldd	#$500		;* Score points
-	jsr	addscor		;*   for killing the warrior.			;;Fixme was: jsr addscore
+	jsr	addscore	;*   for killing the warrior.
 	rts
 
 ;	LOCAL
@@ -461,7 +461,7 @@ YDies	leax	Y
 	leax	Y		;*   and then
 	jsr	killobj		;*   kill the warrior's shot.
 	ldd	#$100		;* Score points for
-	jsr	addscor		;*   destroying the warrior shots.		;;Fixme was: jsr addscore
+	jsr	addscore	;*   destroying the warrior shots.
 	rts
 
 ;	PULLORG	ROMSAVE

@@ -33,9 +33,9 @@
 ;	ROUTINE	disp
 DISP	pshs	A,X		;* Save work register
 	lda	#4		;* Mark this message as newly
-	sta	MesgTim		;*   appearing on the display.			;;Fixme was: sta MesgTime
+	sta	MesgTime	;*   appearing on the display.
 	lda	2,S		;* The SHORT position of the
-	adda	ScoreAd		;*   message is controlled by			;;Fixme was: adda ScoreAddr
+	adda	ScoreAddr	;*   message is controlled by
 	sta	2,S		;*   ScoreAddr.
 	puls	A,X		;* Restore work register
 	rts

@@ -61,7 +61,7 @@ Mortal	TUNE	Qpldie		;* Play a tune at the destruction of the player
 .2S	LDD	#60		;sleep 1 second
 	RADIX	16
 	JSR	TIMER
-	ldx	[SinInde]	;* If the Sinistar				;;Fixme was: [SinIndex]
+	ldx	[SinIndex]	;* If the Sinistar
 	ldx	OSSCWSA,X	;*   is on the screen
 	bne	.99S		;*   when the player dies,
 	SPEAK	1		;*   say "I am Sinistar"

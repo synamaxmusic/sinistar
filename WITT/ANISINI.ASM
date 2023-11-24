@@ -21,7 +21,7 @@
 ;	ROUTINE	anisinistar
 ANISINI	pshs	A,B,X,Y		;* Save work registers
 	PSHS	D,X
-	LDX	[SININDE]	;is sinistar on screen?
+	LDX	[SININDEX]	;is sinistar on screen?
 	LDA	OSSCWSA,X
 	BEQ	.2S
 	ldx	Finish		;* If sinistar is not alive, exit.
@@ -126,7 +126,7 @@ AniSCS	pshs	A,X		;* Save work register
 ;***
 .1S	cmpa	#LiveSC		;* If the Sinistar is saying "Beware, I Live!"
 	beq	.2S		;*   it can do so in or out of sector.
-	tst	SiniSec		;* If the Sinistar is				;;Fixme was: SiniSector
+	tst	SiniSector	;* If the Sinistar is
 	bne	.99S		;*   out of sector, then exit.
                                 
 .2S	ldx	#.100S		;* Call the routine entry corresponding
@@ -238,7 +238,7 @@ AniSC	pshs	A,B,X,Y,U	;* Save work registers
 ;*	The animation sequence always runs, but it may not draw anything
 ;*	when the Sinistar is off screen, or not yet "alive".
 ;***
-	ldx	[SinInde]	;* If the Sinistar is				;;Fixme was: ldx [SinIndex]
+	ldx	[SinIndex]	;* If the Sinistar is
 	ldx	OSSCWSA,X	;*   not on screen,
 	beq	Ani99S		;*   then exit.
 	ldx	Finish		;* If sinistar is
