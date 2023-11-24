@@ -18,3 +18,5 @@ ScoreAddr EQU	ScoreAd
 SiniSector EQU	SiniSec
 AddBombs EQU	AddBomb
 DCredits EQU	DCredit
+PlaIndex EQU	PlaInde
+PlyrAngl EQU	PlyrAng

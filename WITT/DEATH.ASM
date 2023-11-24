@@ -26,7 +26,7 @@ Death	LDA	AMDEMO		;in attract mode demo?
 	CLR	NPLAYER		;zero player count
 ;*	nop
 ;	ROUTINE	PntScrn		;* Point screen entry
-PntScrn	jmp	IAMode		;*   for attract mode.				;; Gets patched over by MICA/ZPNTSCRN.ASM
+PntScrn	jmp	IAMode		;*   for attract mode.				;; Gets patched over by MICA/ZPNTSCRN.ASM ($583B)
 ;*
 ;	ROUTINE	Mortal		;* RTS here to be IMMORTAL.
 Mortal	TUNE	Qpldie		;* Play a tune at the destruction of the player

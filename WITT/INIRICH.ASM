@@ -6,7 +6,7 @@
 ;===============================================================================
 ; EQUs to remove later
 ;AniSC	EQU	$5433	;ANISINI
-Copyright EQU	$5956
+;Copyright EQU	$5956
 ;DISPE 	EQU	$55A0
 ;ERASE 	EQU	$55D4
 ;ANISCF	EQU	$5550	;ANISINI
@@ -274,7 +274,7 @@ ADemo	tst	AMDemo		;*   if the system is not in demo mode
 .2S	jsr	AddBombs	;* Begin with sinibombs
 	inca			;*   in the bombbay for the demo attack.
 	cmpa	#(MaxBombs/2)	;* Note that half the bombbay is full so that
-										;;(patched over in MICA/BOBFIXES.ASM)
+										;;(patched over in MICA/BOBFIXES.ASM) ($525E)
 	blt	.2S		;*   crystal pickups are obviously making bombs.
 ;*
 	New_Sleep	Task1,.100S,OTimer	;* Start watchdog task.
@@ -283,7 +283,7 @@ ADemo	tst	AMDemo		;*   if the system is not in demo mode
 	RADIX	10
 	ldd	#(40*60)/2			;*   which will run for		;;Fixme was: ldd #(40.*60.)/2
 										;;(patched over first by WITT/FIXINIRI.ASM,
-										;; and then again by MICA/BOBFIXES.ASM)
+										;; and then again by MICA/BOBFIXES.ASM) ($5279)
 	RADIX 	16
 	std	OMTLen,X			;*   40 seconds
 	CLRD
@@ -292,11 +292,11 @@ ADemo	tst	AMDemo		;*   if the system is not in demo mode
 ;***
 ;*	This is the demo watchdog timer.
 ;***
-.100S	lda	#%00111001	;* During the demo, the start buttons and	;;(patched over in WITT/FIXINIRI.ASM)
+.100S	lda	#%00111001	;* During the demo, the start buttons and	;;(patched over in WITT/FIXINIRI.ASM) ($5283)
 	sta	PanMask		;*   star scrolling must work.  Fire for HSTD.
 	RADIX	10
 	ldd	#(45*60)	;* Allow the system to run			;;Fixme was: ldd #(45.*60.)
-										;;(patched over in MICA/BOBFIXES.ASM)
+										;;(patched over in MICA/BOBFIXES.ASM) ($5287)
 	RADIX	16
 	jsr	Timer		;*   for 45 seconds.
 	JMP	DEATH		;end demo
@@ -370,8 +370,8 @@ KenTbl	fdb	$6A00		;* U
 	fdb	$45F1		;* U
 	fdb	$4234		;* U
 	fdb	$A7BD		;* U
-	fdb	$5769
-	fdb	$7474
+	fdb	$5769								;;These last four bytes spell out "Witt"
+	fdb	$7474								;;in ASCII.
 ;*	ENDTBL
 
 ;	PULLORG	ROMSAVE

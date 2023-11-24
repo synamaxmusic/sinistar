@@ -111,7 +111,7 @@ SUBPA99S puls	A,B,X,Y		;* Restore work registers
 ROMSAV	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
-	FDB	_SINIBOMB
+;	FDB	_SINIBOMB	;; ALREADY DEFINED IN COLLISIO.ASM
 	FDB	_ATTACK
 	FDB	_DAMAGED
 	FDB	_TARGET
