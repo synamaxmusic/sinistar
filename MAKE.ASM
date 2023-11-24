@@ -67,6 +67,8 @@
 ;  R   R  IIIII   CCCC  H   H
 ;
 
+	INCLUDE	WITT/new_equates.ASM	;Added to support longer symbol names
+
 	INCLUDE WITT/RICHS.ASM
 	;INCLUDE WITT/RICHS2.ASM
 
