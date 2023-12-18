@@ -1,13 +1,38 @@
 # Sinistar
 A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
 
-Source code rewrite by SynaMax, started 11/6/23
+Source code rewrite by SynaMax, started November 6th, 2023
+
+Current status (as of 12/18/2023):
+
+* Rewrite is 34% complete and currently stops at ROM address $5D2F
+* Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
+
+The original source code for the game can be found at https://github.com/historicalsource/sinistar/
+
+A recreation of the source code for Sinistar's sound roms can be found here: https://github.com/synamaxmusic/Sinistar-Sound-ROM/
+
+Sinistar's speech roms are separate from the sound roms and have not been disassembled yet.
+
+## Overview
+
+Four main programmers worked on Sinistar and each directory in the source code belongs to one of them (however there's evidence that all of them were modifying and editing each other's code).
+
+Sam Dicker was the first software engineer to work on the game and so his code deals with critical routines related to the game engine, including joystick control handling, drawing graphics, and background multi-tasking routines for enemy AI and gameplay logic.  Jack Haeger's pixel artwork is also represented here (in the ```SAM/IMAGE.ASM``` file).  
+
+After Sam's code, we move on to Rich Witt's files.  He worked a large chunk of the game logic routines including sinibomb pickups, enemy AI, collsion handling, and the Sinistar's lip sync animation.
+
+Noah Falstein's section is up next and he worked on further AI programming for the enemies, planetoid logic (vibrating, tossing crystals, swarming, shattering), enemy population difficulty tables, and the Sinistar's speech calls.
+
+Finally, RJ Mical's code involves the game's attract mode, high score table, operator message/high score initial entry, and death explosion routines for the warriors, the Sinistar, and player ship.  There's a fair amount of unused code located in this directory including an earlier version of RJ's explosion routine as well as Mike Metz and Ken Lantz's "Marquee" title screen that's only found in the AMOA '82 prototype build.
+
+The ```MAKE.ASM``` file in the top directory grabs all the source code files from all four folders and tells the assembler which order they go in the binary ROM data.
 
 ## Build Instructions
 
-This source code was rewritten to target Macro Assembler {AS}.
+This source code was rewritten to target [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html).  
 
-To build Sinistar, place the four folders (```FALS, SAM, WITT, MICA```) and the "```MAKE.ASM```" file into the same directory as ASL and P2BIN.
+To build Sinistar, place the four folders (```FALS, SAM, WITT, MICA```) and the ```MAKE.ASM``` file into the same directory as ASL and P2BIN.
 
 Then, open a command prompt and type in:
 
@@ -87,7 +112,7 @@ Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as i
 
 I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Sometimes I'll use double semi-colons (```;;```) to denote my comments from the original ones.
 
-Because we're not using VMS to build this, I made a new file called, "```MAKE.ASM```", based off the original MAKE.COM batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling DEBUG features.
+Because we're not using VMS to build this, I made a new file called ```MAKE.ASM```, based off the original MAKE.COM batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling debug features.
 
 ### PUSHORG and PULLORG 
 
@@ -258,5 +283,5 @@ These periods have been removed and ```RADIX 10``` is used instead when needed.
 
 * Exclusive OR ```!X``` are now just ```!```.
 * Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
-* ```!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```-5```.
+* ```#!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```#~$4```.
 * Several symbol appear in different files with slightly longer names, creating inconsistent symbols.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAV``` exclusively.
