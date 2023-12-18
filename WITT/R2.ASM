@@ -11,7 +11,7 @@
 	INCLUDE "../WITT/COPYRIGH.ASM"		;* EBCDIC copyright
 	INCLUDE "../WITT/DIFFICUL.ASM"		;* Difficulty factor tables
 	INCLUDE "../WITT/KRSINI.ASM"		;* Sinistar Killing routine
-	;INCLVER	RICH,leavesec		;* Leaving sector vectors
+	INCLUDE "../WITT/LEAVESEC.ASM"		;* Leaving sector vectors
 	;INCLVER	RICH,tables
 	;INCLVER	RICH,worker
 	;INCLVER	RICH,warrior

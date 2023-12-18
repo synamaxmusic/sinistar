@@ -9,7 +9,7 @@ RSTPOP	EQU	$6C7C
 ReTarget EQU	$6438
 AimFlang EQU	$64DD	;UPDFLANG
 getlodist EQU	$635A	;DISTANCE
-stblimpulse EQU	$5CF6   ;STBLIMP
+;stblimpulse EQU	$5CF6   ;STBLIMP
 NEWVEL	EQU	$6503	;VELOCITY
 updlvel	EQU	$6540	;VELOCITY
 getsodist EQU	$6396	;DISTANCE
@@ -469,4 +469,4 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 ;	PULLORG	ROMSAVE
 ROMSAV	SET	*
 
-;	INCLVER	RICH,stblimp	;* Impulse engine speed table
+	INCLUDE "../WITT/STBLIMP.ASM"	;* Impulse engine speed table

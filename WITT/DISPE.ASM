@@ -24,7 +24,7 @@ dispe	pshs	A,B,X		;* Save work registers
 	sta	MesgTime	;*   to keep the Erase process sleeping.
 	lda	PMEMCTL
 	pshs	A
-	ANDA	#-$5		;Fixme was: anda #!N(4)
+	ANDA	#~$4		;Fixme was: anda #!N(4)
 	sta	PMEMCTL
 	sta	MEMCTL
 	ldd	#$0741!$0404	;* 404 is for DMA bug				;Fixme was: ldd #$0741!X$0404
