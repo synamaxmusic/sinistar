@@ -8,6 +8,9 @@ Current status (as of 12/18/2023):
 * Rewrite is 34% complete and currently stops at ROM address $5D2F
 * Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
 
+  ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
+
+
 The original source code for the game can be found at https://github.com/historicalsource/sinistar/
 
 A recreation of the source code for Sinistar's sound roms can be found here: https://github.com/synamaxmusic/Sinistar-Sound-ROM/
