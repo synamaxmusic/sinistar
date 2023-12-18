@@ -192,7 +192,7 @@ MODSINI	PSHS	D,X,Y,U		;save regs
 	LEAU	8,S		;get start of ram buffer
 	LDA	PMEMCTL		;write inhibit off
 	PSHS	A               
-	ANDA	#-$5		;Fixme was: ANDA	#!N4           
+	ANDA	#~$4		;Fixme was: ANDA	#!N4           
 	STA	PMEMCTL         
 	STA	MEMCTL          
 .2S	STY	DSOUR		;set source to sinistar image

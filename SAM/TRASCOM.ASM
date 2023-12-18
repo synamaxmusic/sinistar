@@ -61,7 +61,7 @@ TRASCOM	LDX	TRASBUB		;get trash compactor bubble  > uses A,B,X,U
 	STD	DHIGH
 	LDA	PMEMCTL		;write inhibit off
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDB	#DSCY		;move data

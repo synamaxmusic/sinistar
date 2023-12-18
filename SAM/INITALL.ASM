@@ -541,7 +541,7 @@ GAMOVER	NOP
 PCLRSCR	PSHS	D		;> uses none
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#1831!404	;Fixme was: LDD	#1831!X404 ;erase scanner region * * * FOR DMA ERROR
@@ -565,7 +565,7 @@ PCLRSCR	PSHS	D		;> uses none
 CLRSCR	PSHS	D		;> uses none
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDA	#97		;setup to erase entire screen
@@ -597,7 +597,7 @@ INISINI	PSHS	D,X
 	STD	DHIGH
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDA	#DCNS		;zero it
@@ -687,7 +687,7 @@ FIN	LDD	#1466		;get width in A, color in B > uses A,B
 SWPLAY	PSHS	A,X,Y,U
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 PLSIZE	SET	PLNURAM-PLURAM
@@ -745,7 +745,7 @@ PHRSAV	SET	*
 FRAME	PSHS	A,B		;> uses none
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#1FF!404	;Fixme was: LDD	#1FF!X404 ;* * * FOR DMA ERROR   draw scanner bottom frame

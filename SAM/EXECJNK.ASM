@@ -84,7 +84,7 @@ EXECJNK	LDU	TLEVEL		;save current task pointer > uses A,B,X,U
 	;LOCAL
 	LDA	PMEMCTL		;write inhibit off
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#70E!404	;Fixme was: LDD	#70E!X404	;draw scanner screen border: * * * FOR DMA ERROR

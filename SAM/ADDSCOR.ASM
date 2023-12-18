@@ -90,7 +90,7 @@ CMPBCD	PSHS	A,B	;> uses none
 UPBONUS	PSHS	D,X,U
 	LDA	PMEMCTL		;dma inhibit off
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#(3<<8+8*4-1)!404	;Fixme was: LDD	#(3!<8+8*4-1)!X404 ;erase score: set dma size * * *FOR DMA BUG
@@ -159,7 +159,7 @@ UPSTATS	STD	DSOUR           ;Fixme was: UPSTAT
 	STD	DHIGH           
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A               
-	ANDA	#-$5		;Fixme was: ANDA	#!N4            
+	ANDA	#~$4		;Fixme was: ANDA	#!N4            
 	STA	PMEMCTL         
 	STA	MEMCTL          
 	LDA	2,S		;get dma constant
@@ -182,7 +182,7 @@ SCOREDI	LDA	SCOREFL		;did the player score?
 UPSCORE	PSHS	D,X,U		;> uses none	
 	LDA	PMEMCTL		;dma inhibit off
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#8503		;compute screen address of score

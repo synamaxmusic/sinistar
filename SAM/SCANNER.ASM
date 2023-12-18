@@ -243,7 +243,7 @@ ERASCAN	LDA	#30		;compute screen l pos   > uses A,B and TEMP 0,1
 	RTS
 .3S	LDA	PMEMCTL		;top flavor - dma to erase    write inhibit off
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#202!404	;Fixme was: LDD	#202!X404 ;* * * TEMPORARY FOR DMA BUG
@@ -283,7 +283,7 @@ DRWSCAN	LDA	#30		;compute screen l pos  > uses A,B,X and TEMP 0,1
 	RTS
 .3S	LDA	PMEMCTL		;top flavor - dma to draw    write inhibit off
 	PSHS	A
-	ANDA	#-$5		;Fixme was: ANDA	#!N4
+	ANDA	#~$4		;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDD	#202!404	;Fixme was: LDD	#202!X404 ;* * * TEMPORARY FOR DMA BUG
