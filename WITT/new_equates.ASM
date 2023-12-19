@@ -20,3 +20,4 @@ AddBombs EQU	AddBomb
 DCredits EQU	DCredit
 PlaIndex EQU	PlaInde
 PlyrAngl EQU	PlyrAng
+addpiece EQU 	addpiec

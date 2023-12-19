@@ -1,8 +1,8 @@
 ;===============================================================================
 ; EQUs to remove later
-LSSBomb	EQU	$5D2F
-LSSINI	EQU	$5DBE
-LSWOCR	EQU	$5D6A
+;LSSBomb	EQU	$5D2F
+;LSSINI	EQU	$5DBE
+;LSWOCR	EQU	$5D6A
 ;===============================================================================
 
 	ORG	ROMSAV
@@ -80,6 +80,6 @@ ROMSAV	SET	*
 	FDB	LeaveSector		;vector to leave-sector routine
 ;	PULLORG
 
-;	INCLVER	RICH,lssbomb		;* Sinibomb leaving sector
-;	INCLVER	RICH,lswocr		;* Worker with crystal leaving sector
-;	INCLVER	RICH,lssini		;* Sinistar leaving sector
+	INCLUDE "../WITT/LSSBOMB.ASM"		;* Sinibomb leaving sector
+	INCLUDE "../WITT/LSWOCR.ASM"		;* Worker with crystal leaving sector
+	INCLUDE "../WITT/LSSINI.ASM"		;* Sinistar leaving sector
