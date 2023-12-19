@@ -3,9 +3,9 @@ A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
 
 Source code rewrite by SynaMax, started November 6th, 2023
 
-Current status (as of 12/18/2023):
+Current status (as of 12/19/2023):
 
-* Rewrite is 34% complete and currently stops at ROM address $5D2F
+* Rewrite is around 40% complete; 28010 out of 69632 bytes have been assembled in the binary ROM data.  Currently working on speed tables found in Witt's module.  This number does not account for final patches that will need to be inserted at the end for various fixes.
 * Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
 
   ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
