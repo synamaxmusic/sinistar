@@ -1,5 +1,5 @@
 ;*
-	INCLUDE "../WITT/SYMRICH.ASM"	;* Rich's symbols
+	INCLUDE "../WITT/SYMRICH.ASM"		;* Rich's symbols
 	INCLUDE "../WITT/RAMRICH.ASM"		;* Ram variables
 	INCLUDE "../WITT/INIRICH.ASM"		;* VECTOR INIVECTs
 ;*
@@ -12,7 +12,7 @@
 	INCLUDE "../WITT/DIFFICUL.ASM"		;* Difficulty factor tables
 	INCLUDE "../WITT/KRSINI.ASM"		;* Sinistar Killing routine
 	INCLUDE "../WITT/LEAVESEC.ASM"		;* Leaving sector vectors
-	;INCLVER	RICH,tables
+	INCLUDE "../WITT/TABLES.ASM"
 	;INCLVER	RICH,worker
 	;INCLVER	RICH,warrior
 	;INCLVER	RICH,sinibomb
