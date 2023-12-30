@@ -288,4 +288,4 @@ These periods have been removed and ```RADIX 10``` is used instead when needed.
 * Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
 * ```#!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```#~$4```.
 * Several symbol appear in different files with slightly longer names, creating inconsistent symbols.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAV``` exclusively.
-* Copyright strings were inserted automatically by a macro, but I decided to manually insert the copyright strings to make the code easier to follow along while looking at the binary data.
+* The "COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC." strings in the final ROM were originally inserted automatically by a macro, but in this rewrite I decided to manually insert the strings to make the code easier to follow along while looking at the binary data.
