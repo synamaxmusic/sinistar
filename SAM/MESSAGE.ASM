@@ -69,55 +69,68 @@
 ;*****
 ;	PAGE
 ;	NLIST
-;.$PP	SET	0
-;.$ORG0	SET	0
-;.$ORG1	SET	.$ORG0
-;.$ORG2	SET	.$ORG1
-;.$ORG3	SET	.$ORG2
-;.$ORG4	SET	.$ORG3
-;.$ORG5	SET	.$ORG4
-;.$ORG6	SET	.$ORG5
-;.$ORG7	SET	.$ORG6
+PP	SET	0		;;Fixme was: .$PP   SET	0
+ORG0	SET	0		;;Fixme was: .$ORG0 SET	0
+ORG1	SET	ORG0		;;Fixme was: .$ORG1 SET	.$ORG0
+ORG2	SET	ORG1		;;Fixme was: .$ORG2 SET	.$ORG1
+ORG3	SET	ORG2		;;Fixme was: .$ORG3 SET	.$ORG2
+ORG4	SET	ORG3		;;Fixme was: .$ORG4 SET	.$ORG3
+ORG5	SET	ORG4		;;Fixme was: .$ORG5 SET	.$ORG4
+ORG6	SET	ORG5		;;Fixme was: .$ORG6 SET	.$ORG5
+ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET	.$ORG6
+
+;;
+;; At first glance, these appear to be duplicates of the PUSHORG and PULLORG macros
+;; but this PUSHORG doesn't have a ROMTEST sub-macro since we're just starting assembly.
+;; I renamed these macros so that they can be used.
+;;
+;; PULMORG is almost exactly the same as PULLORG but I have to include it here because
+;; PULLORG hasn't been defined yet during assembly.
+;;
 
 ;* push current address on org stack (8 levels) and optionally re-org
-;PUSHORG	MACRO	ADR
+PUSMORG	MACRO	ADR
 ;	NLIST
-;.$PP	SET	.$PP+1
-;.$ORG7	SET	.$ORG6
-;.$ORG6	SET	.$ORG5
-;.$ORG5	SET	.$ORG4
-;.$ORG4	SET	.$ORG3
-;.$ORG3	SET	.$ORG2
-;.$ORG2	SET	.$ORG1
-;.$ORG1	SET	.$ORG0
-;.$ORG0	SET	*
-;	IFNB	<ADR>
-;	LIST
-;	ORG	ADR
+PP	SET	PP+1		;;Fixme was: .$PP   SET .$PP+1
+ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET .$ORG6	
+ORG6	SET	ORG5		;;Fixme was: .$ORG6 SET .$ORG5	
+ORG5	SET	ORG4		;;Fixme was: .$ORG5 SET .$ORG4	
+ORG4	SET	ORG3		;;Fixme was: .$ORG4 SET .$ORG3	
+ORG3	SET	ORG2		;;Fixme was: .$ORG3 SET .$ORG2	
+ORG2	SET	ORG1		;;Fixme was: .$ORG2 SET .$ORG1	
+ORG1	SET	ORG0		;;Fixme was: .$ORG1 SET .$ORG0	
+ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*	
+	IFNB	<ADR>
+	ORG	ADR
 ;	NLIST
-;	ENDIF
+;;	IF ROMSAV-* = 0		;;Fixme was: 	IFE	ROMSAV-*
+;;	RADIX 10		;; (RADIX 10 for decimal 12)
+;;	ROMTEST	(ORG0>>12)	;;Fixme was: 	ROMTEST	(*!>12.)
+;;	RADIX 16		;; (I guess I could also use OUTRADIX, but RADIX 16 is easier to understand)
+;;	ENDIF
+	ENDIF
 ;	LIST
-;	ENDM
+	ENDM
 
 ;* pull current address off of org stack and optionally reset symbol address
-;PULLORG	MACRO	ADR
+PULMORG	MACRO	ADR
 ;	NLIST
-;	IFNB	<ADR>
+	IFNB	<ADR>
 ;	LIST
-;ADR	SET	*
+ADR	SET	*
 ;	NLIST
-;	ENDIF
-;	ORG	.$ORG0
-;.$PP	SET	.$PP-1
-;.$ORG0	SET	.$ORG1
-;.$ORG1	SET	.$ORG2
-;.$ORG2	SET	.$ORG3
-;.$ORG3	SET	.$ORG4
-;.$ORG4	SET	.$ORG5
-;.$ORG5	SET	.$ORG6
-;.$ORG6	SET	.$ORG7
+	ENDIF
+	ORG	ORG0		;;Fixme was: 	ORG	.$ORG0
+PP	SET	PP-1            ;;Fixme was: .$PP	SET	.$PP-1
+ORG0	SET	ORG1            ;;Fixme was: .$ORG0	SET	.$ORG1
+ORG1	SET	ORG2            ;;Fixme was: .$ORG1	SET	.$ORG2
+ORG2	SET	ORG3            ;;Fixme was: .$ORG2	SET	.$ORG3
+ORG3	SET	ORG4            ;;Fixme was: .$ORG3	SET	.$ORG4
+ORG4	SET	ORG5            ;;Fixme was: .$ORG4	SET	.$ORG5
+ORG5	SET	ORG6            ;;Fixme was: .$ORG5	SET	.$ORG6
+ORG6	SET	ORG7            ;;Fixme was: .$ORG6	SET	.$ORG7
 ;	LIST
-;	ENDM
+	ENDM
 
 ;	NOGEN
 ;	LIST
@@ -146,18 +159,18 @@ DES	EQU	ORG+2	;DESTINATION (WHERE DATA IS TO GO) 2-BYTES
 XSIZE	EQU	DES+2	;HORIZONTAL SIZE (X-SIZE)
 YSIZE	EQU	XSIZE+1	;VERTICAL SIZE (Y-SIZE)
 
-;===============================================================
-;
-;   AS doesn't like forward references so we'll have to move
-;   this JMP table to the end in order to get the correct
-;   addresses.  Creating SECTIONs and placing the routine code
-;   and the JMP addresses inside these areas worked except for
-;   FONTEXP.  To fix this, I replaced the call here with
-;   FONTJMP, a new defined symbol.
-;
+;;===============================================================
+;;
+;;   AS doesn't like forward references so we'll have to move
+;;   this JMP table to the end in order to get the correct
+;;   addresses.  Creating SECTIONs and placing the routine code
+;;   and the JMP addresses inside these areas worked except for
+;;   FONTEXP.  To fix this, I replaced the call here with
+;;   FONTJMP, a new defined symbol.
+;;
 FONTJMP	SET	0
-;
-;===============================================================
+;;
+;;===============================================================
 ;
 ;	ORG	MESS1	;START AT THE ADDRESS SPECIFIED ABOVE
 ;	JMP	CHROUT	;JUMP TO THE CHARACTER OUTPUT ROUTINE
@@ -182,7 +195,7 @@ FONTJMP	SET	0
 ;*		3X5 FONT SECOND				 *
 ;*							 *
 ;*********************************************************
-	ORG	MESS1+37
+	PUSMORG	MESS1+37		;; Added this new ORG since we're skipping the jump table for now
 FONT57	FDB	L0
 	FDB	L1
 	FDB	L2
@@ -291,29 +304,28 @@ FONT35	FDB	S0
 	FDB	SPER
 	FDB	SPER
 	FDB	SPER
-;	IFN	(*-FONT35)-(FONE57-FONT57)	;THESE 2 TABLES ARE SAME LENGTH
-;	 FCB	$1111	;3 BY 5 FONT TABLE AND 5 BY 7 TABLE IS NOT SAME LENGTH!
-;	ENDIF
+	IF (*-FONT35)-(FONE57-FONT57) <> 0	;THESE 2 TABLES ARE SAME LENGTH					;;Fixme was: IFN (*-FONT35)-(FONE57-FONT57)
+	FCB	$1111				;3 BY 5 FONT TABLE AND 5 BY 7 TABLE IS NOT SAME LENGTH!
+	ENDIF
 
 ;	SECTION SPTR_CRIMAGE
 SPTR	SET	0
 ;* define a letter
 LETTER	MACRO	N1,H1,W1
-N1	EQU	SPTR		;Fixme was: N1	EQU	.$PTR (changed to SPTR)
-	FCB	H1<<4+W1	;Fixme was: FCB	H1!<4+W1
-SPTR	SET	SPTR+2		;Fixme was: .$PTR	SET	.$PTR+2
+N1	EQU	SPTR		;;Fixme was: N1	EQU	.$PTR (changed to SPTR)
+	FCB	H1<<4+W1	;;Fixme was: FCB	H1!<4+W1
+SPTR	SET	SPTR+2		;;Fixme was: .$PTR	SET	.$PTR+2
 	ENDM
 
 ;* pack 4 bytes into 1
 PACK	MACRO	B1,B2,B3,B4
-	;FCB	B1!.$10!<3+B1!.1!<6+B2!.$10!<1+B2!.1!<4+B3!.$10!>1+B3!.1!<2+B4!.$10!>3+B4!.1
-	FCB	(B1&$10)<<3+(B1&1)<<6+(B2&$10)<<1+(B2&1)<<4+(B3&$10)>>1+(B3&1)<<2+(B4&$10)>>3+(B4&1)
-SPTR	SET	SPTR+4		;Fixme was: .$PTR	SET	.$PTR+4
+	FCB	(B1&$10)<<3+(B1&1)<<6+(B2&$10)<<1+(B2&1)<<4+(B3&$10)>>1+(B3&1)<<2+(B4&$10)>>3+(B4&1)	;;Fixme was: FCB  B1!.$10!<3+B1!.1!<6+B2!.$10!<1+B2!.1!<4+B3!.$10!>1+B3!.1!<2+B4!.$10!>3+B4!.1
+SPTR	SET	SPTR+4		;;Fixme was: .$PTR	SET	.$PTR+4
 	ENDM
 	
 ;* font expander
-FONTJMP	SET *			;;(Had to set this in order to get the JMP at line 1285 to work)
-	SECTION FONTEXP		;;(Routine has to be in a SECTION get local labels working)
+FONTJMP	SET *			;; (Had to set this in order to get the JMP at line 1285 to work)
+	SECTION FONTEXP		;; (Routine has to be in a SECTION get local labels working)
 FONTEXP	PSHS	D,X,Y,U		;> uses none
 	LDU	#FPACKED	;starting address of packed date
 	LDX	#FEXPAND	;starting address of expansion ram
@@ -995,8 +1007,8 @@ FPACKED	LETTER	L1,4,6
 SRAMSAV	SET	SPTR			;Fixme was: SRAMSAV SET SPTR
 
 ;	LIST
-	;PULLORG	MESS1MID
-MESS1MID SET 	*
+	PULMORG	MESS1MID
+;MESS1MID SET 	*
 
 	INCLUDE "../SAM/PHRASE.ASM"
 

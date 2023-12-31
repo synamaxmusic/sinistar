@@ -78,7 +78,13 @@ SS	SET	*
 ;	MLIST
 	ENDM
 
-;* push current address on org stack (8 levels) and optionally re-org
+;;
+;; In the original code, PUSHORG and PULLORG were already defined in MESSAGE.SRC, but the PUSHORG macro in there
+;; is different as it's missing the ROMTEST sub-macro found here.  To avoid "macro double defined" errors, I decided to
+;; rename the MESSAGE macros as PUSMORG and PULMORG.
+;;
+
+;;* push current address on org stack (8 levels) and optionally re-org
 PUSHORG	MACRO	ADR
 ;	NLIST
 PP	SET	PP+1		;;Fixme was: .$PP   SET .$PP+1
@@ -92,7 +98,7 @@ ORG1	SET	ORG0		;;Fixme was: .$ORG1 SET .$ORG0
 ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*	
 	IFNB	<ADR>
 	ORG	ADR
-	IF ROMSAV-* = 0		;;Fixme was: 	IF ROMSAV-* = 0
+	IF ROMSAV-* = 0		;;Fixme was: 	IFE	ROMSAV-*
 	RADIX 10		;; (RADIX 10 for decimal 12)
 	ROMTEST	(ORG0>>12)	;;Fixme was: 	ROMTEST	(*!>12.)
 	RADIX 16		;; (I guess I could also use OUTRADIX, but RADIX 16 is easier to understand)
