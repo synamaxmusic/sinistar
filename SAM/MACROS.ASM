@@ -42,104 +42,96 @@ N1	SET	*
 ;* vector patch
 VECTOR	MACRO	N1
 ;	BLIST
-;	LOCAL
-SS	SET	*	;.$$ was previously defined in MESSEQU.SRC (Had to rename to "SS")
+;	LOCAL						;; Making this section local prevented the macro from working properly
+SS	SET	*					;; .$$ was previously defined in MESSEQU.SRC (Had to rename to "SS")
 	ORG	N1
 	JSR	SS
 	ORG	SS
 	HOOK	N1
 ;	MLIST
 	ENDM
-;===============================================================================
-;
-;  I tried getting the ROUTINE macro to work but was unsuccessful.  Instead,
-;  I will use a <LABEL> SET * to add it to the symbol table.  Also, anytime a
-;  "Z<LABEL>" symbol shows up, I will be inserting a new patch that inserts 
-;  the vector to the new routine manually, which makes things easier to
-;  follow as well.  See "MICA/HSTDTE.ASM" to see an example of this.
-;
-;===============================================================================
-	
+
 ;* ROUTINE
 ;* first occurance	- creates symbol
 ;* second occurance	- types 'REPLACING' message
 ;* first occurance	- types 'DUP REPLACE' error message
-
-;ROUTINE MACRO	{INTLABEL}		;Fixme was: ROUTINE	MACRO	N1
-;;	BLIST
-;	IFNDEF __LABEL__		;Fixme was: IFNDEF	N1
-;__LABEL__ LABEL *			;Fixme was: N1
-;;	MESSAGE	"			CREATING __LABEL__"
-;	ELSEIF	"Z__LABEL__"=FALSE	;Fixme was: ELSE
-;;	IFNDEF	ZN1
-;Z__LABEL__ SET *			;Fixme was: ZN1
-;;	MESSAGE	"						REPLACING __LABEL__"
-;	ELSEIF
-;;	LOCAL
-;;	SECTION ZORG
-;;	MESSAGE	"DUP						REPLACE __LABEL__"
-;	ENDIF	
-;SS	SET	*			;Fixme was: .$$	SET	*
-;	ORG	__LABEL__
-;	JMP	SS
-;	ORG	SS
-;;	ENDIF
-;;	ENDSECTION ZORG
-;;	MLIST
-;	ENDM
+ROUTINE	MACRO	N1
+;	BLIST
+	IFNDEF	N1
+N1	SET	*
+	MESSAGE	"			CREATING N1"					;; Instead of MESSG and ERR, Macroassembler AS uses MESSAGE and ERROR
+	ELSE
+	IFNDEF	Z_N1
+Z_N1	SET	*									;; Macroassembler AS also needs an "_" to attach macro arguments to labels
+	MESSAGE	"						REPLACING N1"
+	ELSE
+;	LOCAL
+	MESSAGE	"DUP						REPLACE N1"
+	ENDIF	
+	SECTION DUPLROUT								;; Needed a local section
+SS	SET	*
+	ORG	N1
+	JMP	SS
+	ORG	SS
+	ENDSECTION DUPLROUT
+	ENDIF
+;	MLIST
+	ENDM
 
 ;* push current address on org stack (8 levels) and optionally re-org
-;PUSHORG	MACRO	ADR
+PUSHORG	MACRO	ADR
 ;	NLIST
-;.$PP	SET	.$PP+1
-;.$ORG7	SET	.$ORG6
-;.$ORG6	SET	.$ORG5
-;.$ORG5	SET	.$ORG4
-;.$ORG4	SET	.$ORG3
-;.$ORG3	SET	.$ORG2
-;.$ORG2	SET	.$ORG1
-;.$ORG1	SET	.$ORG0
-;.$ORG0	SET	*
-;	IFNB	<ADR>
-;	ORG	ADR
-;	IFE	ROMSAV-*
-;	ROMTEST	(*!>12.)
-;	ENDIF
-;	ENDIF
+PP	SET	PP+1		;;Fixme was: .$PP   SET .$PP+1
+ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET .$ORG6	
+ORG6	SET	ORG5		;;Fixme was: .$ORG6 SET .$ORG5	
+ORG5	SET	ORG4		;;Fixme was: .$ORG5 SET .$ORG4	
+ORG4	SET	ORG3		;;Fixme was: .$ORG4 SET .$ORG3	
+ORG3	SET	ORG2		;;Fixme was: .$ORG3 SET .$ORG2	
+ORG2	SET	ORG1		;;Fixme was: .$ORG2 SET .$ORG1	
+ORG1	SET	ORG0		;;Fixme was: .$ORG1 SET .$ORG0	
+ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*	
+	IFNB	<ADR>
+	ORG	ADR
+	IF ROMSAV-* = 0		;;Fixme was: 	IF ROMSAV-* = 0
+	RADIX 10		;; (RADIX 10 for decimal 12)
+	ROMTEST	(ORG0>>12)	;;Fixme was: 	ROMTEST	(*!>12.)
+	RADIX 16		;; (I guess I could also use OUTRADIX, but RADIX 16 is easier to understand)
+	ENDIF
+	ENDIF
 ;	LIST
-;	ENDM
+	ENDM
 
 ;* pull current address off of org stack and optionally reset symbol address
-;PULLORG	MACRO	ADR
+PULLORG	MACRO	ADR
 ;	NLIST
-;	IFNB	<ADR>
-;ADR	SET	*
-;	ENDIF
-;	ORG	.$ORG0
-;.$PP	SET	.$PP-1
-;.$ORG0	SET	.$ORG1
-;.$ORG1	SET	.$ORG2
-;.$ORG2	SET	.$ORG3
-;.$ORG3	SET	.$ORG4
-;.$ORG4	SET	.$ORG5
-;.$ORG5	SET	.$ORG6
-;.$ORG6	SET	.$ORG7
+	IFNB	<ADR>
+ADR	SET	*
+	ENDIF
+	ORG	ORG0		;;Fixme was: 	ORG	.$ORG0
+PP	SET	PP-1            ;;Fixme was: .$PP	SET	.$PP-1
+ORG0	SET	ORG1            ;;Fixme was: .$ORG0	SET	.$ORG1
+ORG1	SET	ORG2            ;;Fixme was: .$ORG1	SET	.$ORG2
+ORG2	SET	ORG3            ;;Fixme was: .$ORG2	SET	.$ORG3
+ORG3	SET	ORG4            ;;Fixme was: .$ORG3	SET	.$ORG4
+ORG4	SET	ORG5            ;;Fixme was: .$ORG4	SET	.$ORG5
+ORG5	SET	ORG6            ;;Fixme was: .$ORG5	SET	.$ORG6
+ORG6	SET	ORG7            ;;Fixme was: .$ORG6	SET	.$ORG7
 ;	LIST
-;	ENDM
+	ENDM
 
 ;* equate a symbol to a value if not already defined
-;SYMVER	MACRO	N1,A1
+SYMVER	MACRO	N1,A1
 ;	NLIST
-;	IFNDEF	N1
-;N1	EQU	A1
-;	ELSE
-;	IFN	N1-A1
-;	ERR	N1,A1 conflict
-;	ENDIF
-;	ENDIF
+	IFNDEF	N1
+N1	EQU	A1
+	ELSE
+	IF N1-A1 <> 0
+	ERROR	"N1,A1 conflict"
+	ENDIF
+	ENDIF
 ;	LIST
-;	ENDM
-;=====================================================================
+	ENDM
+	
 ;*****
 ;*
 ;* PAD	[label,] bytes
@@ -149,42 +141,41 @@ SS	SET	*	;.$$ was previously defined in MESSEQU.SRC (Had to rename to "SS")
 ;*			  long and follow that with labelLEN.
 ;*
 ;*****
-;PAD	MACRO	a1,a2
-;;	BLIST
-;	IFNB	<a2>
-;a1SAV	SET	*
-;	RMB	a2
-;a1LEN	RMB	0
-;	ELSE
-;	RMB	a1
-;	ENDIF
-;;	MLIST
-;	ENDM	;PAD
+PAD	MACRO	a1,a2
+;	BLIST
+	IFNB	<a2>
+a1_SAV	SET	*				;;Fixme was: a1SAV
+	RMB	a2
+a1_LEN	RMB	0				;;Fixme was: a1LEN
+	ELSE
+	RMB	a1
+	ENDIF
+;	MLIST
+	ENDM	PAD
 
 ;* End tests
 ENDTEST	MACRO
 ;	BLIST
-	IF BASSAV>=$9900			;; (Assumes that DP is $98)
-	MESSAGE	"			DP OVFL";; Added white space before "DP OVFL" because
-						;; it's easier to see in ASL.
+	IF BASSAV-((D_P+1)<<8) >= 0		;;Fixme was: IFGE BASSAV-(D_P+1)!<8
+	MESSAGE	"DP OVFL"
 	ENDIF
-;	IFN	.$PP
-;	ERR	PUL/PUS MM
+;	IF PP <> 0				;;Fixme was: IFN .$PP
+;	ERROR	"PUL/PUS MM"
 ;	ENDIF
-;	IFN	1+*
-;	ERR	ORG
+;	IF 1+* <> 0				;;Fixme was: IFN 1+*
+;	ERROR	"ORG"
 ;	ENDIF
-;	IFLT	MESS2-ROMSAVE
-;	ERR	ROM OVFL
+	IF MESS2-ROMSAV < 0			;;Fixme was: IFLT MESS2-ROMSAV
+	ERROR	"ROM OVFL"
+	ENDIF
+;	IF MESLEN-MESSAV < 0			;;Fixme was: IFLT MESLEN-MESSAV
+;	ERROR	"MESROM OVFL"
 ;	ENDIF
-;	IFLT	MESLEN-MESSAV
-;	ERR	MESROM OVFL
+;	IF INDEXS-RAMSAV < 0			;;Fixme was: IFLT INDEXS-RAMSAV
+;	ERROR	"RAM OVFL"
 ;	ENDIF
-;	IFLT	INDEXS-RAMSAV
-;	ERR	RAM OVFL
-;	ENDIF
-;	IFLT	OUTCHR-HISAV
-;	ERR	HIROM OVFL
+;	IF OUTCHR-HISAV < 0			;;Fixme was: IFLT OUTCHR-HISAV
+;	ERROR	"HIROM OVFL"
 ;	ENDIF
 ;	MLIST
 	ENDM
@@ -358,21 +349,21 @@ SLEEP	MACRO	WU
 ;*		wakes up at last wake up address, reqrs task wsa in Y
 ;*	CHANGE_SLEEP	[sleep list],[wake up address]
 ;*		requires current task workspace address in Y
-; CHANGE_SLEEP MACRO SL,WU
-; ;	BLIST
-; 	LDX	#SL
-; 	IFIDN	<WU>,<HERE>
-; 	JSR	C1SLEEP
-; 	ELSE
-; 	IFIDN	<WU>,<LOOP>
-; 	JMP	C3SLEEP
-; 	ELSE
-; 	LDD	#WU
-; 	JMP	C2SLEEP
-; 	ENDIF
-; 	ENDIF
-; ;	MLIST
-; 	ENDM
+CHANGE_SLEEP MACRO SL,WU
+;	BLIST
+	LDX	#SL
+	IF ("WU"="HERE")			;;Fixme was: IFIDN <WU>,<HERE>
+	JSR	C1SLEEP
+	ELSEIF ("WU"="LOOP")			;;Fixme was: ELSE
+;	IFIDN	<WU>,<LOOP>
+	JMP	C3SLEEP
+	ELSE
+	LDD	#WU
+	JMP	C2SLEEP
+	ENDIF
+	ENDIF
+;	MLIST
+	ENDM
 
 ;* change wake up address to here, requires current task workspace address in Y
 WAKE_HERE MACRO
@@ -478,47 +469,47 @@ TUNECK	MACRO
 	ENDIF
 	ENDM
 
-;ROMTEST	MACRO	ADR
-;	IFE	ADR-1
-;	CPYCHK	1
-;	ENDIF
-;	IFE	ADR-2
-;	CPYCHK	2
-;	ENDIF
-;	IFE	ADR-3
-;	CPYCHK	3
-;	ENDIF
-;	IFE	ADR-4
-;	CPYCHK	4
-;	ENDIF
-;	IFE	ADR-5
-;	CPYCHK	5
-;	ENDIF
-;	IFE	ADR-6
-;	CPYCHK	6
-;	ENDIF
-;	IFE	ADR-7
-;	CPYCHK	7
-;	ENDIF
-;	IFE	ADR-8
-;	CPYCHK	8
-;	ENDIF
-;	IFE	ADR-$E
-;	CPYCHK	E
-;	ENDIF
-;	IFE	ADR-$F
-;	CPYCHK	F
-;	ENDIF
-;	ENDM
+ROMTEST	MACRO	ADR
+	IF ADR-1 = 0			;;Fixme was: IFE ADR-1
+	CPYCHK	1
+	ENDIF
+	IF ADR-2 = 0			;;Fixme was: IFE ADR-2
+	CPYCHK	2
+	ENDIF
+	IF ADR-3 = 0			;;Fixme was: IFE ADR-3
+	CPYCHK	3
+	ENDIF
+	IF ADR-4 = 0			;;Fixme was: IFE ADR-4
+	CPYCHK	4
+	ENDIF
+	IF ADR-5 = 0			;;Fixme was: IFE ADR-5
+	CPYCHK	5
+	ENDIF
+	IF ADR-6 = 0			;;Fixme was: IFE ADR-6
+	CPYCHK	6
+	ENDIF
+	IF ADR-7 = 0			;;Fixme was: IFE ADR-7
+	CPYCHK	7
+	ENDIF
+	IF ADR-8 = 0			;;Fixme was: IFE ADR-8
+	CPYCHK	8
+	ENDIF
+	IF ADR-$E = 0			;;Fixme was: IFE ADR-E
+	CPYCHK	E
+	ENDIF
+	IF ADR-$F = 0			;;Fixme was: IFE ADR-F
+	CPYCHK	F
+	ENDIF
+	ENDM
 
-;CPYCHK	MACRO	ROM
-;	IFNDEF	CRROM
+CPYCHK	MACRO	ROM
+	IFNDEF	CR_ROM			;;Fixme was: IFNDEF	CRROM
 ;	LIST
-;CRROM	SET	*
-;	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+CR_ROM	SET	*			;;Fixme was: CRROM	SET	*
+	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
 ;	NLIST
-;	ENDIF
-;	ENDM
+	ENDIF
+	ENDM
 
 ;*	This inclver appears here so that DISPLAY may use the macros!
 
