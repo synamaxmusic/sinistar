@@ -5,6 +5,7 @@ Source code rewrite by SynaMax, started November 6th, 2023
 
 Current status (as of 12/30/2023):
 
+* On 12/30/2023, I got several important and heavily-used macros to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
 * Rewrite is around 41% complete; 28653 out of 69632 bytes have been assembled in the binary ROM data.  Currently working on main Worker routine found in Witt's module.  This number does not account for final patches that will need to be inserted at the end for various fixes.
 * Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
 
