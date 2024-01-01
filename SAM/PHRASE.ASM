@@ -87,33 +87,36 @@ RED	EQU	$DD		;* Red
 ;*			  long and follow that with labelLEN.
 ;*
 ;*****
-;PAD	MACRO	arg1,arg2
+MPAD	MACRO	arg1,arg2							;; (PAD macro already exists in MACROS.ASM, ultimately, this one is not needed.  I renamed it to MPAD to avoid errors.)
 ;* * *	IFN	VERSION-FINAL	* Version is not final.
-;	IFNB	<arg2>
-;arg1SAV	SET	*
-;	RMB	arg2
-;arg1LEN	RMB	0
-;	ELSE
-;	RMB	arg1
-;	ENDIF
+	IFNB	arg2
+arg1_SAV	SET	*							;;Fixme was: arg1SAV SET *
+	RMB	arg2
+arg1_LEN	RMB	0							;;Fixme was: arg1LEN RMB 0
+	ELSE
+	RMB	arg1
+	ENDIF
 ;* * *	ELSE			* Version is Final
 ;* * *	IFNB	<arg2>
 ;* * *arg1LEN	RMB0
 ;* * *	ENDIF
 ;* * *	ENDIF
-;	ENDM	PAD
+	ENDM	PAD
 
 ;	LIST
-	ORG	MESS1MID
+	PUSHMORG MESS1MID
 ;*
 ;**** PHRASE CHARACTER LISTS ****
 ;*
-;=========================================================================
-;
-;   I went with Macro Assembler AS's CODEPAGE and CHARSET instructions
-;   to achieve the same effect that the LINE macro did.
-;
-;
+;;=========================================================================
+;;
+;;  I went with Macro Assembler AS's CODEPAGE and CHARSET instructions
+;;  to achieve the same effect that the LINE macro did.
+;;
+;;  Using RORG, we go back by 1 byte and overwrite the last character
+;;  by adding the last chacter with CEND to terminate the string.
+;;
+;;=========================================================================
 	CODEPAGE WILLIASCII	;Turn on Williams Character Set Table
 INDIC	FCC	"INITIAL TESTS INDICATE"
 	RORG -1
@@ -347,7 +350,7 @@ FRPLAY	FCC	"  FREE PLAY"
 	RORG -1
 	FCB CY+CEND
 	CHARSET		;Going back to regular ASCII
-;=========================================================================
+;;=========================================================================
 ;*
 ;*	START OF PHRASE VECTORS
 ;*
@@ -429,10 +432,18 @@ PHRASE	FDB	INDIC	;'INITIAL TESTS INDICATE'
 	FDB	CLER	;' CLEARED'	
 	FDB	FRPLAY	;'  FREE PLAY'
 PhrNum	SET	(*-Phrase)/2
-	;PAD	PHR,2*(MaxMes-PhrNum)	;* Padding for additional phrases
+;	PAD	PHR,2*(MaxMes-PhrNum)	;* Padding for additional phrases			
+;;=========================================================================
+;;
+;;  Because of how {AS} needs to use an underscore for adding macro arguments to labels,
+;;  the commonly used label "PHRSAV" is replaced with "PHR_SAV" if we use the PAD (or MPAD) macro.
+;;  Instead, it's just easier to recreate what PAD did with just three new lines of code so that
+;;  we can still use "PHRSAV". 
+;;
 PHRSAV	SET	*
 	RMB	2*(MaxMes-PhrNum)
 PHRLEN	RMB	0	
+;;=========================================================================
 ;*
 ;*	GAME STRINGS
 ;*
@@ -518,12 +529,12 @@ AJUST	FDB	$8543		;GAME ADJUST HEADER
 	FCB	$99
 	FCB	MSADJ+CEND
 
-;	PULLORG	MESS1END
-MESS1END SET *			;*********
+	PULLORG	MESS1END
+				;*********
 ;*********************************	*********************************
 ;*			   ROM RE-ORGANIZATION				*
 ;*********************************	*********************************
-	ORG	MESS2		;*********
+	PUSHMORG MESS2		;*********
 
 BADJ	FDB	$183E		;GAME ADJUST TRAILER
 	FCB	$BB
@@ -565,5 +576,4 @@ BKRES	FDB	$5F23		;BOOKS RESET STATUS MESSAGE
 	FCB	$33
 	FCB	MSCLRD+CEND
 
-;	PULLORG	MESS2MID
-MESS2MID SET *
+	PULLORG	MESS2MID

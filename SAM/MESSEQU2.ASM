@@ -1,4 +1,4 @@
-CEND	EQU	$80	;Fixme was: END EQU $80 (had to rename)
+CEND	EQU	$80	;;Fixme was: END EQU $80 (had to rename)
 C0	EQU	$00
 C1	EQU	$01
 C2	EQU	$02
@@ -82,7 +82,7 @@ TXREST	EQU	$0B	;'FACTORY SETTINGS RESTORED'
 TXBKRS	EQU	$0C	;'BOOKKEEPING TOTALS CLEARED'
 TXRESM	EQU	$0D	;'HIGH SCORE TABLE RESET'
 
-;==============================================================================
+;;==============================================================================
 
 	CODEPAGE WILLIASCII
 	CHARSET '0',$00
@@ -95,7 +95,7 @@ TXRESM	EQU	$0D	;'HIGH SCORE TABLE RESET'
 	CHARSET '7',$07
 	CHARSET '8',$08
 	CHARSET '9',$09
-	CHARSET '\32',$0A
+	CHARSET '\32',$0A	;;Space
 	CHARSET 'A',$0B
 	CHARSET 'B',$0C
 	CHARSET 'C',$0D
@@ -129,6 +129,6 @@ TXRESM	EQU	$0D	;'HIGH SCORE TABLE RESET'
 	CHARSET '!',$29
 	CHARSET '(',$2A
 	CHARSET ')',$2B
-	CHARSET '\H',$2C	;Apostrophe
+	CHARSET '\H',$2C	;;Apostrophe
 	CHARSET ',',$2D
 	CHARSET '.',$2E

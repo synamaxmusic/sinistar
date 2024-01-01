@@ -106,24 +106,29 @@ ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*
 	ENDIF
 ;	LIST
 	ENDM
-
+;;===============================================================================
+;;
+;;  Because PULLORG was already defined in MESSAGE.ASM, we get "double macro defined" errors in AS.
+;;  As a result, this macro is commented out to fix this.
+;;
+;;===============================================================================
 ;* pull current address off of org stack and optionally reset symbol address
-PULLORG	MACRO	ADR
-;	NLIST
-	IFNB	<ADR>
-ADR	SET	*
-	ENDIF
-	ORG	ORG0		;;Fixme was: 	ORG	.$ORG0
-PP	SET	PP-1            ;;Fixme was: .$PP	SET	.$PP-1
-ORG0	SET	ORG1            ;;Fixme was: .$ORG0	SET	.$ORG1
-ORG1	SET	ORG2            ;;Fixme was: .$ORG1	SET	.$ORG2
-ORG2	SET	ORG3            ;;Fixme was: .$ORG2	SET	.$ORG3
-ORG3	SET	ORG4            ;;Fixme was: .$ORG3	SET	.$ORG4
-ORG4	SET	ORG5            ;;Fixme was: .$ORG4	SET	.$ORG5
-ORG5	SET	ORG6            ;;Fixme was: .$ORG5	SET	.$ORG6
-ORG6	SET	ORG7            ;;Fixme was: .$ORG6	SET	.$ORG7
-;	LIST
-	ENDM
+;PULLORG	MACRO	ADR
+;;	NLIST
+;	IFNB	<ADR>
+;ADR	SET	*
+;	ENDIF
+;	ORG	ORG0		;;Fixme was: 	ORG	.$ORG0
+;PP	SET	PP-1            ;;Fixme was: .$PP	SET	.$PP-1
+;ORG0	SET	ORG1            ;;Fixme was: .$ORG0	SET	.$ORG1
+;ORG1	SET	ORG2            ;;Fixme was: .$ORG1	SET	.$ORG2
+;ORG2	SET	ORG3            ;;Fixme was: .$ORG2	SET	.$ORG3
+;ORG3	SET	ORG4            ;;Fixme was: .$ORG3	SET	.$ORG4
+;ORG4	SET	ORG5            ;;Fixme was: .$ORG4	SET	.$ORG5
+;ORG5	SET	ORG6            ;;Fixme was: .$ORG5	SET	.$ORG6
+;ORG6	SET	ORG7            ;;Fixme was: .$ORG6	SET	.$ORG7
+;;	LIST
+;	ENDM
 
 ;* equate a symbol to a value if not already defined
 SYMVER	MACRO	N1,A1
@@ -165,9 +170,9 @@ ENDTEST	MACRO
 	IF BASSAV-((D_P+1)<<8) >= 0		;;Fixme was: IFGE BASSAV-(D_P+1)!<8
 	MESSAGE	"DP OVFL"
 	ENDIF
-;	IF PP <> 0				;;Fixme was: IFN .$PP
-;	ERROR	"PUL/PUS MM"
-;	ENDIF
+	IF PP <> 0				;;Fixme was: IFN .$PP
+	ERROR	"PUL/PUS MM"
+	ENDIF
 ;	IF 1+* <> 0				;;Fixme was: IFN 1+*
 ;	ERROR	"ORG"
 ;	ENDIF

@@ -69,6 +69,16 @@
 ;*****
 ;	PAGE
 ;	NLIST
+;;===============================================================================
+;;
+;;  <<Overview>>
+;;
+;;  Because we're just starting to build the game, before we even look at Sinistar-specific code, we need
+;;  to build this MESSAGE.ASM file first.  This code uses a special area of the ROM reserved for diagnostic
+;;  and in-game strings that are displayed on-screen, and is based off of previous code from Joust (but modified
+;;  to work with vertical monitors).
+;;
+;;===============================================================================
 PP	SET	0		;;Fixme was: .$PP   SET	0
 ORG0	SET	0		;;Fixme was: .$ORG0 SET	0
 ORG1	SET	ORG0		;;Fixme was: .$ORG1 SET	.$ORG0
@@ -78,18 +88,33 @@ ORG4	SET	ORG3		;;Fixme was: .$ORG4 SET	.$ORG3
 ORG5	SET	ORG4		;;Fixme was: .$ORG5 SET	.$ORG4
 ORG6	SET	ORG5		;;Fixme was: .$ORG6 SET	.$ORG5
 ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET	.$ORG6
-
+;;===============================================================================
 ;;
-;; At first glance, these appear to be duplicates of the PUSHORG and PULLORG macros
-;; but this PUSHORG doesn't have a ROMTEST sub-macro since we're just starting assembly.
-;; I renamed these macros so that they can be used.
+;;  <<Duplicate PUSHORG / PULLORG macros>>
 ;;
-;; PULMORG is almost exactly the same as PULLORG but I have to include it here because
-;; PULLORG hasn't been defined yet during assembly.
+;;  At first glance, the next two macros appear to be duplicates of the PUSHORG and PULLORG macros
+;;  found in SAM/MACROS.ASM. These duplicate macros were included here because the MESSAGE.SRC and EQUATES.SRC files
+;;  are originally meant to be assembled separately before Sam's Sinistar code starts.  Because we're assembling all
+;;  these files together for this rewrite, we get "double macro defined" errors.
 ;;
+;;  The PUSHORG macro found here is slightly different from the one used in the game code, so I have renamed it to
+;;  PUSHMORG to denote this is for the MESSAGE section of the ROM.
+;;
+;;  PUSHMORG is missing the ROMTEST sub-macro which inserts a Williams Copyright string around every $1000 bytes or so. 
+;;  We don't need a copyright message here because we need as much space as possible to store all these strings and
+;;  font sprites.
+;;
+;;  With the exception of an additional LIST instruction, this PULLORG macro is almost exactly the same as the one 
+;;  found in MACROS.ASM, so I decided to comment out that duplicate PULLORG to avoid the "double macro" error in AS. 
+;;
+;;  When I first started this rewrite, I was replacing all the PUSHORGs with just regular "ORG" instructions and
+;;  adding a "<label> SET *" instruction for every PULLORG reference.  Now that I got the macros working, I feel it's
+;;  more accurate to have these macros handle all the ORG instructions just like it did back in the day.
+;;
+;;===============================================================================
 
 ;* push current address on org stack (8 levels) and optionally re-org
-PUSMORG	MACRO	ADR
+PUSHMORG	MACRO	ADR
 ;	NLIST
 PP	SET	PP+1		;;Fixme was: .$PP   SET .$PP+1
 ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET .$ORG6	
@@ -103,19 +128,21 @@ ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*
 	IFNB	<ADR>
 	ORG	ADR
 ;	NLIST
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;	IF ROMSAV-* = 0		;;Fixme was: 	IFE	ROMSAV-*
 ;;	RADIX 10		;; (RADIX 10 for decimal 12)
 ;;	ROMTEST	(ORG0>>12)	;;Fixme was: 	ROMTEST	(*!>12.)
 ;;	RADIX 16		;; (I guess I could also use OUTRADIX, but RADIX 16 is easier to understand)
 ;;	ENDIF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	ENDIF
 ;	LIST
 	ENDM
 
 ;* pull current address off of org stack and optionally reset symbol address
-PULMORG	MACRO	ADR
+PULLORG	MACRO	ADR
 ;	NLIST
-	IFNB	<ADR>
+	IFNB	ADR
 ;	LIST
 ADR	SET	*
 ;	NLIST
@@ -172,7 +199,7 @@ FONTJMP	SET	0
 ;;
 ;;===============================================================
 ;
-;	ORG	MESS1	;START AT THE ADDRESS SPECIFIED ABOVE
+;	PUSHORG	MESS1	;START AT THE ADDRESS SPECIFIED ABOVE
 ;	JMP	CHROUT	;JUMP TO THE CHARACTER OUTPUT ROUTINE
 ;	JMP	PHROUT	;JUMP TO THE PHRASE OUTPUT ROUTINE
 ;	JMP	BCDOUT	;JUMP TO THE B.C.D. OUTPUT ROUTINE
@@ -195,7 +222,7 @@ FONTJMP	SET	0
 ;*		3X5 FONT SECOND				 *
 ;*							 *
 ;*********************************************************
-	PUSMORG	MESS1+37		;; Added this new ORG since we're skipping the jump table for now
+	PUSHMORG	MESS1+37		;; Added this new ORG since we're skipping the jump table for now
 FONT57	FDB	L0
 	FDB	L1
 	FDB	L2
@@ -1007,13 +1034,12 @@ FPACKED	LETTER	L1,4,6
 SRAMSAV	SET	SPTR			;Fixme was: SRAMSAV SET SPTR
 
 ;	LIST
-	PULMORG	MESS1MID
-;MESS1MID SET 	*
+	PULLORG	MESS1MID
 
 	INCLUDE "../SAM/PHRASE.ASM"
 
 ;	PAGE
-	ORG	MESS2MID
+	PUSHMORG MESS2MID
 ;*********************************************************
 ;*	WARNING CHARACTER ROUTINES ARE RE-ENTERENT	*
 ;*							*
@@ -1280,10 +1306,10 @@ OUTTX1	LDY	#TXT	;GET THE TEXT TABLE
 	
 ;* * *ENDADR	EQU	;*	NEXT FREE ADDRESS AFTER THIS MODULE
 ;* * *LENGTH	EQU	;*-MESS	TOTAL BYTE LENGTH OF MODULE (IN HEX)
-;	PULLORG	MESS2END
-MESS2END SET *
+	PULLORG	MESS2END
+
 ;===============================================================
-	ORG	MESS1	;START AT THE ADDRESS SPECIFIED ABOVE
+	PUSHMORG MESS1	;START AT THE ADDRESS SPECIFIED ABOVE
 	JMP	CHROUT	;JUMP TO THE CHARACTER OUTPUT ROUTINE
 	JMP	PHROUT	;JUMP TO THE PHRASE OUTPUT ROUTINE
 	JMP	BCDOUT	;JUMP TO THE B.C.D. OUTPUT ROUTINE
@@ -1296,12 +1322,14 @@ MESS2END SET *
 	JMP	ERTEXT	;JUMP TO THE TEXT 3X5 ERASE ROUTINE
 	JMP	ERTT35	;JUMP TO THE TEXT 5X7 ERASE ROUTINE
 	FDB	FONT35	;FOR BILL SO HE CAN USE THE NUMBERS
-	JMP	FONTJMP	;JUMP TO THE FONT EXPANDER ROUTINE
+	JMP	FONTJMP	;JUMP TO THE FONT EXPANDER ROUTINE			;;Fixme was: JMP FONTEXP
 
 	ENDSECTION OUTTX1
 	ENDSECTION ORCC2
 	ENDSECTION ORCC1
 	ENDSECTION OUTPUT
+	
+	PULLORG									;; (Can't forget the PULLORG!!)
 
 ;===============================================================
 	
