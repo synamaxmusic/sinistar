@@ -120,19 +120,23 @@ Because we're not using VMS to build this, I made a new file called ```MAKE.ASM`
 
 ### PUSHORG and PULLORG 
 
-The first two macros that I have commented out are ```PUSHORG```/```PULLORG```.  They were used to hold various ```ORG``` addresses in an internal stack for the programmers as they worked on different sections of code.  Nearly all the code in the game uses these two macros to define the start and stop addresses for that code section.  ```PUSHORG``` is basically just a regular ```ORG``` instruction but is "pushing" the last address off the stack.  Conversely, ```PULLORG``` is saving that current address to the stack for a later ```PUSHORG```.  In this rewrite, a standard ```ORG``` instruction is used.  If a symbol is next to ```PULLORG```, then I add a new "```SET   *```" instruction to mark the new address for that symbol:
+When I first started rewriting the codebase, the first two macros that I commented out were ```PUSHORG```/```PULLORG```, but now I have implemented them back into the code.  Nearly all the source files use these two macros to define the start and stop addresses for that code section. 
+
+They were used to hold various ```ORG``` addresses in an internal stack for the programmers as they worked on different sections of code.  ```PUSHORG``` is basically just a regular ```ORG``` instruction but is "pushing" the last address off the stack.  Conversely, ```PULLORG``` is saving that current address to the stack for a later ```PUSHORG```.
+
+Before rewriting the macros, I used a standard ```ORG``` instruction for ```PUSHORG```.  If a symbol is next to ```PULLORG```, then I added a new "```SET   *```" instruction to mark the new address for that symbol:
 
 ```
-	;PUSHORG ROMSAV
-	ORG	ROMSAV		;;Start code at last ROMSAV address
+	;PUSHORG ROMSAVE
+	ORG	ROMSAVE		;;Start code at last ROMSAV address
 
 	...
 
-	;PULLORG ROMSAV
-ROMSAV	SET	*		;;Set current address to ROMSAV
+	;PULLORG ROMSAVE
+ROMSAVE	SET	*		;;Set current address to ROMSAV
 ```
 
-When ```ORG ROMSAV``` is called again at the beginning of the next assembly file, it will use the new address we previously assigned to ```ROMSAV```, essentially beginning where we previously left off in the ROM.
+When ```ORG ROMSAVE``` is called again at the beginning of the next assembly file, it will use the new address we previously assigned to ```ROMSAV```, essentially beginning where we previously left off in the ROM.
 
 ### ROUTINE
 
@@ -164,9 +168,13 @@ ZN1
 	MLIST
 	ENDM
 ```
+Because of how Macroassembler {AS} handles macro arguments, an underscore has to be used between the "Z" and the routine label, so in this build ```ZGAMOVER``` is now ```Z_GAMOVER```.
 
+The problem with this macro is that it doesn't say when this symbol renaming occurs until actually building the code and the only evidence of it happening can be seen in the old ```EQU``` and ```SET``` files.
 
-The problem with this macro is that it doesn't say when this symbol renaming occurs until actually building the code and the only evidence of it happening can be seen in the old ```EQU``` and ```SET``` files.  In this build, anytime a "Z" routine is encountered, a new patch will be inserted at the beginning of that routine to denote what is actually happening and why a ```JMP``` is at the location of the old symbol.
+### PAD
+
+```PAD``` is another macro that gets used a lot to create padding or reserve memory bytes and assigning two new labels: ```<label>SAV``` and ```<label>LEN```.  Unfortunately, this won't work with {AS} without having to change the label names to: ```<label>_SAV``` and ```<label>_LEN```.  While this underscore is acceptable for ```ROUTINE```, ```PAD``` is used more often and will require a lot of rewriting to fix mismatching labels with the new underscore character.  I chose to not use this macro when new label names are being defined because of this.
 
 ### TEXT/PHRASE
 
@@ -185,7 +193,7 @@ Here's what this new code looks like and how it works:
 
 ```
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*		;; Save the current address
+ROMSAVE	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 	FDB	_GAME		
@@ -194,7 +202,7 @@ ROMSAV	SET	*		;; Save the current address
 PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 				;; more phrases later
 
-	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ```
 
@@ -271,6 +279,8 @@ Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/c
           .IFNIDN   .IFNIDN <str1>,<str2> str1 and str2 are not 
                                           identical
 ```
+These conditional pseudo-ops get used a lot so having this guide was extremely important for getting macros to work with Macroassembler {AS}; I'm really lucky to have stumbled across it.
+
 ### Decimal numbers
 
 * ```RADIX 16``` is declared very early on and decimal numbers are defined by using ```.``` after the integer.
@@ -281,12 +291,13 @@ Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/c
 	NIWASHOT	EQU	32.	;* The number of warrior shot images
 	NISBOMB		EQU	3.	;* The number of sinibomb images
 ```
-These periods have been removed and ```RADIX 10``` is used instead when needed.
+These periods have been removed and ```RADIX 10``` is used instead when needed.  
+
+At first, I tried changing the ``RADIX 16``` at the very beginning of the code but it created a lot of headaches.  Using the ```RADIX 10``` instructions also helps when browsing through the code as it makes it easier to distinguish the hex values from the decimal ones. 
 
 ### Common fixes
 
 * Exclusive OR ```!X``` are now just ```!```.
 * Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
 * ```#!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```#~$4```.
-* Several symbol appear in different files with slightly longer names, creating inconsistent symbols.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAV``` exclusively.
-* The "COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC." strings in the final ROM were originally inserted automatically by a macro, but in this rewrite I decided to manually insert the strings to make the code easier to follow along while looking at the binary data.
+* Several symbol appear in different files with slightly longer names, creating inconsistent symbols.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAVE``` exclusively.
