@@ -22,11 +22,18 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 
 Four main programmers worked on Sinistar and each directory in the source code belongs to one of them (however there's evidence that all of them were modifying and editing each other's code).
 
-Sam Dicker was the first software engineer to work on the game and so his code deals with critical routines related to the game engine, including joystick control handling, drawing graphics, and background multi-tasking routines for enemy AI and gameplay logic.  Jack Haeger's pixel artwork is also represented here (in the ```SAM/IMAGE.ASM``` file).  
+The four modules that make up the codebase are assembled in this order:
 
-After Sam's code, we move on to Rich Witt's files.  He worked a large chunk of the game logic routines including sinibomb pickups, enemy AI, collsion handling, and the Sinistar's lip sync animation.
+* SAM
+* WITT
+* FALS
+* MICA
 
-Noah Falstein's section is up next and he worked on further AI programming for the enemies, planetoid logic (vibrating, tossing crystals, swarming, shattering), enemy population difficulty tables, and the Sinistar's speech calls.
+Sam Dicker was the first software engineer to work on the game and his code deals with critical routines related to the game engine, the player's ship, and the Sinistar itself.  This also includes joystick control handling, rendering graphics, sound call tables, and background multi-tasking routines for enemy AI and gameplay logic.  Jack Haeger's pixel artwork is also represented in this module (located in the ```SAM/IMAGE.ASM``` file).  
+
+After Sam's code, we move on to Rich Witt's files.  He worked a large chunk of the game logic routines, sometimes modifying Sam's pre-existing code.  Rich's work includes the Sinistar death/player warp routines, sinibomb pickups, enemy speed tables and AI, collsion handling, and the Sinistar's lip sync animation.
+
+Noah Falstein's module is up next and he worked on further AI programming for the enemies, planetoid logic (vibrating, tossing crystals, swarming, shattering), enemy population difficulty tables, and the Sinistar's speech calls.
 
 Finally, RJ Mical's code involves the game's attract mode, high score table, operator message/high score initial entry, and death explosion routines for the warriors, the Sinistar, and player ship.  There's a fair amount of unused code located in this directory including an earlier version of RJ's explosion routine as well as Mike Metz and Ken Lantz's "Marquee" title screen that's only found in the AMOA '82 prototype build.
 
@@ -36,7 +43,7 @@ The ```MAKE.ASM``` file in the top directory grabs all the source code files fro
 
 This source code was rewritten to target [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html).  
 
-To build Sinistar, place the four folders (```FALS, SAM, WITT, MICA```) and the ```MAKE.ASM``` file into the same directory as ASL and P2BIN.
+To build Sinistar, place the four folders (```SAM, WITT, FALS, MICA```) and the ```MAKE.ASM``` file into the same directory as ASL and P2BIN.
 
 Then, open a command prompt and type in:
 
@@ -84,11 +91,11 @@ p2bin sinistar.p sinistar_rom_11-b_16-3004-63.4a -r $F000-$FFFF
 
 ## About the source code
 
-After deliberating for a few months and conducting several tests with various 6809 macro assemblers, I decided to take it upon myself to rewrite the source code for Sinistar.  Considering the size of the codebase, this was not an easy or quick task.
+Back in May 2023, I stumbled upon the fact that Sinistar's source code was leaked in 2021 and available on Github.  After deliberating for a few months and conducting several tests with various 6809 macro assemblers, I decided to do something I've never done before and accept the challenge of rewriting the source code for Sinistar so that it can be buildable with a newer assembler.  Considering the size of the codebase, this was not an easy or quick task.
 
 Other Williams games have be rewritten before, such as [mwenge's work for Defender](https://github.com/mwenge/defender/) and [Robotron](https://github.com/mwenge/robotron/), both targeting the asm6809 assembler.  His work inspired me to make the attempt at recreating the missing 6800 assembly code for Sinistar's [Video Sound ROM 9 and 10](https://github.com/synamaxmusic/Sinistar-Sound-ROM).  [Here is a video](https://youtu.be/Msc6hqyTW6U) on how I achieved this and how the sound ROMs in Sinistar work.  
 
-The goal of both of these Sinistar repositories is to recreate the game's ROMs from scratch.  With Video Sound ROM 9, two disassemblies were heavily relied on in order to piece together the ROM since the source code was missing and had to be cobbled together from looking at the surviving source code and comments from the [other sound roms](https://github.com/historicalsource/williams-soundroms/).  With this project however, we have the [original source code](https://github.com/historicalsource/sinistar) (leaked in 2021), so there's not as much guesswork involved.  I did tests with several different assemblers, including asm6809 and vasm (which I used previously for Sinistar's sound ROM) but I was running into several issues.  I wondered why Robotron and Defender were able to be retargeted for asm6809, but not Sinistar or even Joust.
+The goal of both of these Sinistar repositories is to recreate the game's ROMs from scratch.  With Video Sound ROM 9, two disassemblies were heavily relied on in order to piece together the ROM since the source code was missing and had to be cobbled together from looking at the surviving source code and comments from the [other sound roms](https://github.com/historicalsource/williams-soundroms/).  With this project however, we have the [original source code](https://github.com/historicalsource/sinistar), so there's not as much guesswork involved (in theory).  I did tests with several different assemblers, including asm6809 and vasm (which I used previously for Sinistar's sound ROM) but I was running into several issues.  I wondered why Robotron and Defender were able to be retargeted for asm6809, but not Sinistar or even Joust.
 
 Joust and Sinistar were the first two games developed by the new internal dev team at Williams, after Eugene Jarvis and Larry DeMar left Williams to form Vid Kidz. Because of this, the source code for both Joust and Sinistar are similar to each other but show a lot of differences from the code for Defender and Robotron, especially when it comes to the use of macros.
 
@@ -102,21 +109,21 @@ Macros do show up for Defender and Robotron, but there's not too many of them, a
 
 Like Joust, Sinistar was written on VAX/VMS workstations.  I'm not sure what assembler was used for Joust, but both codebases appear to use the same syntax and we know that Sinistar was written for a cross-assembler by the now-defunct Boston System Office (BSO).  It had support for several macro instructions that only a few 6809 assemblers still use today, such as ```IRP```, ```IRPC``` and ```REPT```.  This particular assembler is currently lost (which is one of the main reasons why this project was started in the first place).
 
-The BSO assembler also had a very limited symbol table size which made Sinistar's development extra difficult and as a result, additional precautions had to be made in order for the code to build properly.  For example, each of the four main software engineers (Sam Dicker, Richard Witt, Noah Falstein and R.J. Mical) had to generate their own files that listed every single ```EQU```, ```SET```, and symbol they used in their section of the game.  Extra care was taken to make sure all the symbols matched up with everyone else's library.  At the end of the toolchain, a batch script file written in VAX DCL language collected all of the source files and fed them into the assembler in a specific order.  It was a lot of work to make sure everything matched up but in the end, I'm really glad they were kinda forced to generate all these symbol definitions because it has made a lot of this reverse engineering work much, much easier.  
+The BSO assembler also had a very limited symbol table size which made Sinistar's development extra difficult and as a result, additional precautions had to be made in order for the code to build properly.  For example, each of the four main software engineers had to generate their own files that listed every single ```EQU```, ```SET```, and symbol they used in their section of the game.  Extra care was taken to make sure all the symbols matched up with everyone else's library.  At the end of the toolchain, a batch script file written in VAX DCL language collected all of the source files and fed them into the assembler in a specific order.  It was a lot of work to make sure everything matched up but in the end, I'm really glad they were kinda forced to generate all these symbol definitions because it has made a lot of this reverse engineering work much, much easier.  
 
 ### Choosing a new assembler
 
-Even just taking a quick glance over the code, it quickly becomes apparent that we need an newer assembler that supports several different kinds of macros or otherwise this project wouldn't be possible.  I decided to target the source code rewrite to work with [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html) because it supports a lot of those specific macro instructions previously mentioned and the syntax is very similar to what is in the original code so any rewrites are kept to a minimum.
+Even just taking a quick glance over the code, it quickly becomes apparent that we need an modern and easily-obtainable assembler that supports several different kinds of macros or otherwise this project wouldn't be possible.  I decided to target the source code rewrite to work with [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html) because it supports a lot of those specific macro instructions previously mentioned and the syntax is very similar to what is in the original code so any rewrites are kept to a minimum.
 
 [Alan R. Baldwin's ASxxxx cross-assembler](https://shop-pdp.net/ashtml/asxxxx.php) was also considered as it also supports the ```IRP```, ```IRPC``` and ```REPT``` macro instructions, but the amount of syntax changes needed in order for the code to build would be unfeasible. 
 
-Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as it does some things differently from other assemblers that I've come across and the documentation is rather daunting.  Unlike ASxxxx's manual, there's not many examples or concise instructions on how the assembler works, so this was where a lot of guesswork was needed.  In fact, I feel I learned more from looking at Sonic 1 and 2 disassemblies targeting {AS} than the manual itself.  Once I got the hang of the new syntax changes though, I started getting into the flow of things and was able to rewrite all of Sam Dicker's code in a week.  It was a rough start but I did get used to how {AS} operates and I'm happy with the results so far.
+Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as it does some things differently from other assemblers that I've come across and the documentation is rather daunting.  Unlike ASxxxx's manual, there's not many examples or concise instructions on how the assembler works.  In fact, I feel I learned more from looking at Sonic 1 and 2 disassemblies targeting {AS} than the manual itself.  Once I got the hang of the new syntax changes though, I started getting into the flow of things and was able to rewrite all of Sam Dicker's code in a week.  It was a rough start but I did get used to how {AS} operates and I'm happy with the results so far.
 
 ## Changing the source code
 
-I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Sometimes I'll use double semi-colons (```;;```) to denote my comments from the original ones.
+I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Any new comments by me will use two semi-colons (```;;```), while original comments will only use one (```;```).
 
-Because we're not using VMS to build this, I made a new file called ```MAKE.ASM```, based off the original MAKE.COM batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling debug features.
+Because we're not using VMS to build this, I made a new file called ```MAKE.ASM```, based off the original ```MAKE.COM``` batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling debug features.
 
 ### PUSHORG and PULLORG 
 
@@ -124,7 +131,7 @@ When I first started rewriting the codebase, the first two macros that I comment
 
 They were used to hold various ```ORG``` addresses in an internal stack for the programmers as they worked on different sections of code.  ```PUSHORG``` is basically just a regular ```ORG``` instruction but is "pushing" the last address off the stack.  Conversely, ```PULLORG``` is saving that current address to the stack for a later ```PUSHORG```.
 
-Before rewriting the macros, I used a standard ```ORG``` instruction for ```PUSHORG```.  If a symbol is next to ```PULLORG```, then I added a new "```SET   *```" instruction to mark the new address for that symbol:
+Before rewriting the macros, I used a standard ```ORG``` instruction for ```PUSHORG```.  If a symbol is next to ```PULLORG```, then I added a new "```<label> SET   *```" instruction to mark the new address for that symbol:
 
 ```
 	;PUSHORG ROMSAVE
@@ -170,7 +177,7 @@ ZN1
 ```
 Because of how Macroassembler {AS} handles macro arguments, an underscore has to be used between the "Z" and the routine label, so in this build ```ZGAMOVER``` is now ```Z_GAMOVER```.
 
-The problem with this macro is that it doesn't say when this symbol renaming occurs until actually building the code and the only evidence of it happening can be seen in the old ```EQU``` and ```SET``` files.
+The problem with this macro is that it doesn't say when this symbol renaming occurs until actually building the code and since no complete listing file exists for the codebase, the only remaining evidence of this renaming occurring can be seen in the old ```EQU``` and ```SET``` files.
 
 ### PAD
 
