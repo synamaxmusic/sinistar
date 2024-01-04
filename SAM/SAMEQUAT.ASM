@@ -1,18 +1,19 @@
-	INCLUDE "../SAM/START.ASM"
-
-ODYNFIX	EQU	$2		;  Fix for incorrect OINDEX value.
-				;  Using ODYNOVH was giving OINDEX
-				;  $FFFC, but $FFFE shows up in
-				;  the EQU files instead.
+;	INCLUDE "../SAM/START.ASM"					;;(This is not needed)
+;===============================================================================
+ODYNFIX	EQU	$2		;;  Fix for incorrect OINDEX value.
+				;;  Using ODYNOVH was giving OINDEX
+				;;  $FFFC, but $FFFE shows up in
+				;;  the EQU files instead.
+;===============================================================================
 	
-	;SUBTTL	SAM'S EQUATES
+;	SUBTTL	SAM'S EQUATES
 	
 SAMEQUATES
 ;* assembly flags and counters
 TRUE	SET	-1		;  Fixme was: TRUE  EQU -1
 FALSE	SET	0		;  Fixme was: FALSE EQU 0
-_STMODE   SET	FALSE		;initialize tune interpreter off	;Fixme was: .$TMODE SET	FALSE
-ROMSAV	SET	0		;starting address of rom	;(Renaming ROMSAVE to ROMSAV for consistency)
+_STMODE   SET	FALSE		;initialize tune interpreter off	;;Fixme was: .$TMODE SET	FALSE
+ROMSAVE	SET	0		;starting address of rom
 BASSAVE	SET	$9800		;starting address of direct page ram
 RAMSAVE	SET	$9900		;starting address of extended ram
 SRAMSAV	SET	$D000		;starting address of static ram
@@ -30,14 +31,14 @@ DXWB	EQU	$40		;dma ex-or write enable bottom pixel
 DXWT	EQU	$80		;dma ex-or write enable top pixel
 WDOGC	EQU	$39		;watchdog constant
 DINHIB	EQU	$74		;DMA inhibit address
-;PMEMCTL	EQU	$BFFF	;pseudo memory control byte	(double defined...already in MESSAGE.ASM)
-;STACK	SET	0C000		;stack bottom
+;;PMEMCTL	EQU	$BFFF	;pseudo memory control byte	(double defined...already in MESSAGE.ASM)
+;;STACK	SET	0C000		;stack bottom
 ;	IFNDEF	ROM
 STACK	SET	$C000-100	;for DCON
-;	ENDIF
-;CRAM	EQU	$C000		;color ram			(double defined...already in MESSEQU1.ASM)
+;;	ENDIF
+;;CRAM	EQU	$C000		;color ram			(double defined...already in MESSEQU1.ASM)
 PIA	EQU	$C800		;start of pias
-;MEMCTL	EQU	$C900		;memory control byte		(double defined...already in MESSAGE.ASM)
+;;MEMCTL	EQU	$C900		;memory control byte		(double defined...already in MESSAGE.ASM)
 DCTRL	EQU	$CA00		;dma status byte
 DCONS	EQU	$CA01		;dma constant
 DSOUR	EQU	$CA02		;dma source address
@@ -45,7 +46,7 @@ DDEST	EQU	$CA04		;dma destination address
 DHIGH	EQU	$CA06		;dma height
 DWIDE	EQU	$CA07		;dma width
 SCNLIN	EQU	$CB00		;screen vertical line counter
-;WDOG	EQU	$CBFF		;watchdog address		(double defined...already in MESSEQU1.ASM)
+;;WDOG	EQU	$CBFF		;watchdog address		(double defined...already in MESSEQU1.ASM)
 
 ;* game constants
 STACKAL	SET	$40		;stack allocation

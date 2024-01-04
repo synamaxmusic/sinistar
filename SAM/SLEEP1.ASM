@@ -1,8 +1,8 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	MULTITASKING ROUTINES
+;;	SUBTTL	MULTITASKING ROUTINES
 
 ;* last task on list (except free list) dummy workspace and index
 LTWSI	FDB	LTWSI
@@ -130,13 +130,13 @@ ALLOC	PSHS	U		;save regs  > uses A,B,X
 	PULS	U,PC
 
 ;* scanner die	current scanner task workspace address in Y
-;	ROUTINE	SCANDIE
-SCANDIE	JSR	ERASCAN		;erase scanner image  save Y, uses A,B
+	ROUTINE	SCANDIE
+	JSR	ERASCAN		;erase scanner image  save Y, uses A,B
 	LDU	OSCHAR,Y	;decrement family counter
 	DEC	[OCDInd,U]
 ;* die		current task workspace address in Y
-;	ROUTINE	DIE
-DIE	LDD	OTLINK,Y	;link-out current process
+	ROUTINE	DIE
+	LDD	OTLINK,Y	;link-out current process
 	LDX	[PRTASK]
 	BRA	.2S
 .1S	LDX	[X]
@@ -159,5 +159,4 @@ DEALLOC	PSHS	D,U		;save regs  > uses none
 	STD	OINDEX,X
 	PULS	D,U,PC
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

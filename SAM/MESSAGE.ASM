@@ -1,3 +1,12 @@
+;;===============================================================================
+;;
+;;  Two semicolons (;;) are used to denote new comments by me.
+;;  Single semicolons (;) are used to replace the old * comment sign found in earlier
+;;  6809 assemblers and denotes original source code comments.
+;;
+;;								- SynaMax
+;;
+;;===============================================================================
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ;*									       *
 ;*									       *
@@ -104,8 +113,8 @@ ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET	.$ORG6
 ;;  We don't need a copyright message here because we need as much space as possible to store all these strings and
 ;;  font sprites.
 ;;
-;;  With the exception of an additional LIST instruction, this PULLORG macro is almost exactly the same as the one 
-;;  found in MACROS.ASM, so I decided to comment out that duplicate PULLORG to avoid the "double macro" error in AS. 
+;;  With the exception of additional LIST/NLIST instructions, this PULLORG macro is exactly the same as the one 
+;;  found in MACROS.ASM, so I decided to comment out that duplicate PULLORG to avoid the "double macro" error in {AS}. 
 ;;
 ;;  When I first started this rewrite, I was replacing all the PUSHORGs with just regular "ORG" instructions and
 ;;  adding a "<label> SET *" instruction for every PULLORG reference.  Now that I got the macros working, I feel it's
@@ -1031,7 +1040,7 @@ FPACKED	LETTER	L1,4,6
 	PACK	$00,$10,$00,$00
 ;*
 	FCB	0			;end of packed code
-SRAMSAV	SET	SPTR			;Fixme was: SRAMSAV SET SPTR
+SRAMSAV	SET	SPTR			;Fixme was: SRAMSAVE SET .$PTR
 
 ;	LIST
 	PULLORG	MESS1MID

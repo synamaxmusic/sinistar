@@ -1,6 +1,6 @@
 ;	INCLVER	RICH,table		* Table definition org macro
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;***
 ;*	Warrior guarding in orbit. (TASKLIST 8/16)
 ;***
@@ -18,5 +18,10 @@ stblimpulse
 	RADIX	16
 ;	ENDTBL
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
+
+;;===============================================================================
+;;
+;;  This speed table is patched over with WITT/ZSTBLIMP.SRC
+;;
+;;===============================================================================

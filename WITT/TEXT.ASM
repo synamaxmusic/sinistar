@@ -13,12 +13,12 @@
 ;*	2) Does not depend on the player number (like DISPLAY does)
 ;*
 ;*****
-TEXT	MACRO	LONGPOS,SHORTPOS	;Fixme was: TEXT MACRO	L1,S1
+TEXT	MACRO	LONGPOS,SHORTPOS,{NOEXPAND}	;;Fixme was: TEXT MACRO	L1,S1
 ;	NLIST
-SDLOFF	SET	LONGPOS		;Fixme was: .$DLOFF
-SDSOFF	SET	SHORTPOS	;Fixme was: .$DSOFF
-SCOLR	SET	$100		;Fixme was: .$COLR
-SDISP	SET	rts		;Fixme was: .$DISP
+SDLOFF	SET	LONGPOS				;;Fixme was: .$DLOFF
+SDSOFF	SET	SHORTPOS			;;Fixme was: .$DSOFF
+SCOLR	SET	$100				;;Fixme was: .$COLR
+SDISP	SET	rts				;;Fixme was: .$DISP
 ;	LIST
 ;	NMLIST
 	ENDM

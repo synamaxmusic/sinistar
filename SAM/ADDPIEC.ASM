@@ -1,4 +1,4 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
@@ -7,13 +7,13 @@
 ;ANIMTBL	EQU	$5002	;SAMTABLE
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	ADD AND SUBTRACT SINISTAR PIECES
+;;	SUBTTL	ADD AND SUBTRACT SINISTAR PIECES
 
 ;* subtract a sinistar piece
-;	ROUTINE	SUBPIEC
-SUBPIEC	PSHS	D,X,U		;save regs > uses none
+	ROUTINE	SUBPIEC
+	PSHS	D,X,U		;save regs > uses none
 	LDX	PIECEPT		;is sinistar gone?
 	CMPX	#PIECETB
 	BNE	.1S
@@ -64,14 +64,14 @@ SUBPIEC	PSHS	D,X,U		;save regs > uses none
 .5S	PULS	D,X,U,PC
 
 ;* Bob's 'queuer' sinistar explosion
-;	ROUTINE	SNXQUE
-SNXQUE	NOP
+	ROUTINE	SNXQUE
+	NOP
 	NOP
 	RTS
 	
 ;* add a sinistar piece
-;	ROUTINE	ADDPIEC
-ADDPIEC	PSHS	D,X		;save regs > uses none
+	ROUTINE	ADDPIEC
+	PSHS	D,X		;save regs > uses none
 	LDX	PIECEPT		;is sinistar still being built?
 	CMPX	FINISH          
 	BEQ	.1S              
@@ -111,8 +111,8 @@ ADDPIEC	PSHS	D,X		;save regs > uses none
 ;*	SinSN - Next Sinistar piece SHORT offset (screen) in 8 bits
 ;*
 ;*****
-;	ROUTINE	TARGET
-TARGET	PSHS	A,B,X,U		;save regs  > uses none
+	ROUTINE	TARGET
+	PSHS	A,B,X,U		;save regs  > uses none
 	STX	PIECEPT		;save target piece pointer
 	LDD	OSPLOFF,X	;get target piece offsets
 	ASRA			;convert to screen coordinates
@@ -149,14 +149,14 @@ TARGET	PSHS	A,B,X,U		;save regs  > uses none
 	
 ;* modify sinistar
 ;*	pass piece descriptor in X, change collis flag in A, dma ctrl byte in B
-;	ROUTINE	MODSINI
-MODSINI	PSHS	D,X,Y,U		;save regs
+	ROUTINE	MODSINI
+	PSHS	D,X,Y,U		;save regs
 	LEAS	-(MHPIECE+8),S	;get temporary space
 	LDA	OSPSOFF,X	;get s position offset
 	STA	2,S		;save for collision table adjustment
 	LDB	#SINIHIG	;multiply by sinistar height
 	MUL                     ;
-	LDY	#SINIMAG	;Fixme was: LDY	#SINIMAGE ;Y points to sinistar image
+	LDY	#SINIMAG	;Y points to sinistar image				;;Fixme was: LDY	#SINIMAGE 
 	LEAY	D,Y		;add s sequential offset
 	LDB	OSPLOFF,X	;get l position offset
 	STB	3,S		;save for collision table adjustment
@@ -167,7 +167,7 @@ MODSINI	PSHS	D,X,Y,U		;save regs
 .1S	STA	S		;save it
 	LEAY	B,Y		;add l byte offset
 	LDU	OSPDESC,X	;get piece image descriptor
-	LDA	#1!4		;Fixme was: LDA	#1!X4 ;* * *TEMPORARY FOR DMA BUG
+	LDA	#1!4		;* * *TEMPORARY FOR DMA BUG				;;Fixme was: LDA	#1!X4 
 	STA	DWIDE		;initialize dma for width of 1
 	LDA	OWIDTH,U	;get piece width
 	STA	1,S		;save it
@@ -192,7 +192,7 @@ MODSINI	PSHS	D,X,Y,U		;save regs
 	LEAU	8,S		;get start of ram buffer
 	LDA	PMEMCTL		;write inhibit off
 	PSHS	A               
-	ANDA	#~$4		;Fixme was: ANDA	#!N4           
+	ANDA	#~$4									;;Fixme was: ANDA	#!N4           
 	STA	PMEMCTL         
 	STA	MEMCTL          
 .2S	STY	DSOUR		;set source to sinistar image
@@ -261,7 +261,7 @@ MODSINI	PSHS	D,X,Y,U		;save regs
 	CMPB	S		;is that top collision boundry?
 	BLS	.10S		
 	LEAS	1,S		;yes, pull stack
-	LDB	#7F-2*SINIHIG	;turn off collisions for this line
+	LDB	#$7F-2*SINIHIG	;turn off collisions for this line
 	STB	X               
 	NEGB                    
 	BRA	.15S             
@@ -277,7 +277,7 @@ MODSINI	PSHS	D,X,Y,U		;save regs
 	BRA	.12S             
 .14S	INCB			;convert new top collision offset to pixels
 	ASLB                    
-	BITA	#0F		;check flavor
+	BITA	#$0F		;check flavor
 	BNE	.15S             
 	DECB                    
 .15S	STB	SINIWID,X	;save new top collison offset
@@ -288,5 +288,4 @@ MODSINI	PSHS	D,X,Y,U		;save regs
 .3S	LEAS	(MHPIECE+8),S	;release temporary space
 	PULS	D,X,Y,U,PC	;restore regs
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

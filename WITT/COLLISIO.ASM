@@ -1,6 +1,6 @@
 ;===============================================================================
 ; EQUs to remove later
-PREBOY	EQU	$5728	;COLLISIO
+;PREBOY	EQU	$5728	;COLLISIO
 GIVCRYS	EQU	$6C64	;STUBS
 KRCRYS	EQU	$6C70	;STUBS
 PREBOU	EQU	$6C79	;STUBS
@@ -24,7 +24,7 @@ ADDVIB	EQU	$6C56	;STUBS
 ;	INCLVER	RICH,display		* Message display macros
 ;	INCLVER	RICH,table		* Data table macros
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* SCORING
@@ -37,9 +37,8 @@ ADDVIB	EQU	$6C56	;STUBS
 ;*	     5 Planetoids (including Pluto) (handled by KRPlan?)
 ;*
 ;*****
-;	ROUTINE	collision
+	ROUTINE	collision
 ;* collision types (must assemble before COLLIDE macros)
-collision SET	*
 CLCOUNT	SET	0
 	MAKECOL	PLAYER
 	MAKECOL	PLANET
@@ -158,8 +157,8 @@ SINIBITE1 CLRD
 ;*	Bombs = Bombs + 1
 ;*
 ;*****
-;	ROUTINE	AddBomb
-AddBomb	pshs	A,B,X,Y		;* Save work registers.
+	ROUTINE	AddBomb
+	pshs	A,B,X,Y		;* Save work registers.
 	LDA	BOMBS		;* If the Sinibomb count was zero,
 	bne	.1S		;*   the "EMPTY" message in the bomb
 	jsr	NotEmpty	;*   display area must be erased.
@@ -188,7 +187,7 @@ QFulCr	_IPrio	21		;* Tune for picking up last and latter crystals
 	_Stop
 ;	ENDTBL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*		;; Save the current address
+ROMSAVE	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 	FDB	_CRYSTAL
@@ -200,7 +199,7 @@ ROMSAV	SET	*		;; Save the current address
 PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 				;; more phrases later
 
-	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;*****
 ;*
@@ -290,7 +289,6 @@ CRYWO1S	TUNE	QWorkCr		;* Play a tune when worker picks up a crystal
 	ENDSECTION CRYSTALWORKER
 ;*                               
 ;	LOCAL                   
-	SECTION	PLAYERPLANET
 	COLLIDE	PLAYER,PLANET	;* Vib. Bounce
 	tst	InWarp		;* During the warp,
 	lbne	rts		;*   player collisions are off!
@@ -315,7 +313,7 @@ PreBoY	exg	X,Y		;* Swap objects
 	COLLIDE	PLANET,PLANET	;* Vib. Bounce
 	COLLIDE	SINI,SINI	;* Vib. Bounce <<< Hmmm >>>
 ;*                               
-.1S	pshs	X		;* Save first object WS
+BOUNCER	pshs	X		;* Save first object WS				;;Fixme was: 1$ (can't use local labels because of PreBoY)
 	leax	,Y		;* Get planet object WS
 	jsr	Prebou		;* Pre-bounce prep for planet
 	puls	X		;* Restore first WS
@@ -329,8 +327,7 @@ PreBoY	exg	X,Y		;* Swap objects
 	rts                     
 	COLLIDE	PLANET,SINI	;* Vib. Bounce <<< can shatter planet >>>
 	jsr	AddVib
-	bra	.1S
-	ENDSECTION	PLAYERPLANET
+	bra	BOUNCER								;;Fixme was: bra 1$
 
 	COLLIDE	Planet,PlShot
 	COLLIDE	Planet,WaShot
@@ -384,7 +381,7 @@ SBOMB1S	DISPLAY	YELLOW
 	PHRASE	YELLOW,35,INTERCEPTED
 	rts
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*		;; Save the current address
+ROMSAVE	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 	FDB	_SINIBOMB
@@ -393,7 +390,7 @@ ROMSAV	SET	*		;; Save the current address
 PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 				;; more phrases later
 
-	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;	ENDSECTION SBOMBCOLLIDE	
 	
@@ -464,8 +461,7 @@ YDies	leax	Y
 	jsr	addscore	;*   destroying the warrior shots.
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 	INCLUDE "../WITT/DEATH.ASM"	;* Player death routine
 ;	INCLVER	RICH,empty

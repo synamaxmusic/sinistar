@@ -21,18 +21,18 @@
 ;* assembler extensions:
 
 ;* repeat
-RPT	MACRO	COUNT,P1,P2,P3,P4,P5,P6,P7,P8,P9
-;	NLIST
+RPT	MACRO	COUNT,P1,P2,P3,P4,P5,P6,P7,P8,P9,{NOEXPAND}	;;Fixme was: RPT MACRO	COUNT,P1,P2,P3,P4,P5,P6,P7,P8,P9
+;	NLIST							;;(using {NOEXPAND} to not make this show up in the listing)
 	REPT	COUNT
-	IRP	INST, P1,P2,P3,P4,P5,P6,P7,P8,P9	;Fixme was: IRP	INST,<<P1>,<P2>,<P3>,<P4>,<P5>,<P6>,<P7>,<P8>,<P9>>
+	IRP	INST, P1,P2,P3,P4,P5,P6,P7,P8,P9		;;Fixme was: IRP INST,<<P1>,<P2>,<P3>,<P4>,<P5>,<P6>,<P7>,<P8>,<P9>>
 	INST
-	ENDM						;Fixme was: ENDR
-	ENDM						;Fixme was: ENDR
+	ENDM							;;Fixme was: ENDR
+	ENDM							;;Fixme was: ENDR
 ;	LIST
 	ENDM
 
 ;* hook for a vector patch
-HOOK	MACRO	N1
+HOOK	MACRO	N1,{NOEXPAND}
 ;	NLIST
 N1	SET	*
 	RPT	3,NOP
@@ -85,7 +85,7 @@ SS	SET	*
 ;;
 
 ;;* push current address on org stack (8 levels) and optionally re-org
-PUSHORG	MACRO	ADR
+PUSHORG	MACRO	ADR									;,{NOEXPAND}
 ;	NLIST
 PP	SET	PP+1		;;Fixme was: .$PP   SET .$PP+1
 ORG7	SET	ORG6		;;Fixme was: .$ORG7 SET .$ORG6	
@@ -96,12 +96,13 @@ ORG3	SET	ORG2		;;Fixme was: .$ORG3 SET .$ORG2
 ORG2	SET	ORG1		;;Fixme was: .$ORG2 SET .$ORG1	
 ORG1	SET	ORG0		;;Fixme was: .$ORG1 SET .$ORG0	
 ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*	
+TSTPTR	SET	*
 	IFNB	<ADR>
 	ORG	ADR
-	IF ROMSAV-* = 0		;;Fixme was: 	IFE	ROMSAV-*
-	RADIX 10		;; (RADIX 10 for decimal 12)
-	ROMTEST	(ORG0>>12)	;;Fixme was: 	ROMTEST	(*!>12.)
-	RADIX 16		;; (I guess I could also use OUTRADIX, but RADIX 16 is easier to understand)
+	IF ROMSAVE-* = 0		;;Fixme was: 	IFE	ROMSAV-*
+	RADIX 10		;; (decimal 12)
+	ROMTEST	(ROMSAVE>>12)	;;Fixme was: 	ROMTEST	(*!>12.)
+	RADIX 16		
 	ENDIF
 	ENDIF
 ;	LIST
@@ -131,7 +132,7 @@ ORG0	SET	*		;;Fixme was: .$ORG0 SET .$*
 ;	ENDM
 
 ;* equate a symbol to a value if not already defined
-SYMVER	MACRO	N1,A1
+SYMVER	MACRO	N1,A1,{NOEXPAND}
 ;	NLIST
 	IFNDEF	N1
 N1	EQU	A1
@@ -341,7 +342,7 @@ SLEEP	MACRO	WU
 ;	BLIST
 	IF ("WU"="HERE")
 	RADIX 10
-	WAKE_AT *+10
+	WAKE_AT *+10				;;Fixme was: WAKE_AT *+10.
 	RADIX 16
 	ELSEIF ("WU"!="LOOP")
 	WAKE_AT WU

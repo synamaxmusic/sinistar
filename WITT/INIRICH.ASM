@@ -1,7 +1,7 @@
 ;	SUBTTL	INIRICH - Initialization routines for RICH
 ;	PAGE
 ;	INCLVER	RICH,table		* ORG Macro
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
@@ -16,7 +16,7 @@ AMSINI	EQU	$6C59	;STUBS
 ;EMPTY 	EQU	$52F5
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* ExeVect .....	Hooks routine to occur every frame
@@ -38,15 +38,14 @@ AMSINI	EQU	$6C59	;STUBS
 	VECTOR	ExeVect		;* On each frame of animation
 	jsr	AniSC		;* Animate Sinistar for speech calls
 	rts
-ROMSAV	SET	*		;;(needed to add this)
 ;***
 ;*	The characteristics descriptor of the sinibomb will find the
 ;*	current image descriptor pointing at the RAM area for an image.
 ;***
-	ORG	CSBomb+OFiDesc
+	PUSHORG	CSBomb+OFiDesc
 	fdb	RISBomb+1+2	;* First Image Descriptor
-;	PULLORG
-	ORG	ROMSAV		;;(needed to add this)
+	PULLORG
+
 ;*****
 ;*
 ;* VECTOR EXEVECT
@@ -286,7 +285,7 @@ ADemo	tst	AMDemo		;*   if the system is not in demo mode
 										;; and then again by MICA/BOBFIXES.ASM) ($5279)
 	RADIX 	16
 	std	OMTLen,X			;*   40 seconds
-	CLRD
+	CLRD									;;CLRB and STD instructions both get patched over ($527E)
 	std	OMTLen+2,X
 .99S	rts
 ;***
@@ -370,12 +369,11 @@ KenTbl	fdb	$6A00		;* U
 	fdb	$45F1		;* U
 	fdb	$4234		;* U
 	fdb	$A7BD		;* U
-	fdb	$5769								;;These last four bytes spell out "Witt"
-	fdb	$7474								;;in ASCII.
+	fdb	$5769				;;These last four bytes spell out "Witt"
+	fdb	$7474				;;in ASCII.
 ;*	ENDTBL
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 	INCLUDE "../WITT/EMPTY.ASM"		;* "EMPTY" or bombs display.
 	INCLUDE "../WITT/ANISINI.ASM"		;* Animate Sinistar

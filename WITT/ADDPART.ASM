@@ -1,7 +1,7 @@
 ;	INCLVER	RICH,display		* Message display macros
 ;	INCLVER	RICH,speak		* Speech macro
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;	SUBTTL	ADDPART
 ;*****
 ;*
@@ -21,8 +21,8 @@
 ;*	Nothing
 ;*
 ;*****
-;	ROUTINE	addpart
-addpart	pshs	D		;* Save work registers
+	ROUTINE	addpart
+	pshs	D		;* Save work registers
 	ldd	PiecePtr	;* If the Sinistar
 	cmpd	Finish		;*   is built ...
 	beq	.99S		;*   fully, then recover from a bad call.
@@ -42,8 +42,7 @@ addpart	pshs	D		;* Save work registers
 	rts
 
 .100S	SPEAK	LiveSC		;* And then inhibit the Sinistar ...
-;	ROUTINE	Sinhibit
-Sinhibit SET	*
+	ROUTINE	Sinhibit
 	pshs	A,Y		;* Save work registers
 	ldy	[SinIndex]	;* Y -> Sinistar scanner workspace.
 	RANDOM	OSEED1,BYTE	;* Randomize
@@ -54,7 +53,6 @@ Sinhibit SET	*
 	puls	A,Y		;* Restore work registers
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 ;	INCLVER	RICH,anisini		* Sinistar animation routine and values

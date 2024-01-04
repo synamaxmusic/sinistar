@@ -1,23 +1,22 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
 ;QNEWSHI	EQU	$4DDF
 ;===============================================================================
 	
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	PLAYER SCORE AND SINIBOMB STATUS DISPLAY AND CHANGE
+;;	SUBTTL	PLAYER SCORE AND SINIBOMB STATUS DISPLAY AND CHANGE
 
 ;* add bcd score to players score	pass score in D
-;	ROUTINE	ADDSCOR
-ADDSCOR	PSHS	A,B,X,U		;> uses none
+	ROUTINE	ADDSCOR
+	PSHS	A,B,X,U		;> uses none
 	INC	SCOREFL		;set score flag
 	LDU	#NSCORE		;get next ship score
 	LDX	#PSCORE		;get player score data address
-	BSR	ADD6S		;Fixme was: BSR ADDBCD 	;add new points to score,  save X, uses none
-				;;(I have NO IDEA why renaming ADDBCD
-				;; to ADD6S fixes the range overflow)
+	BSR	ADD6S		;add new points to score,  save X, uses none			;; Fixme was: BSR ADDBCD
+												;;(I have NO IDEA why renaming ADDBCD to ADD6S fixes the range overflow)
 	BCC	.1S		;wrap around?
 	CLR	WRAPFLG		;yes, set wrap flag and award extra ship
 	BRA	.2S              
@@ -57,7 +56,7 @@ ADDSCOR	PSHS	A,B,X,U		;> uses none
 .5S	PULS	A,B,X,U,PC
 
 ;* add bcd number in D to 8 dig numb pointed to by X, returns overflow in carry
-ADDBCD	SET *
+ADDBCD	SET *										;;Added this to restore label
 ADD6S	PSHS	A,B,X	;> uses none
 	LDA	3,X
 	ADDA	1,S
@@ -90,14 +89,14 @@ CMPBCD	PSHS	A,B	;> uses none
 UPBONUS	PSHS	D,X,U
 	LDA	PMEMCTL		;dma inhibit off
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4									;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#(3<<8+8*4-1)!404	;Fixme was: LDD	#(3!<8+8*4-1)!X404 ;erase score: set dma size * * *FOR DMA BUG
+	LDD	#(3<<8+8*4-1)!$404	;erase score: set dma size * * *FOR DMA BUG	;;Fixme was: LDD  #(3!<8+8*4-1)!X404 
 	STD	DHIGH
-	LDA	#81		;set dma destination
+	LDA	#$81		;set dma destination
 	LDB	SCOREAD
-	ADDB	#22
+	ADDB	#$22
 	TFR	D,X
 	STX	DDEST
 	LDA	#DCNS+DWBL	;erase it
@@ -120,30 +119,30 @@ UPBONUS	PSHS	D,X,U
 	PULS	D,X,U,PC
 
 ;* update ship display		pass count in A, dma constant in B
-;	ROUTINE	UPSHIPS
-UPSHIPS	PSHS	A,B		;save dma constant  > uses none
+	ROUTINE	UPSHIPS
+	PSHS	A,B		;save dma constant  > uses none
 	DECA			;too few or to many to display?
 	CMPA	#9
 	BHI	NOUPSTA
 	LDB	#6		;compute s axis offset
 	MUL
 	ADDB	SCOREAD		;add to score s axis screen position
-	LDA	#7D		;l axis screen position
+	LDA	#$7D		;l axis screen position
 	STD	DDEST		;set dma destination
 	LDD	#ISHIPS		;set dma source
 	BRA	UPSTATS		;update status image, uses A,B
                                 
 ;* update sinibomb display	;pass sinibomb count in A, dma constant in B
-;	ROUTINE	UPBOMBS         
-UPBOMBS	PSHS	D		;save dma constant  > uses none
+	ROUTINE	UPBOMBS         
+	PSHS	D		;save dma constant  > uses none
 	DECA			;decrement count
-	LDB	#89		;get l axis screen address for first row
+	LDB	#$89		;get l axis screen address for first row
 	RADIX 10
-	CMPA	#10		;not in this row?
+	CMPA	#10		;not in this row?					;;Fixme was: CMPA #10.
 	RADIX 16
 	BLT	.1S    
 	RADIX 10	
-	SUBA	#10		;yes, subtract number in this row
+	SUBA	#10		;yes, subtract number in this row			;;Fixme was: SUBA #10.
 	RADIX 16
 	ADDB	#3		;add l axis spacing for one row
 .1S	PSHS	B		;save l axis address
@@ -153,9 +152,9 @@ UPBOMBS	PSHS	D		;save dma constant  > uses none
 	PULS	A		;get l axis offset
 	STD	DDEST		;set dma destination
 	LDD	#ISBOMST	;set image data
-;* update status display		;pass image address in D, dma ctrl byte in 2,S
-UPSTATS	STD	DSOUR           ;Fixme was: UPSTAT
-	LDD	#305!404	;Fixme was: LDD	#305!X404 ;set dma block size
+;* update status display	;pass image address in D, dma ctrl byte in 2,S
+UPSTATS	STD	DSOUR           							;;Fixme was: UPSTAT (truncated label again)
+	LDD	#$305!$404	;set dma block size					;;Fixme was: LDD #305!X404 
 	STD	DHIGH           
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A               
@@ -170,35 +169,35 @@ UPSTATS	STD	DSOUR           ;Fixme was: UPSTAT
 NOUPSTA	PULS	D,PC
 
 ;* score display task
-;	ROUTINE	SCOREDI
-SCOREDI	LDA	SCOREFL		;did the player score?
+	ROUTINE	SCOREDI
+	LDA	SCOREFL		;did the player score?
 	BEQ	.1S
 	BSR	UPSCORE		;update score
 	CLR	SCOREFL		;yes?, clear score flag
 .1S	SLEEP	LOOP
 
 ;* update score routine
-;	ROUTINE	UPSCORE
-UPSCORE	PSHS	D,X,U		;> uses none	
+	ROUTINE	UPSCORE
+	PSHS	D,X,U		;> uses none	
 	LDA	PMEMCTL		;dma inhibit off
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4									;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#8503		;compute screen address of score
+	LDD	#$8503		;compute screen address of score
 	ADDB	SCOREAD
 	TFR	D,X
 	LDU	#PSCORE		;get address of score data
 .1S	LDA	U		;get byte of score
 	CMPA	LSCORE-PSCORE,U	;compare with last displayed score
 	BEQ	.2S
-	LDA	#0F		;different?, set mask to mask off lower nibble
+	LDA	#$0F		;different?, set mask to mask off lower nibble
 	BSR	.4S		;erase and redraw upper nibble if different
-	LDA	#0F0		;set mask to mask off upper nibble
+	LDA	#$0F0		;set mask to mask off upper nibble
 	BSR	.4S		;erase and redraw lower nibble if different
 	LDA	U		;get byte of score
 	STA	LSCORE-PSCORE,U	;update byte of last displayed score
-.2S	LEAX	0E,X		;advance screen address for next pair of digits
+.2S	LEAX	$0E,X		;advance screen address for next pair of digits
 	LEAU	1,U		;advance score data pointer
 	CMPU	#PSCORE+4	;done?
 	BLO	.1S              
@@ -218,13 +217,12 @@ UPSCORE	PSHS	D,X,U		;> uses none
 	BEQ	.5S             
 	CLRB			;different?, zero color
 	JSR	OUTBCD		;erase old digit  save U, uses X
-	LEAX	-0E,X		;restore screen position
+	LEAX	-$0E,X		;restore screen position
 	LDA	U		;get byte of score
 	ORA	TEMP		;mask off on nibble
 	LDB	#RED		;get score color
 	JSR	OUTBCD		;draw new digit
-	LEAX	-0E,X		;restore sceen position
+	LEAX	-$0E,X		;restore sceen position
 .5S	RTS
 
-;	PULLORG	ROMSAV
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

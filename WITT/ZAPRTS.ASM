@@ -1,4 +1,4 @@
-;	MESSG	"			DEFINING ZAPRTS"
+	MESSAGE	"			DEFINING ZAPRTS"		;;Fixme was: MESSG
 ;	NLIST
 ;*****
 ;*

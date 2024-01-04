@@ -16,7 +16,7 @@
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ;	NLIST
 ;SINISTAR.EQU	SET	*
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 ;	INCLVER	RICH,RICHS.SYM
 ;	INCLVER	RICH,RICHS.SET
 ;	INCLVER	RICH,R0

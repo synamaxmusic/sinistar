@@ -5,7 +5,7 @@
 EXPOBJ	EQU	$6C61	;STUBS
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* DEATH
@@ -19,17 +19,17 @@ EXPOBJ	EQU	$6C61	;STUBS
 ;*	All on screen workers, warriors, planets and crystals will be killed.
 ;*
 ;*****
-;	ROUTINE	Death
-Death	LDA	AMDEMO		;in attract mode demo?
+	ROUTINE	Death
+	LDA	AMDEMO		;in attract mode demo?
 	BEQ	Mortal
 	CLR	AMDEMO		;yes?, end attract mode demo
 	CLR	NPLAYER		;zero player count
 ;*	nop
-;	ROUTINE	PntScrn		;* Point screen entry
-PntScrn	jmp	IAMode		;*   for attract mode.				;; Gets patched over by MICA/ZPNTSCRN.ASM ($583B)
+	ROUTINE	PntScrn		;* Point screen entry
+	jmp	IAMode		;*   for attract mode.				;; Gets patched over by MICA/ZPNTSCRN.ASM ($583B)
 ;*
-;	ROUTINE	Mortal		;* RTS here to be IMMORTAL.
-Mortal	TUNE	Qpldie		;* Play a tune at the destruction of the player
+	ROUTINE	Mortal		;* RTS here to be IMMORTAL.
+	TUNE	Qpldie		;* Play a tune at the destruction of the player
 	lda	#-1		;* Flash the
 	sta	PCRAM		;*   screen.
 	CLRD		
@@ -75,5 +75,4 @@ Mortal	TUNE	Qpldie		;* Play a tune at the destruction of the player
 	lbeq	TurnIni		;*   until the Sinistar has finished speaking.
 	SLEEP	LOOP
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

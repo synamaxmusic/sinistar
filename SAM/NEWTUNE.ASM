@@ -1,21 +1,21 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
 ;QCOIN	EQU	$4DFC	
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	TUNE ROUTINE
+;;	SUBTTL	TUNE ROUTINE
 
 ;* new tune		pass tune address in word after call
-;	ROUTINE	NEWTUNE
-NEWTUNE	PSHS	D,X,U		;> uses none
+	ROUTINE	NEWTUNE
+	PSHS	D,X,U		;> uses none
 	LDX	6,S		;get tune address and advance return stack
 	LDU	X++
 	STX	6,S
 	LDA	AMDEMO		;in attract mode demo?
-	BEQ	NUTUNE1		;Fixme was: BEQ 1$
+	BEQ	NUTUNE1									;;Fixme was: BEQ 1$
 	CMPU	#QCOIN		;yes, is it coin sound?
 	BNE	NUTUNE2		;only play coin sound in attract mode
 NUTUNE1	LDA	U+		;check priority
@@ -24,9 +24,9 @@ NUTUNE1	LDA	U+		;check priority
 	CLRA			;clear repeat counters addresses
 SS	SET	TNREPT
 	REPT	NTNREPT
-	STA	SS		;Fixme was .$$
+	STA	SS									;;Fixme was .$$
 SS	SET	SS+OTNRLEN
-	ENDM			;Fixme was: ENDR
+	ENDM										;;Fixme was: ENDR
 	BSR	TNLOAD		;load tune, save none, use A,B,X,U
 NUTUNE2	PULS	D,X,U,PC
 
@@ -38,9 +38,9 @@ TNLOAD	LDA	U		;fetch first instruction > uses A,B,X,U
 	BNE	.1S
 	CLR	TNPRIO		;zero priority
 	LDA	#-1		;clear sound lines
-	STA	PIA+0E
-	LDA	#1E!1F		;Fixme was: LDA	#1E!X1F ;background sound off, for now
-	STA	PIA+0E
+	STA	PIA+$0E
+	LDA	#$1E!$1F	;background sound off, for now				;;Fixme was: LDA #1E!X1F 
+	STA	PIA+$0E
 	RTS			;quit
 .1S	LDX	#TNREPT		;repeat, find counter
 .2S	CMPU	X		;is this the counter?		
@@ -65,20 +65,19 @@ TNLOAD	LDA	U		;fetch first instruction > uses A,B,X,U
 	BRA	TNLOAD		;load next instruction 
 .7S	BPL	.8S		;sound?
 	LDB	#-1		;yes?, clear sound lines
-	STB	PIA+0E
+	STB	PIA+$0E
 ;* THIS IS WHERE THE SOUND IS ACTUALLY PLAYED
-	STA	PIA+0E		;play sound
+	STA	PIA+$0E		;play sound
 	LEAU	1,U		;advance tune program counter
-	BITA	#40		;time?
+	BITA	#$40		;time?
 	BEQ	TNLOAD
 	BRA	.9S		;yes, set timer
 .8S	LDA	U+		;set priority
-	ANDA	#3F
+	ANDA	#$3F
 	STA	TNPRIO
 .9S	LDA	U+		;set tune timer
 	STA	TNTIME
 	STU	TNPC		;save tune program counter
 	RTS
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

@@ -1,5 +1,5 @@
-	INCLUDE "../SAM/START.ASM"
-;	INCLVER	SAM,SINISTAR.EQU
+;;	INCLUDE "../SAM/START.ASM"
+;;	INCLVER	SAM,SINISTAR.EQU
 
 ;===============================================================================
 ; EQUs to remove later
@@ -9,11 +9,11 @@
 ;IMGOBJ	EQU	$4332	;GETOBJ
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
 ;* player shooting
-;	ROUTINE	PlShoot
-PLSHOOT	TUNE	QFIRE
+	ROUTINE	PlShoot
+	TUNE	QFIRE
 	LDA	SFREE		;are there any screen workspaces available?
 	BEQ	.1S
 	JSR	GETOBJ		;yes, create shot  save none, uses A,B,X
@@ -21,7 +21,7 @@ PLSHOOT	TUNE	QFIRE
 	STD	OCHAR,X
 	LDB	PLYRANG		;use same image rotation as player
 	ADDB	#4
-	ANDB	#078		;angles 80-0F8 use 0-78
+	ANDB	#$078		;angles 80-0F8 use 0-78
 	CLRA
 	ADDD	#IPLSHOT
 	TFR	D,U
@@ -60,5 +60,4 @@ PLSHOOT	TUNE	QFIRE
 	JSR	PUTOBJ		;save none, uses none
 .1S	RTS
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

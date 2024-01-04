@@ -1,6 +1,6 @@
 ;	INCLUDE "../WITT/DISPLAY.ASM"		;* Message display macros
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* LSSBOMB
@@ -20,13 +20,11 @@
 ;*	Nothing
 ;*
 ;*****
-	ORG	CSbomb+OLSVec
+	PUSHORG	CSbomb+OLSVec
 	fdb	LSSBomb
-;	PULLORG
-	ORG	ROMSAV
+	PULLORG
 
-;	ROUTINE	LSSBomb
-LSSBOMB	SET	*
+	ROUTINE	LSSBomb
 	pshs	A,B,X,Y		;* Save work registers
 	tst	SiniSector	;* If the Sinistar is not in sector
 	bne	LSSB1S		;*   then intercept the bomb.
@@ -49,7 +47,6 @@ LSSB1S	leax	Y		;* X -> sinibomb scanner workspace		;;Fixme was: 1$ (Had to conve
 LSSB99S	puls	A,B,X,Y		;* Restore work registers			;;Fixme was: 99$
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 ;	INCLVER	RICH,subpart		;* Kill a part of the sinistar

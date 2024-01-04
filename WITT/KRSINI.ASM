@@ -1,9 +1,9 @@
-;===============================================================================
-;
-;    Until a better solution is found, all local labels have been replaced with
-;    global ones.  1$ is now Kill1, 223$ is now Kill223, etc.
-;
-;===============================================================================
+;;===============================================================================
+;;
+;;    Until a better solution is found, all local labels have been replaced with
+;;    global ones.  1$ is now Kill1, 223$ is now Kill223, etc.
+;;
+;;===============================================================================
 ; EQUs to remove later
 RSTPOP	EQU	$6C7C
 ReTarget EQU	$6438
@@ -17,7 +17,7 @@ updsvel	EQU	$6569	;DISTANCE
 UnTarget EQU	$6479	;RETARGET
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* KRSINI
@@ -37,8 +37,8 @@ UnTarget EQU	$6479	;RETARGET
 ;*		 new Sinistar building site.
 ;*
 ;*****
-;	Routine	KRSINI
-KRSINI	pshs	D,X,Y		;* Save work registers
+	Routine	KRSINI
+	pshs	D,X,Y		;* Save work registers
                                 
 	inc	InWarp		;* Mark the Sinistar not to build up.
 	ldd	#Piecend	;* Finish off the
@@ -436,7 +436,7 @@ Kill250	puls	A,B,X,Y		;* Restore message registers
 	SLEEP	LOOP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*		;; Save the current address
+ROMSAVE	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 	
@@ -464,9 +464,8 @@ ROMSAV	SET	*		;; Save the current address
 PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 				;; more phrases later
 
-	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 	INCLUDE "../WITT/STBLIMP.ASM"	;* Impulse engine speed table

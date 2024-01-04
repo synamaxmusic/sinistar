@@ -2,7 +2,7 @@
 ; EQUs to remove later
 ;ADDPART EQU	$5D7B	;ADDPART
 ;===============================================================================
-
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* LSWOCR
@@ -20,14 +20,12 @@
 ;*	Nothing
 ;*
 ;*****
-	ORG	CWorkCr+OLSVec
+	PUSHORG	CWorkCr+OLSVec
 	fdb	LSWoCr
-;	PULLORG
+	PULLORG
 
-	ORG	ROMSAV
-
-;	ROUTINE	LSWoCr
-LSWoCr	tst	SiniSector	;* If the sinistar is not out of the
+	ROUTINE	LSWoCr
+	tst	SiniSector	;* If the sinistar is not out of the
 	beq	.1S		;*   sector, the worker cannot transform.
 	jsr	addpart		;* Become part of the sinistar
 .1S	pshs	X		;* Save work registers
@@ -36,7 +34,6 @@ LSWoCr	tst	SiniSector	;* If the sinistar is not out of the
 	puls	X		;* Restore work registers
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 	INCLUDE "../WITT/ADDPART.ASM"		;* Build up the sinistar

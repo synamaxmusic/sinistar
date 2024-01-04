@@ -1,4 +1,4 @@
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;	SUBTTL	COPYRIGHT
 ;*****
 ;*
@@ -43,5 +43,4 @@ copyright
 	addd	#$4B00		;*   C.
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

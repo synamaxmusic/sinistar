@@ -1,4 +1,4 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
@@ -6,13 +6,13 @@
 ;QBOUNCE	EQU	$4DA9
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	BOUNCE ROUTINE
+;;	SUBTTL	BOUNCE ROUTINE
 
 ;* bounce routine		;pass ship wsa addresses in X and Y
-;	ROUTINE	BOUNCE
-BOUNCE	LDA	OSTATUS,X	;if both object bounced then exit > uses A,B,U
+	ROUTINE	BOUNCE
+	LDA	OSTATUS,X	;if both object bounced then exit > uses A,B,U
 	BITA	#3
 	BEQ	.1S
 	LDA	OSTATUS,Y
@@ -28,7 +28,7 @@ BOUNCE	LDA	OSTATUS,X	;if both object bounced then exit > uses A,B,U
 	BCC	.2S		;scale down masses till sum is on inverse table
 	RORA
 	BRA	.3S
-.2S	CMPA	#20
+.2S	CMPA	#$20
 	BLO	.4S
 	LSRA
 .3S	LSR	TEMP+2
@@ -112,5 +112,4 @@ BOUNCE	LDA	OSTATUS,X	;if both object bounced then exit > uses A,B,U
 	ADCA	#0
 	RTS
 
-;	PULLORG	ROMSAV
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

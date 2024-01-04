@@ -5,7 +5,7 @@
 
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;	SUBTTL	EMPTY - Conditionally displays EMPTY message in sinibomb area.
 ;*****
 ;*
@@ -22,8 +22,8 @@
 ;*		       Z bit = 0 if the bomb bay is empty.
 ;*
 ;*****
-;	Routine	Empty
-Empty	tst	Bombs		;* If there are bombs in the bomb bay,
+	Routine	Empty
+	tst	Bombs		;* If there are bombs in the bomb bay,
 	bne	EMPTY99		;*   no warning message is needed.			;;Fixme was: bne .99S (had to make global label)
 	pshs	A,B,X,Y,CC	;* Save work registers
 	TEXT	$8A,$00		;* Warn player of empty bomb bay.
@@ -34,7 +34,7 @@ Empty	tst	Bombs		;* If there are bombs in the bomb bay,
 	puls	A,B,X,Y,CC	;* Restore work registers
 EMPTY99	rts
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*		;; Save the current address
+ROMSAVE	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 	FDB	_EMPTY		
@@ -42,7 +42,7 @@ ROMSAV	SET	*		;; Save the current address
 PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 				;; more phrases later
 
-	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;	SUBTTL	NOTEMPTY - Erases EMPTY message from sinibomb display area.
@@ -58,8 +58,8 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 ;*	Nothing - but only if the copyright is still intact.
 ;*
 ;*****
-;	Routine	NotEmpty
-NOTEMPTY pshs	A,B,X,Y		;* Save work registers
+	Routine	NotEmpty
+	pshs	A,B,X,Y		;* Save work registers
 	TEXT	$8A,$00		;* Clear the message regarding an empty bomb bay
 	lda	#SDLOFF		;* <Normally the PHRASE macro is used here to		;;Fixme was: .$DLOFF
 	ldb	ScoreAddr	;*  display the word, bu the TEXT MACRO is not
@@ -68,5 +68,4 @@ NOTEMPTY pshs	A,B,X,Y		;* Save work registers
 	puls	A,B,X,Y		;* Restore work registers
 	ZAPrts			;* RTS if copyrighted.
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

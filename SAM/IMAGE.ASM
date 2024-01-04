@@ -8,7 +8,7 @@
 
 ;* space needed for dummy last workspace
 DSPACE	RMB	7
-;	ORG	DSPACE
+;;	ORG	DSPACE					;;This messes things up for some reason.
 
 ;* player ship
 IPLAYER FDB	$0609,IPLAY1,IPLAY1+6*9,$0504,$0609,IPLAY2,IPLAY2+6*9,$0504
@@ -1641,4 +1641,4 @@ ISBOMST	FCB	$09,$22,$90
 ISCANN	FCB	$01,$10
 	FCB	$01,$10
 
-ROMSAV	SET	*   ;marks start of program data
+ROMSAVE	SET	*   ;marks start of program data

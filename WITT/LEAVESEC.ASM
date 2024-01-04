@@ -5,7 +5,7 @@
 ;LSWOCR	EQU	$5D6A
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* LEAVESECTOR
@@ -24,61 +24,60 @@ LeaveSector
 	jsr	[OKiVec,U]	;* Kill object
 	puls	X,PC		;* Restore work register and return
 
-;	PULLORG	ROMSAV
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 ;* player ship
-	ORG	CPLAYER+OLSVEC
+	PUSHORG	CPLAYER+OLSVEC
 	FDB	TRAP			;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* planetoid 1
-	ORG	CPLAN1+OLSVEC
+	PUSHORG	CPLAN1+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* planetoid 2
-	ORG	CPLAN2+OLSVEC
+	PUSHORG	CPLAN2+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* planetoid 3
-	ORG	CPLAN3+OLSVEC
+	PUSHORG	CPLAN3+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* planetoid 4
-	ORG	CPLAN4+OLSVEC
+	PUSHORG	CPLAN4+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* planetoid 5
-	ORG	CPLAN5+OLSVEC
+	PUSHORG	CPLAN5+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;*sinibomb
-	ORG	CSBOMB+OLSVEC
+	PUSHORG	CSBOMB+OLSVEC
 	FDB	LSSBomb			;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* worker
-	ORG	CWORKER+OLSVEC
+	PUSHORG	CWORKER+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* warrior
-	ORG	CWARRIO+OLSVEC
+	PUSHORG	CWARRIO+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* sinistar
-	ORG	CSINI+OLSVEC
+	PUSHORG	CSINI+OLSVEC
 	FDB	LSSini			;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* crystal
-	ORG	CCRYSTA+OLSVEC
+	PUSHORG	CCRYSTA+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* worker with crystal
-	ORG	CWORKCR+OLSVEC
+	PUSHORG	CWORKCR+OLSVEC
 	FDB	LSWoCr			;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 ;* sinistar piece
-	ORG	CPIECE+OLSVEC
+	PUSHORG	CPIECE+OLSVEC
 	FDB	LeaveSector		;vector to leave-sector routine
-;	PULLORG
+	PULLORG
 
 	INCLUDE "../WITT/LSSBOMB.ASM"		;* Sinibomb leaving sector
 	INCLUDE "../WITT/LSWOCR.ASM"		;* Worker with crystal leaving sector

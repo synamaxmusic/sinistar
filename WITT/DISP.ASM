@@ -1,4 +1,4 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 ;	INCLVER	SAM,Sinistar.equ
 ;	INCLUDE "../WITT/DISPLAY.ASM"		;* Message display macros
 
@@ -7,7 +7,7 @@
 
 ;===============================================================================
 	
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* DISP
@@ -40,8 +40,7 @@ DISP	pshs	A,X		;* Save work register
 	puls	A,X		;* Restore work register
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 	INCLUDE DISPE.ASM			;* Message to player erasing
 	;INCLVER	RICH,erase		;* Message erasing intelligence

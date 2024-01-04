@@ -44,6 +44,14 @@
 	CPU 6809
 	
 ;===============================================================================
+;  Build Options
+;ROM	EQU	1		;Change to 1 to build the final ROM
+;DEBUG	EQU	1		;* Define this symbol to include test code
+;DIAGNOSE EQU	1		;* Define this symbol to include Graphic Diagnostics
+;PROMS	EQU	1		;* Define before burning proms
+;KENSMARQ EQU	1		;Adds AMOA '82 title screen "Marquee" graphic
+
+;===============================================================================
 ;
 ;   SSSS   AAA   M   M
 ;  S      A   A  MM MM
@@ -51,11 +59,11 @@
 ;      S  A   A  M   M
 ;  SSSS   A   A  M   M
 ;
-	
+
 	INCLUDE SAM/MESSAGE.ASM
 	INCLUDE SAM/EQUATES.ASM
+
 	INCLUDE SAM/IMAGE.ASM
-	INCLUDE SAM/MACROS.ASM		;(Moved from START.ASM)
 	INCLUDE	SAM/SAMS.ASM
 	
 ;===============================================================================
@@ -70,7 +78,7 @@
 	INCLUDE	WITT/new_equates.ASM	;Added to support longer symbol names
 
 	INCLUDE WITT/RICHS.ASM
-	;INCLUDE WITT/RICHS2.ASM
+;	;INCLUDE WITT/RICHS2.ASM
 
 ;===============================================================================
 ;

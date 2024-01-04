@@ -1,4 +1,4 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
 ;===============================================================================
 ; EQUs to remove later
@@ -9,10 +9,10 @@
 ;DCRYWOR	EQU	$4547	;DRAWOBJ
 ;===============================================================================
 	
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
 SCANNER
-	;SUBTTL	SCANNER ROUTINES
+;;	SUBTTL	SCANNER ROUTINES
 
 ;* scanner position update task
 SCANVEL	LDD	SLPOS		;compute change in l scroll relative to player
@@ -32,21 +32,21 @@ SCANVEL	LDD	SLPOS		;compute change in l scroll relative to player
 	ADDB	OSUSPOS,Y
 	STB	OSUSPOS,Y	;save s scroll relative to player
 	LDA	OLPOS+WPLAYER	;compute scanner screen border screen l position
-	LDB	#18
+	LDB	#$18
 	MUL
 	COMA
 	STA	SBORD		;save scanner screen border screen l position
 	LDA	OSPOS+WPLAYER	;compute scanner screen border screen s position
-	LDB	#0C
+	LDB	#$0C
 	MUL
 	NEGA
-	ADDA	#7F
+	ADDA	#$7F
 	STA	SBORD+1		;save scanner screen border screen s position
 	SLEEP	LOOP
 
 ;* get scanner object	char after call, positn in D, returns scanner wsa in X
-;	ROUTINE	GETSCN
-GETSCN	PSHS	D,U		;> uses X
+	ROUTINE	GETSCN
+	PSHS	D,U		;> uses X
 	LDX	4,S		;get return address
 	LDU	X++		;get char descriptor addr, advance return addr
 	STX	4,S		;save new return address
@@ -72,7 +72,7 @@ GETSCN	PSHS	D,U		;> uses X
 .2S	STD	SCANIVE		;save new scanner velocity table pointer
 	LDD	S		;set initialize position
 	STD	OSLPOS,X        
-	CMPD	#8080		;does it need a random position? (pos=$8080)
+	CMPD	#$8080		;does it need a random position? (pos=$8080)
 	LBNE	.9S              
  	RANDOM	OSEED1,WORD	;yes, set position randomly
 	STD	OSLPOS,X        
@@ -99,12 +99,12 @@ GETSCN	PSHS	D,U		;> uses X
 	BHI	.3S		;which edge?
 	LDB	S		;place on top or bottom edge
 	SEX
-	ADDA	#80
+	ADDA	#$80
 	STA	OSLPOS,X
 	BRA	.4S
 .3S	LDB	1,S		;place on left or right edge
 	SEX
-	ADDA	#80
+	ADDA	#$80
 	STA	OSSPOS,X
 .4S	LEAS	2,S
 	LDD	OSLVEL,X	;is it stationary relative to l edge?
@@ -183,8 +183,8 @@ GETSCN	PSHS	D,U		;> uses X
 	PULS	D,U,PC
 
 ;* scroll scanner
-;	ROUTINE	SCROLSC
-SCROLSC	LDU	OSCHAR,Y	;characteristic table addr in U > uses A,B,X,U
+	ROUTINE	SCROLSC
+	LDU	OSCHAR,Y	;characteristic table addr in U > uses A,B,X,U
 	LDD	OSLVEL,Y	;get l and s velocity
 	ADDA	SCLVEL		;add l scanner scroll velocity
 	ADDA	OSLPOS,Y	;add to l position
@@ -220,21 +220,21 @@ ISCAN	BSR	SCROLSC		;scroll scanner
 	SLEEP	LOOP
 
 ;* erase scanner image	pass scanner task workspace address in Y
-ERASCAN	LDA	#30		;compute screen l pos   > uses A,B and TEMP 0,1
+ERASCAN	LDA	#$30		;compute screen l pos   > uses A,B and TEMP 0,1
 	LDB	OSLPOS,Y
 	MUL
 	BPL	.1S
-	SUBA	#30
+	SUBA	#$30
 .1S	ASRA
 	PSHS	CC		;save flavor
-	ADDA	#81
+	ADDA	#$81
 	STA	TEMP
-	LDA	#30		;compute screen s pos
+	LDA	#$30		;compute screen s pos
 	LDB	OSSPOS,Y
 	MUL
 	BPL	.2S
-	SUBA	#30
-.2S	ADDA	#80
+	SUBA	#$30
+.2S	ADDA	#$80
 	STA	TEMP+1
 	PULS	CC
 	BCS	.3S
@@ -243,14 +243,14 @@ ERASCAN	LDA	#30		;compute screen l pos   > uses A,B and TEMP 0,1
 	RTS
 .3S	LDA	PMEMCTL		;top flavor - dma to erase    write inhibit off
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4							;;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#202!404	;Fixme was: LDD	#202!X404 ;* * * TEMPORARY FOR DMA BUG
+	LDD	#$202!$404	;* * * TEMPORARY FOR DMA BUG		;;Fixme was: LDD	#202!X404 
 	STD	DHIGH
 	LDD	TEMP
 	STD	DDEST
-	LDD	#ISCANN		;Fixme was: LDD	#ISCANNE
+	LDD	#ISCANN							;;Fixme was: LDD	#ISCANNE
 	STD	DSOUR
 	LDA	#DWBL+DZSP+DCNS
 	STA	DCTRL
@@ -260,21 +260,21 @@ ERASCAN	LDA	#30		;compute screen l pos   > uses A,B and TEMP 0,1
 	RTS
 
 ;* draw scanner image   	pass scanner workspace address in Y, char table in U
-DRWSCAN	LDA	#30		;compute screen l pos  > uses A,B,X and TEMP 0,1
+DRWSCAN	LDA	#$30		;compute screen l pos  > uses A,B,X and TEMP 0,1
 	LDB	OSLPOS,Y
 	MUL
 	BPL	.1S
-	SUBA	#30
+	SUBA	#$30
 .1S	ASRA
 	PSHS	CC		;save flavor
-	ADDA	#81
+	ADDA	#$81
 	STA	TEMP
-	LDA	#30		;compute screen s pos
+	LDA	#$30		;compute screen s pos
 	LDB	OSSPOS,Y
 	MUL
 	BPL	.2S
-	SUBA	#30
-.2S	ADDA	#80
+	SUBA	#$30
+.2S	ADDA	#$80
 	STA	TEMP+1
 	PULS	CC
 	BCS	.3S
@@ -283,10 +283,10 @@ DRWSCAN	LDA	#30		;compute screen l pos  > uses A,B,X and TEMP 0,1
 	RTS
 .3S	LDA	PMEMCTL		;top flavor - dma to draw    write inhibit off
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4							;;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#202!404	;Fixme was: LDD	#202!X404 ;* * * TEMPORARY FOR DMA BUG
+	LDD	#$202!$404	;* * * TEMPORARY FOR DMA BUG		;;Fixme was: LDD	#202!X404
 	STD	DHIGH
 	LDD	TEMP
 	STD	DDEST
@@ -300,8 +300,8 @@ DRWSCAN	LDA	#30		;compute screen l pos  > uses A,B,X and TEMP 0,1
 	RTS
 
 ;* scanner object on screen transition   scanner wsa in Y, char in U
-;	ROUTINE	PLACEON
-PLACEON	LDD	SCTEDGE		;find closest edge:  compute distance to top
+	ROUTINE	PLACEON
+	LDD	SCTEDGE		;find closest edge:  compute distance to top
 	ADDD	OSCHIGH,U	
 	SUBA	OSLPOS,Y	;save distance to top
 	STA	TEMP
@@ -352,14 +352,14 @@ CTOPBOT	CLR	OSTATUS,X
 CONRIG	LDA	#$FF		;initialize s position
 	STA	OSPOS,X
 	STA	OLEFT,X
-	LDA	#40		;set right clip flag
+	LDA	#$40		;set right clip flag
 	BRA	CRIGLEF
 ;* place clipping object on left edge
 CONLEF	CLR	OLEFT,X		;initialize s position
 	LDA	ODWIDTH,X
 	NEGA
 	STA	OSPOS,X
-	LDA	#80		;set left clip flag
+	LDA	#$80		;set left clip flag
 CRIGLEF	STA	OSTATUS,X
 	LDA	OSLPOS,Y	;compute l position
 	SUBA	OSCHIGH,U
@@ -413,8 +413,8 @@ FINON	LDA	OLPOS,X		;initialize top
 	JMP	[OONSCR,U]	;yes, setup on screen routine
 
 ;* crystal on screen routine
-;	ROUTINE	CRYON
-CRYON	LDD	#DCRYWOR	;add crystal display to crystal post display
+	ROUTINE	CRYON
+	LDD	#DCRYWOR	;add crystal display to crystal post display
 	STD	OPDRWVE,X
 ;* invisible scanner object onto screen transition
 ISCRON	WAKE_AT	.1S		;change wake-up addr for on screen scanner loop
@@ -453,13 +453,12 @@ UPSCAN	LDU	OSCHAR,Y	;characteristics in U > uses A,B,X,U
 	LSRA
 	STA	TEMP
 	LDA	OLPOS,X
-	ADDA	#50
+	ADDA	#$50
 	LSRA
-	SUBA	#50>>1		;Fixme was: SUBA #50!>1
+	SUBA	#$50>>1							;;Fixme was: SUBA #50!>1
 	SUBA	TEMP
 	ADDA	OSCHIGH,U	;correct for height
 	STD	OSLPOS,Y	;save new position
 	RTS
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

@@ -1,14 +1,16 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
-	ORG ROMSAV
-	
-CR5SAVE	SET	*	
-CR5	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
-ROMSAV	SET	*
-	
-	ORG	HISAV
+	PUSHORG ROMSAVE
 
-;	SUBTTL	INTERRUPT ROUTINES
+;;===============================================================================	
+;CR5SAVE	SET	*	
+;CR5	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+;ROMSAV	SET	*
+;;===============================================================================
+	
+	PUSHORG	HISAV
+
+;;	SUBTTL	INTERRUPT ROUTINES
 
 ;* restart
 RESTART	LDA	#1		;set read rom/write entire screen
@@ -17,14 +19,14 @@ RESTART	LDA	#1		;set read rom/write entire screen
 	JMP	INITALL
 
 ;* irq		NOTE: no dma operations are permitted in interrupt routine    
-;	ROUTINE	IRQ
-IRQ	LDA	SCNLIN		;update colors
+	ROUTINE	IRQ
+	LDA	SCNLIN		;update colors
 	CMPA	#4
 	BHS	.1S
-	LDU	#CRAM+10
-	LDD	PCRAM+0A
-	LDX	PCRAM+0C
-	LDY	PCRAM+0E
+	LDU	#CRAM+$10
+	LDD	PCRAM+$0A
+	LDX	PCRAM+$0C
+	LDY	PCRAM+$0E
 	PSHU	D,X,Y
 	LDD	PCRAM+4
 	LDX	PCRAM+6
@@ -42,7 +44,7 @@ IRQ	LDA	SCNLIN		;update colors
 	ORA	#1
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDA	PIA+0C		;clear interupt
+	LDA	PIA+$0C		;clear interupt
 	LDA	#WDOGC		;stroke watch dog
 	STA	WDOG
 	LDA	PANMASK		;in scrolling enabled?
@@ -51,13 +53,13 @@ IRQ	LDA	SCNLIN		;update colors
 ;*
 	LDD	SSPOS+1		;stars: compute change in screen s position
 	SUBA	STSPOS
-	ADDD	#80
+	ADDD	#$80
 	STA	IRQTEMP+1	;save in temporary
 	ADDA	STSPOS
 	STA	STSPOS
 	LDD	SLPOS+1		;compute change in screen l position
 	SUBA	STLPOS
-	ADDD	#80
+	ADDD	#$80
 	STA	IRQTEMP		;save in temporary
 	ADDA	STLPOS
 	STA	STLPOS
@@ -65,7 +67,7 @@ IRQ	LDA	SCNLIN		;update colors
 	BPL	.1S
 	LDA	#$F0
 	BRA	.2S
-.1S	LDA	#0F
+.1S	LDA	#$0F
 .2S	STA	IRQTEMP+2	;save in temporary
 	LDX	#STARRY		;update star positions:
 	LDY	#0		;clear random star wrap flag (one per screen)
@@ -141,7 +143,7 @@ IRQ	LDA	SCNLIN		;update colors
 	LDA	SLAMTIM		;slam switch timer on?
 	BEQ	.3S
 	DEC	SLAMTIM		;yes?, count it down
-.3S	LDA	PIA+0C		;coin door scan:  read pia
+.3S	LDA	PIA+$0C		;coin door scan:  read pia
 	STA 	IRQTEMP		;save reads
 	EORA	DSCAN		;find changes
 	BEQ	.4S		;any changes?
@@ -170,7 +172,7 @@ IRQ	LDA	SCNLIN		;update colors
 	RTI
 	ENDSECTION COINDOOR
 	
-;	SUBTTL	SCREEN READING ROUTINES AND SUBROUTINES
+;;	SUBTTL	SCREEN READING ROUTINES AND SUBROUTINES
 
 ;* switch scan		pass vector table addr in X, reads in B, changes in A
 SSCAN1	LEAX	4,X		;next switch vectors
@@ -263,15 +265,16 @@ DOOR	FDB	NULL		;bit 7 low  - sound board handshake
 	FDB	NULL		;bit 0 low  - auto
 	FDB	NULL		;bit 0 high - manual
 
-;	PULLORG	HISAV
-HISAV	SET	*
+	PULLORG	HISAV
 
-;	SUBTTL	INTERRUPT VECTORS
+;;	SUBTTL	INTERRUPT VECTORS
 
 	IFDEF	ROM
-	ORG	$FFF0
+	PUSHORG	$FFF0
 	ELSE
-	ORG	$EFF0
+	PUSHORG	$EFF0
 	ENDIF
 	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
-;	PULLORG
+	PULLORG
+	
+	PULLORG ROMSAVE		;;Had to add this to get the ROMTEST sub-macro working again

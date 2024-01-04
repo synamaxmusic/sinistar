@@ -5,12 +5,12 @@
 ;*
 ;*****
 SPEAK	MACRO	ARG
-;	IFLT	ARG
-;	ERR	SPEAK VAL
-;	ENDIF
-;	IFGT	ARG-11.
-;	ERR	SPEAK VAL
-;	ENDIF
+	IF ARG < 0			;;Fixme was: IFLT	ARG
+	ERROR	SPEAK VAL               ;;Fixme was: ERR	SPEAK VAL
+	ENDIF                           ;;Fixme was: ENDIF
+	IF ARG-$0B > 0                  ;;Fixme was: IFGT	ARG-11.
+	ERROR	SPEAK VAL               ;;Fixme was: ERR	SPEAK VAL
+	ENDIF                           ;;Fixme was: ENDIF
 	jsr	AniSCS
 	fcb	ARG
 	ENDM

@@ -1,5 +1,5 @@
-	INCLUDE "../SAM/START.ASM"
-;	INCLVER	SAM,SINISTAR.EQU	
+;;	INCLUDE "../SAM/START.ASM"
+;;	INCLVER	SAM,SINISTAR.EQU	
 
 ;===============================================================================
 ; EQUs to remove later
@@ -7,12 +7,12 @@
 ;SMUL8 	EQU	$47BE	;FUNCTION
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	FRAGMENT EXPLOSION
+;;	SUBTTL	FRAGMENT EXPLOSION
 
 ;* fragment explosion		pass screen workspace in X
-;	ROUTINE	FRAGEXP
+	ROUTINE	FRAGEXP
 	PSHS	D,X,Y,U		;> uses none	
 	LDU	OCHAR,X		;get characteristic descriptor
 	LDA	OPFRAG,U	;get percentage for fragments
@@ -75,5 +75,4 @@
 .6S	LEAS	4,S		;balance stack
 .7S	PULS	D,X,Y,U,PC	;exit
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

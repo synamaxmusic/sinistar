@@ -1,13 +1,21 @@
-;===============================================================================
-	ORG ROMSAV
-	
-CR2SAVE	SET	*	
-CR2	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+;;	INCLUDE	START
+;;	INCLVER	SAM,SINISTAR
+
+	PUSHORG ROMSAVE
+
+;;===============================================================================
+; EQUs to remove later
+;NULL EQU	$E195	;IRQ
+;;
+;;  Copyright message CR2 gets inserted here:
+;;	
+;;CR2SAVE	SET	*	
+;;CR2	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+;;
+;;===============================================================================
 
 
-;NULL EQU	$E195
 
-;===============================================================================
 ;* control panel switch vector table (must assemble before switch routines)
 PANEL	EQU	*		;B side table
 	FDB	NULL		;bit 7 low  - unused
@@ -27,5 +35,4 @@ SBOMBB	FDB	NULL		;bit 1 low  - unused
 FIREB	FDB	NULL		;bit 0 low  - unused
 	FDB	NULL		;bit 0 high - fire
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET 	*
+	PULLORG	ROMSAVE

@@ -1,18 +1,18 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
 ;CLTABLE	EQU	$5047	;SAMTABLE
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-;	SUBTTL	PIXEL COLLISION CHECK
+;;	SUBTTL	PIXEL COLLISION CHECK
 
 ;* pixel collision check routine
-;	ROUTINE	PIXCHK
-PIXCHK	LDD	OBOTTOM,X	;> uses A,B,U
-	ORB	#7F		;find difference between bottoms (in pixels)
+	ROUTINE	PIXCHK
+	LDD	OBOTTOM,X	;> uses A,B,U
+	ORB	#$7F		;find difference between bottoms (in pixels)
 	SUBD	OBOTTOM,Y
 	ASLB
 	ROLA
@@ -118,5 +118,4 @@ SINBOTT	PSHS	X		;save collision table start > uses B
 	STB	TEMP+2		;save bottommost
 	PULS	X,PC
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

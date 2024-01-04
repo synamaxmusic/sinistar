@@ -1,6 +1,6 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
-	Org	RomSav
+	PushOrg	RomSave								;;Fixme was: PushOrg RomSav
 ;	Local
 ;*
 ;*		Speech Calls
@@ -59,5 +59,4 @@ SC9	_IPRIO	3C
 	_TIME	$A0
 	_STOP
 
-;	PullOrg	RomSav
-RomSav	SET	*
+	PullOrg	RomSave								;;Fixme was: PullOrg RomSav

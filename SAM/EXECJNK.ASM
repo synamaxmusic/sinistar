@@ -1,4 +1,4 @@
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
@@ -15,13 +15,13 @@
 ;SSCAN	EQU	$E146	;IRQ
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-;	SUBTTL	EXECUTIVE ROUTINES
+;;	SUBTTL	EXECUTIVE ROUTINES
 
 ;* miscellaneous exec stuff
-;	ROUTINE	EXECJNK
-EXECJNK	LDU	TLEVEL		;save current task pointer > uses A,B,X,U
+	ROUTINE	EXECJNK
+	LDU	TLEVEL		;save current task pointer > uses A,B,X,U
 	LDD	PRTASK
 	STD	OTPTR,U
 	INC	TCLOCK		;increment task clock
@@ -78,29 +78,29 @@ EXECJNK	LDU	TLEVEL		;save current task pointer > uses A,B,X,U
 	RTS			;yes?, stop here
 ;*
 .5S	CLR	PLACCEL		;zero player acceleration
-	LDD	#2222		;draw player scanner image
-	STD	8180
+	LDD	#$2222		;draw player scanner image
+	STD	$8180
 	ENDSECTION SCANPANEL
 	;LOCAL
 	LDA	PMEMCTL		;write inhibit off
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4										;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#70E!404	;Fixme was: LDD	#70E!X404	;draw scanner screen border: * * * FOR DMA ERROR
+	LDD	#$70E!$404	;draw scanner screen border: * * * FOR DMA ERROR		;;Fixme was: LDD  #70E!X404
 	STD	DHIGH
 	LDD	#ISBORD
 	STD	DSOUR
 	LDD	SBORD		;has border moved?
 	CMPD	PSBORD
-	BEQ	SCAN2S		;Fixme was: BEQ 2$ (Had to use global labels because of the HOOK macro, I'm assuming)
+	BEQ	SCAN2S										;;Fixme was: BEQ 2$ (Had to use global labels because of the HOOK macro, I'm assuming)
 	STD	TEMP		;yes, save new position
 	LDD	PSBORD		;erase old scanner screen border
 	ADDA	#3
 	RORA
 	STD	DDEST
 	LDA	#DWBL+DZSP+DCNS
-	BCC	SCAN1S		;Fixme was: BCC 1$
+	BCC	SCAN1S										;;Fixme was: BCC 1$
 	ORA	#DTFL
 SCAN1S	STA	DCTRL
 	LDD	TEMP		;save new border
@@ -109,7 +109,7 @@ SCAN2S	ADDA	#3		;draw scanner border
 	RORA
 	STD	DDEST
 	LDA	#DWBL+DZSP+DCNS
-	BCC	SCAN3S		;Fixme was: BCC 3$
+	BCC	SCAN3S										;;Fixme was: BCC 3$
 	ORA	#DTFL
 SCAN3S	LDB	ZONECOL		;get zone color
 	STB	DCONS
@@ -147,22 +147,22 @@ SCAN3S	LDB	ZONECOL		;get zone color
 .1S 	BITA	#8
 	BNE	.2S 
 	NEGB
-	ADDB	#80
+	ADDB	#$80
 .2S 	SUBB	PLYRANG		;rotate player: find angle from joystick to ship
 	LDA	PLACCEL		;get joystick radius
 	STB	TEMP		;save difference angle
 	MUL			;multiply joystick radius by difference angle
 	BPL	.3S              
 	SUBA	PLACCEL         
-.3S	ADDD	#80		;round off correctly
+.3S	ADDD	#$80		;round off correctly
 	TFR	A,B		;get product into B
 	ADDA	PLYRANG		;rotate ship
 	STA	PLYRANG		;save new rotation angle
 	JSR	SINCOS		;compute players unit vector
 	STD	PLSUNIT		;save players unit vector
 	LDB	TEMP		;check angle from joystick to player ship
-	ADDB	#20             
-	CMPB	#40             
+	ADDB	#$20             
+	CMPB	#$40             
 	BHS	SCROLL		;to great?, skip acceleration
 	LDB	PLLUNIT		;accelerate player:  get l unit vector
 	SEX			;get l component of unit vector
@@ -239,7 +239,7 @@ SCROLL	LDA	PANMASK		;scrolling and stars on?
 	RPT	3,ASRA		;scale down to add to players position
 	RPT	3,ASRB
 	STD	TEMP		;save players angle vector
-	LDB	#7B		;compute player s axis distance from center
+	LDB	#$7B		;compute player s axis distance from center
 	SUBB	OSPOS,Y
 	ASRB			;convert it to bytes
 	SUBB	TEMP		;add s component of players angle
@@ -254,7 +254,7 @@ SCROLL	LDA	PANMASK		;scrolling and stars on?
 	ADDD	S++
 	ADDD	SSVEL
 	STD	SSVEL
-	LDB	#38		;compute player l axis distance from center
+	LDB	#$38		;compute player l axis distance from center
 	SUBB	OLPOS,Y
 	SUBB	TEMP+1		;add l component of players angle
 	SEX			;scale down
@@ -303,26 +303,26 @@ SCROLL	LDA	PANMASK		;scrolling and stars on?
 	RPT	1,LSRA
 	NEGA
 	STA	SCBEDGE		;save scanner screen bottom edge
-	ADDA	#3A
+	ADDA	#$3A
 	STA	SCTEDGE		;save scanner screen top edge
 	LDA	OSPOS,Y		;compute scanner screen s edges
 	RPT	2,LSRA
 	NEGA
 	STA	SCLEDGE		;save scanner screen left edge	
-	ADDA	#3F
+	ADDA	#$3F
 	STA	SCREDGE		;save scanner screen right edge
 ;	LOCAL
 	SECTION FLASHING_SHIP_TIMER
 	DEC	FLASHTI		;count down flashing ship timer
 	BPL	.1S		;time to erase?
 	RADIX 10
-	LDD	#(29<<8)+DCNS+DWBL ;Fixme was: LDD #29.!<8+DCNS+DWBL ;yes, set timer to draw next and erase ship
+	LDD	#(29<<8)+DCNS+DWBL ;yes, set timer to draw next and erase ship			;;Fixme was: LDD #29.!<8+DCNS+DWBL 
 	RADIX 16
 	BRA	.2S
 .1S	DEC	FLASHTI		;count down flashing ship timer
 	BPL	.3S		;time to draw?
 	RADIX 10
-	LDD	#(28<<8)+DWBL	;Fixme was: LDD	#28.!<8+DWBL ;yes, set timer to erase next and draw ship
+	LDD	#(28<<8)+DWBL	;yes, set timer to erase next and draw ship			;;Fixme was: LDD #28.!<8+DWBL 
 	RADIX 16
 .2S	STA	FLASHTI		;save new timer setting
 	LDA	SHIPS		;get ship count
@@ -337,7 +337,7 @@ SCROLL	LDA	PANMASK		;scrolling and stars on?
 	BEQ	.5S
 	LDA	RAPRATE		;yes, get rate
 	RADIX 10
-	CMPA	#10		;Fixme was: CMPA #10. ;at slowest?
+	CMPA	#10		;at slowest?							;;Fixme was: CMPA #10. 
 	RADIX 16
 	BHS	.4S
 	ADDA	#0		;no, increase it (disabled for now)
@@ -364,5 +364,4 @@ VRLOAD	LDA	#-1		;white background > uses none
 	DEC	ESTATE
 	JMP	EXEC
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

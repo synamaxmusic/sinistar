@@ -1,5 +1,5 @@
-;	SUBTTL	BASSAVE
-;	PAGE
+;;	SUBTTL	BASSAVE
+;;	PAGE
 ;*****
 ;*
 ;*	BBBB    AAA    SSSS   SSSS   AAA   V   V  EEEEE
@@ -9,11 +9,10 @@
 ;*	BBBB   A   A  SSSS   SSSS   A   A    V    EEEEE
 ;*
 ;*****
-	ORG	BASSAVE
-;	PULLORG	BASSAVE
-BASSAVE	SET	*
+	PUSHORG	BASSAVE
+	PULLORG	BASSAVE
 
-;	SUBTTL	PLAYSAVE
+;;	SUBTTL	PLAYSAVE
 ;*****
 ;*
 ;*	PPPP   L       AAA   Y   Y   SSSS   AAA   V   V  EEEEE
@@ -23,18 +22,16 @@ BASSAVE	SET	*
 ;*	P      LLLLL  A   A    Y    SSSS   A   A    V    EEEEE
 ;*
 ;*****
-	RADIX	16
-	ORG	PlaySav
+	PUSHORG	PlaySav
 DTime	rmb	2	;* Difficulty Timer
 Pop	rmb	21	;*((CDTEnd-ScoCdt)*3)/2	* Pop. of sector - each 3 bytes
 ;*				  corresponds to a C.D. - first byte is
 ;*				  current Population, next two are desired pop.
 WAgg	rmb	2		;* Warrior aggression factor
 SiniKills	rmb	1	;* The number of Sinistars killed.
-;	PULLORG	PlaySav
-PlaySav	SET	*
+	PULLORG	PlaySav
 
-;	SUBTTL	RAMSAVE
+;;	SUBTTL	RAMSAVE
 ;*****
 ;*
 ;*	RRRR    AAA   M   M   SSSS   AAA   V   V  EEEEE
@@ -44,7 +41,7 @@ PlaySav	SET	*
 ;*	R   R  A   A  M   M  SSSS   A   A    V    EEEEE
 ;*
 ;*****
-	ORG	RamSav
+	PUSHORG	RamSav
 KeyClee
 KeyWorker	rmb	2		;* Keystone for workers
 KeyWarrior	rmb	2		;* Keystone for Warriors
@@ -82,8 +79,7 @@ InImpulse	rmb	1	;* The following timeline applies to the
 ;*	+ End of warp sequence.
 ;***
 HSTDMRQ	RMB	1		;Flag set when HSTD/Marquee page is displayed
-;	PULLORG	RamSave
-RAMSAV	SET	*
+	PULLORG	RamSave
 
 ;	SUBTTL	SRAMSAVE
 ;*****
@@ -95,11 +91,10 @@ RAMSAV	SET	*
 ;*	SSSS   R   R  A   A  M   M  SSSS   A   A    V    EEEEE
 ;*
 ;*****
-	ORG	SRAMSAV
+	PUSHORG	SRAMSAV
 ;***
 ;*	The RAM image for the animated bomb must be in STATIC RAM where
 ;*	the access time is fast enough to perform the image DMA.
 ;***
 RISBomb	rmb	1+2+8+(3*5)	;* Exec changable descriptor for SiniBombs.
-;	PULLORG	SRAMSave
-SRAMSAV SET	*
+	PULLORG	SRAMSav								;;Fixme was: 	PULLORG	SRAMSave

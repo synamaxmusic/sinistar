@@ -1,7 +1,7 @@
 ;****
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE "../SAM/START.ASM"
 
-	Org	ROMSAV
+	PushOrg	ROMSAVE
 
 OWorker	equ	0		;* Offsets
 OWarrior equ	1
@@ -38,25 +38,24 @@ FirLin	equ	60	;* First line on screen
 LefEdg	equ	2C	;* Left edge
 
 ;* Intelligence task - additions
-	ORG	OMTLEN
+	PushORG	OMTLEN
 OWSCON	rmb	2		;* index to controlled workspaceO
 ;	PAD	OWIS,2
 OWISSAV	SET	*
 	RMB	2
 OWISLEN	RMB	0
-;	PullOrg
+	PullOrg
 
 ;* Explosion intelligence task
-	Org	OMtLen
+	PushOrg	OMtLen
 OSWSA	rmb	2	;* Screen WS Address of this explosion
 OImNo	rmb	1	;* Which image number we are now displaying
-;	PullOrg	OExpLen
-OExpLen SET *
+	PullOrg	OExpLen
 
 ;* Equates for Caller routine
 
 ;* Scanner WS for Callees - additions
-	Org	OSCLEN
+	PushOrg	OSCLEN
 OSCNIN	rmb	2		;* Index of sleep task with intelligence
 OIWScIn	rmb	2		;* Index to W/W secondary intelligence
 OSCWCR	rmb	2		;* Scanner WS of Caller index
@@ -73,31 +72,30 @@ OSSQPOS	rmb	1		;* Position of warrior in squadron.
 OSANANG	rmb	1		;* Animation angle (for turret and shooting)
 OSFAST	rmb	1		;* Warrior Flight Angle STep change for aiming.
 ;	PAD	OSWW,6
-;	PullOrg
 OSWWSAV	SET	*
 	RMB	6
 OSWWLEN	RMB	0
+	PullOrg
 
 ;* Scanner WS for Callers - additions
-	Org	OSCLEN
+	PushOrg	OSCLEN
 OSCoCaI	rmb	2		;* Controlling Caller Intelligence index
 OICScIn	rmb	2		;* Index to Callr secondary intelligence
 OQUOTA	rmb	2		;* Quota bytes for W/W on call
 OCLELS	rmb	4		;* Callee list - room for 6 callees
 ;	PAD	OSWC,2		* End of scanner ws of callers
-;	PullOrg
 OSWCSAV	SET	*
 	RMB	2
 OSWCLEN	RMB	0
+	PullOrg
 
 ;*			Intelligence WS for crystal secondary intelligence
-	ORG	OWISSav		;* Org at end of intelligence WS
+	PUSHORG	OWISSav		;* Org at end of intelligence WS
 OCrAge	rmb	1		;* Crystal Age
-;	PULLORG OCrSILn		;* Crystal Secondary Intelligence Length
-OCrSILn	SET	*
+	PULLORG OCrSILn		;* Crystal Secondary Intelligence Length
 
 ;*			Intelligence type table
-	Org	0
+	PushOrg	0
 IQPlan	rmb	2		;* Planetoid
 IQPlay	rmb	2		;* Player
 IQSini	rmb	2		;* Sinistar
@@ -107,36 +105,36 @@ IQCrys	rmb	2		;* Crystals
 ;*		Callees should be last on the list - not currently in tables
 IQWork	rmb	2		;* Workers
 IQWarr	rmb	2		;* Warriors
-;	PullOrg
+	PullOrg
 
 ;*			Vibration Block Offsets
-	Org	0
+	PushOrg	0
 OSVibA	rmb	2		;* Pointer to vibrating task
 OSLVib	rmb	2		;* Vibration that has been added in Long
 OSSVib	rmb	2		;* Vibration added to short velocity
 OSRcht	rmb	1		;* Richter scale - violence of vibration
-;	PullOrg	OVBLen
-OVBLen	SET	*	
+	PullOrg	OVBLen
+	
 
 ;*			Vibration Block Locations
-	Org	OScLen		;* Scanner WS end for dumb planets
+	PushOrg	OScLen		;* Scanner WS end for dumb planets
 VDPlan	rmb	OVBLen
 ;	PAD	OSDP,2		* Length of Dumb Planet scanner WS
-;	PullOrg
 OSDPSAV	SET	*
 	RMB	2
 OSDPLEN	RMB	0
+	PullOrg
 ;*
-	Org	OSWCLen		;* Scanner WS end for callers
+	PushOrg	OSWCLen		;* Scanner WS end for callers
 VCaller	rmb	OVBLen
 ;	PAD	OSVC,2		* Length of Vibrating Caller Scan WS
-;	PullOrg
 OSVCSAV	SET	*
 	RMB	2
 OSVCLEN	RMB	0
+	PullOrg
 
 ;* TEMP equates
-	Org	0
+	PushOrg	0
 OCler	rmb	1		;* Caller type
 OClee	rmb	1		;* Callee type
 OCombo	rmb	1		;* Combination of caller/callee codes
@@ -150,7 +148,6 @@ OurPri	rmb	1		;* Priority of caller on this call
 OHisDs	rmb	2		;* Distance of callee being processed
 OBstDs	rmb	2		;* Distance from caller of best callee
 OHisPri	rmb	1		;* Callee's actual prio with dist. mod.
-;	PullOrg
+	PullOrg
 
-;	PullOrg	RomSav
-RomSav SET	*
+	PullOrg	RomSave					;;Fixme was: PullOrg RomSav (renaming RomSav to ROMSAVE for consistency)

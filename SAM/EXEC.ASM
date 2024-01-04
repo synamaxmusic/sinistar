@@ -1,4 +1,4 @@
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE "../SAM/START.ASM"
 	
 ;===============================================================================
 ; EQUs to remove later
@@ -8,12 +8,18 @@
 ;PIXCHK	EQU	$398E	;PIXCHK
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 	
-CR3SAVE	SET	*	
-CR3	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+;;===============================================================================
+;;
+;;  Copyright message CR3 gets inserted here:
+;;	
+;;CR3SAVE	SET	*	
+;;CR3	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+;;
+;;===============================================================================
 
-	;SUBTTL	EXECUTIVE LOOP
+;	SUBTTL	EXECUTIVE LOOP
 
 ;* start object list
 EXEC	DEC	ESTATE		;are we overloaded?
@@ -138,5 +144,4 @@ EXEC2A	LDB	OLEFT,Y		;compute my right
 .10S	LDY	SAVEOBJ
 .11S	JMP	[ODRWVEC,Y]	;erase/update/display, return to EXEC1 or EXEC2
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

@@ -1,7 +1,7 @@
 	INCLUDE "../WITT/SPEAK.ASM"		;* Speak macro
 ;	INCLVER	RICH,Table			;* Table macro
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;	SUBTTL	AniSinistar - Animates Sinsitar Eyebrows
 ;****
 ;*
@@ -18,8 +18,8 @@
 ;*	Nothing
 ;*
 ;*****
-;	ROUTINE	anisinistar
-ANISINI	pshs	A,B,X,Y		;* Save work registers
+	ROUTINE	anisinistar
+	pshs	A,B,X,Y		;* Save work registers
 	PSHS	D,X
 	LDX	[SININDEX]	;is sinistar on screen?
 	LDA	OSSCWSA,X
@@ -98,15 +98,14 @@ ANISINI	pshs	A,B,X,Y		;* Save work registers
 ;*
 ;*****
 	RADIX	10
-LiveSC	EQU	2		;* "Beware, I Live!" In/Out of sector.
-RoarSC	EQU	8		;* Roar (interuptable) Speach Call
-DieSC	EQU	9		;* Death Roar will interupt other speech calls.
-StatSC	EQU	11		;* Animation Speach Call for Status Page
+LiveSC	EQU	2		;* "Beware, I Live!" In/Out of sector.			;;Fixme was: LiveSC	EQU	2.
+RoarSC	EQU	8		;* Roar (interuptable) Speach Call                      ;;Fixme was: RoarSC	EQU	8.
+DieSC	EQU	9		;* Death Roar will interupt other speech calls.         ;;Fixme was: DieSC	EQU	9.
+StatSC	EQU	11		;* Animation Speach Call for Status Page                ;;Fixme was: StatSC	EQU	11.
 	RADIX	16
 ;*                               
-;	Routine	AniSCS		;* Animate Speech Call Starter
-
-AniSCS	pshs	A,X		;* Save work register
+	Routine	AniSCS		;* Animate Speech Call Starter
+	pshs	A,X		;* Save work register
 	SECTION	ANISCS								;;(had to add this)                                
 	ldx	Finish		;* If sinistar is
 	cmpx	#Alive		;*   not yet alive,
@@ -201,17 +200,17 @@ AniSCS	pshs	A,X		;* Save work register
 	ldx	#AniSC2
 	rts
 ;* Sinistar Shut-up tune
-.112S	_IPRIO	3F								;;Fixme was: .IPRIO
-	_SOUND	1F								;;Fixme was: .SOUND
-	_PRIO	1								;;Fixme was: .PRIO
-	_TIME	1								;;Fixme was: .TIME
-	_STOP									;;Fixme was: .STOP
-	
-	ENDSECTION ANISCS							;;(had to add this)
+.112S	_IPRIO	3F			;;Fixme was: .IPRIO
+	_SOUND	1F			;;Fixme was: .SOUND
+	_PRIO	1			;;Fixme was: .PRIO
+	_TIME	1			;;Fixme was: .TIME
+	_STOP				;;Fixme was: .STOP
+			
+	ENDSECTION ANISCS		;;(had to add this)
 
 ;	SUBTTL	AniSC	- Animate (Sinistar) Speech Call
-;	Routine	AniSC		;* Animate Speech Call
-AniSC	pshs	A,B,X,Y,U	;* Save work registers
+	Routine	AniSC		;* Animate Speech Call
+	pshs	A,B,X,Y,U	;* Save work registers
                                 
 	dec	ASCTime		;* If there is time remaining on a pending
 	bge	Ani99S		;*   animation, wait for it to complete.
@@ -292,7 +291,7 @@ Ani100S	fdb	AMout1,$060C	;* 1 - Mouth shut
 ;*
 ;*****
 
-	RADIX	10								;;(had to add this)
+	RADIX	10		;;(had to add this)
 	
 ;* I am Sinistar.
 ;	TABLE	AniSC1
@@ -377,9 +376,9 @@ AniSCF	fcb	Shut,1,EOA,0				;* Shut mouth.
 AniSCE	fcb	EOA,0					;* End animation.
 ;	ENDTBL
 	
-	RADIX	16								;;(had to add this)
+	RADIX	16		;;(had to add this)
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
+
 
 	INCLUDE "../FALS/SC1.ASM"		;* Speech tunes

@@ -15,7 +15,7 @@
 ;*
 	INCLUDE "../WITT/STBLBOMB.ASM"		;* Player on demo bombing run
 ;*
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
 tables
 ;*****
@@ -176,5 +176,4 @@ sqloffsets
 
 	RADIX	16
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

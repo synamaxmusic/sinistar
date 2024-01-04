@@ -1,6 +1,6 @@
 ;	INCLVER	RICH,table			;* ORG Macro
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
 	RADIX	10
 
@@ -10,17 +10,17 @@
 ;	TABLE	stblbomber
 stblbomber
 	fdb	($7FFF),($1FFF),asrd3
-	fdb	(0100),($0100),asrd1
-	fdb	(0064),($00C0),asrd1
-	fdb	(0032),($00A0),asrd1
-	fdb	(0016),($0080),asrd0
-	fdb	(0000),($0000),asrd0
+	fdb	(0100),($0100),asrd1            ;;Fixme was: fdb	(0100.),($0100),asrd1
+	fdb	(0064),($00C0),asrd1            ;;Fixme was: fdb	(0064.),($00C0),asrd1
+	fdb	(0032),($00A0),asrd1            ;;Fixme was: fdb	(0032.),($00A0),asrd1
+	fdb	(0016),($0080),asrd0            ;;Fixme was: fdb	(0016.),($0080),asrd0
+	fdb	(0000),($0000),asrd0            ;;Fixme was: fdb	(0000.),($0000),asrd0
 ;	ENDTBL
 
 	RADIX	16
 	
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
+	
 ;;=============================================================================== 
 ;;
 ;;  This table gets patched over with the tuned data found in ZSTBLBOM.ASM.

@@ -1,11 +1,11 @@
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE "../SAM/START.ASM"
 ;	INCLVER	SAM,SINISTAR
 
 ;	SUBTTL	RAM ALLOCATION
 
 SAMRAM
 ;* direct page variables
-	ORG	BASSAVE
+	PUSHORG	BASSAVE
 
 D_P	SET	$98		;Fixme was: D_P SET *!>8
 	;SETDP	D_P
@@ -104,11 +104,11 @@ SINISEC	rmb	1		;* Sinistar out of sector flag
 DeathFl	RMB	1		;* Death flag
 AMDemo	rmb	1		;* Attract Mode Demo vs Normal System Play
 
-;	PULLORG	BASSAVE
-BASSAVE	SET	*
+	PULLORG	BASSAVE
+
 
 ;* extended ram
-	ORG	RAMSAVE
+	PUSHORG	RAMSAVE
 
 ;* arrays
 WPLAYER	RMB	0		;player first workspace
@@ -176,13 +176,12 @@ DYNSTO	RMB	STACK-STACKAL-*	;dynamic storage space
 DYNEND	RMB	0		;end of dynamic storage
 	RMB	STACKAL		;stack space
 
-;	PULLORG
+	PULLORG
 
 ;* static ram
-	ORG	SPTR		;Fixme was: ORG	SRAMSAV (Not sure why this doesn't work)
+	PUSHORG	SPTR		;Fixme was: PUSHORG SRAMSAV (Not sure why this doesn't work)
 
 SINIMAG	RMB	SINIHIG*SINIWID	;sinistar image data
 CRIMAGE	RMB	4		;image of crystal
 
-;	PULLORG	SRAMSAV
-SRAMSAV	SET	*
+	PULLORG	SRAMSAV

@@ -20,6 +20,3 @@
 ;*
 	;INCLVER	RICH,stubs		;* To fake Noah's stuff.
 ;*
-
-
-	INCLUDE "../SAM/FIXDAMPD.ASM"		;;TEMPORARY

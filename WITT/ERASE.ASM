@@ -1,4 +1,4 @@
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;*****
 ;*
 ;* ERASE
@@ -16,16 +16,15 @@
 ;*		   -1 for no messages and a clear display.
 ;*
 ;*****
-;	ROUTINE	Erase
-Erase	tst	MesgTime	;* If there are no messages and they have all
+	ROUTINE	Erase
+	tst	MesgTime	;* If there are no messages and they have all
 	blt	.1S		;*   been erased, then exit.
 	dec	MesgTime	;* If there was a message
 	bge	.1S		;*   leave it alone one time
 	jsr	dispe		;*   and erase it the next.
 .1S	SLEEP	LOOP
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
 
 ;	INCLVER	RICH,disp		;* Message to player positioning
 ;	INCLVER	RICH,dispe		;* Message to player erasing

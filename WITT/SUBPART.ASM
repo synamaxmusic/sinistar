@@ -6,7 +6,7 @@
 KABOOM	EQU	$6C6D	;STUBS
 ;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 ;	SUBTTL	SUBPART
 ;*****
 ;*
@@ -30,8 +30,8 @@ KABOOM	EQU	$6C6D	;STUBS
 ;*	Nothing
 ;*
 ;*****
-;	ROUTINE	subpart
-subpart	pshs	A,B,X,Y		;* Save work regsiters
+	ROUTINE	subpart
+	pshs	A,B,X,Y		;* Save work regsiters
 	ldd	PiecePtr	;* If there are
 	cmpd	#PieceTbl	;*   pieces left to the sinistar
 	bne	SUBPA2S		;*   then kill a piece off.			;;Fixme was: bne 2$ (Had to convert local
@@ -108,7 +108,7 @@ SUBPA99S puls	A,B,X,Y		;* Restore work registers
 	rts
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*		;; Save the current address
+ROMSAVE	SET	*		;; Save the current address
 
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 ;	FDB	_SINIBOMB	;; ALREADY DEFINED IN COLLISIO.ASM
@@ -119,8 +119,7 @@ ROMSAV	SET	*		;; Save the current address
 PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 				;; more phrases later
 
-	ORG	ROMSAV		;; Back to our regularly scheduled programming...
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

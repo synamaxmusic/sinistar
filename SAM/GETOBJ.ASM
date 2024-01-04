@@ -1,20 +1,21 @@
-	INCLUDE "../SAM/START.ASM"
-;	INCLVER	SAM,SINISTAR
+;;	INCLUDE "../SAM/START.ASM"
+;;	INCLVER	SAM,SINISTAR
 
-;===============================================================================
+;;===============================================================================
 ; EQUs to remove later
 ;DOBJECT	EQU	$4422	;DRAWOBJ
 ;NOPOST	EQU	$45EA	;DRAWOBJ
 ;EKOBJ	EQU	$4393	;DRAWOBJ
 ;CNULL 	EQU	$4BB5	;SAMTABLE
-;===============================================================================
+;;===============================================================================
 
-	ORG	ROMSAV
-	
-CR4SAVE	SET	*	
-CR4	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+	PUSHORG	ROMSAVE
+;;===============================================================================	
+;CR4SAVE	SET	*	
+;CR4	fcc	"COPYRIGHT 1983 WILLIAMS ELECTRONICS, INC."
+;;===============================================================================
 
-	;SUBTTL	SCREEN LIST ROUTINES
+;;	SUBTTL	SCREEN LIST ROUTINES
 
 ;* get object add char and image	  pass char addr in D, returns obj wsa in X
 GETCOBJ	PSHS	D		;> uses A,B,X   save characteristics
@@ -39,8 +40,8 @@ IMGOBJ	PSHS	U,D		;> uses none
 	PULS	U,D,PC
 
 ;* get object from free list		returns object wsa in X
-;	ROUTINE	GETOBJ
-GETOBJ	DEC	SFREE		;one less free screen object  > uses A,B,X
+	ROUTINE	GETOBJ
+	DEC	SFREE		;one less free screen object  > uses A,B,X
 	LDX	FOBJKEY		;get first free object
 	BNE	.1S		;out of objects?
 	SWI			;TEMPORARY TRAP
@@ -76,5 +77,4 @@ KILLOBJ	LDD	#EKOBJ		;> uses A,B
 	STD	OCHAR,X
 	RTS	
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

@@ -1,13 +1,13 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
-;===============================================================================
+;;===============================================================================
 ; EQUs to remove later
 ;CRYSTBL	EQU	$4FAA	;SAMTABLE
-;===============================================================================
+;;===============================================================================
 	
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	DISPLAY ROUTINES
+;;	SUBTTL	DISPLAY ROUTINES
 
 ;* erase kill object
 EKOBJ	LDX	OIDESC,Y	;> uses A,B,X,Y
@@ -28,8 +28,8 @@ EKOBJ	LDX	OIDESC,Y	;> uses A,B,X,Y
 	JMP	KOBJECT		;link-out object
 
 ;* change image			pass object wsa in Y
-;	ROUTINE	CHGOBJ
-CHGOBJ	LDX	OIDESC,Y	;erase old image  > uses A,B,X
+	ROUTINE	CHGOBJ
+	LDX	OIDESC,Y	;erase old image  > uses A,B,X
 	LDA	OHEIGHT,X
 	LDB	ODWIDTH,Y
 	EORA	#4		;* * * FOR DMA BUG
@@ -109,7 +109,7 @@ DRAWOBJ	LDX	OIDESC,Y	;ABCDEFGHIJK
 	STD	OSPOS,Y
 	BCS	.2S
 	LDB	OSTATUS,Y	;    E    J
-	ORB	#80
+	ORB	#$80
 	STB	OSTATUS,Y
 	CLRB
 	STB	OLEFT,Y
@@ -122,7 +122,7 @@ DRAWOBJ	LDX	OIDESC,Y	;ABCDEFGHIJK
 	BMI	.1S
 	STA	OLEFT,Y		;A C   G
 	STA	DDEST+1
-	BITB	#40
+	BITB	#$40
 	BEQ	.11S
 	ADDA	OWIDTH,X	;  C   G
 	BCS	.4S
@@ -134,11 +134,11 @@ DRAWOBJ	LDX	OIDESC,Y	;ABCDEFGHIJK
 	BMI	.9S
 	STA	OLEFT,Y		;A C  F    K
 	STA	DDEST+1
-	BITB	#40
+	BITB	#$40
 	BNE	.4S
 	ADDA	OWIDTH,X	;A    F
 	BCC	.11S
-	ORB	#40		;     F
+	ORB	#$40		;     F
 	STB	OSTATUS,Y
 .4S	LDA	OSPOS,Y		;  C  F    K
 	COMA
@@ -157,7 +157,7 @@ DRAWOBJ	LDX	OIDESC,Y	;ABCDEFGHIJK
 	LDD	OIMAGE,X
 	STD	ODSOUR,Y
 	STD	DSOUR
-.8S	ANDB	#3F		;   D  G
+.8S	ANDB	#$3F		;   D  G
 	STB	OSTATUS,Y
 	LDA	OWIDTH,X
 	STA	ODWIDTH,Y
@@ -204,7 +204,7 @@ DRAWOBJ	LDX	OIDESC,Y	;ABCDEFGHIJK
 	STA	DDEST
 	ADDA	OHEIGHT,X
 	BPL	.15S
-	LDA	#7F
+	LDA	#$7F
 .15S	STA	OTOP,Y		;ABCD
 	STB	OLPOSF,Y
 	SEX
@@ -232,14 +232,14 @@ POSTCHG	LDA	OSVEL,Y		;restore s velocity > uses A,B
 
 ;* draw crystal on worker	pass object wsa in Y, image descriptor in X
 DCRYWOR	LDA	OSTATUS,Y	;left or right clipped? > uses A,B,X
-	BITA	#0C0            
+	BITA	#$0C0            
 	BNE	.1S		;yes, skip crystal
 	LDA	OLPOSF,Y	;get worker flavor
 	ASLA                    
 	LDD	OBOTTOM,Y	;get worker screen address
 	ROLA			;convert to pixel address
 	ADDD	OLCENT,X	;add center offset
-	CMPA	#DINHIB<<1	;Fixme was: CMPA #DINHIB!<1 ;crystal off top
+	CMPA	#DINHIB<<1	;crystal off top				;;Fixme was: CMPA #DINHIB!<1 
 	BHS	.1S		;yes, skip crystal
 	LSRA			;convert back to screen address ( bytes)
 	ROR	TEMP		;save flavor
@@ -288,7 +288,7 @@ CRYDRAW	LDA	OEFFECT,Y	;combine pixels into 2 bytes > uses A,B,X
 	BRA	.2S
 .1S	STA	CRIMAGE		;top flavor: setup dma image
 	STB	CRIMAGE+2
-	LDD	#202!404	;Fixme was: LDD	#202!X404 ;* * *FOR DMA BUG  set dma size
+	LDD	#$202!$404	;* * *FOR DMA BUG  set dma size			;;Fixme was: LDD	#202!X404 
 	STD	DHIGH
 	LDD	#CRIMAGE	;set dma source
 	STD	DSOUR
@@ -308,9 +308,9 @@ NOPOST	LDA	OSTATUS,Y	;decrement bounce counter
 
 ;* paste an image on top of a screen object	pass object wsa in Y,
 ;*	 main image descriptor in X, paste on image descriptor in OEFFECT
-;	ROUTINE	PASTEON
-PASTEON	LDA	OSTATUS,Y	;left or right clipped? > uses A,B,U
-	BITA	#0C0
+	ROUTINE	PASTEON
+	LDA	OSTATUS,Y	;left or right clipped? > uses A,B,U
+	BITA	#$0C0
 	BNE	.2S		;yes, skip extra image
 	LDU	OEFFECT,Y	;get image descriptor of image to paste
 	LDD	OHEIGHT,U	;get paste image height and width
@@ -342,11 +342,11 @@ SCROFF	LDX	OCHAR,Y		;get char desc table addr > uses A,B,X
 .1S	LDX	[OSCAN,Y]	;get scanner task workspace
 	STD	OEXEC,X
 	LDD	OLVEL,Y		;compute scanner l velocity
-	ADDD	#20
+	ADDD	#$20
 	RPT	2,ASLB,ROLA
 	STA	OSLVEL,X	;save scanner l velocity
 	LDD	OSVEL,Y		;compute scanner s velocity
-	ADDD	#20
+	ADDD	#$20
 	RPT	1,ASLB,ROLA
 	STA	OSSVEL,X	;save scanner s velocity
 	PSHS	Y		;save screen workspace
@@ -358,8 +358,8 @@ SCROFF	LDX	OCHAR,Y		;get char desc table addr > uses A,B,X
 	STD	OSSCWSA,Y       
 	PULS	Y		;restore screen workspace
 ;* kill object
-;	ROUTINE	KOBJECT
-KOBJECT	LDX	OFLINK,Y	;> uses A,B,X,Y
+	ROUTINE	KOBJECT
+	LDX	OFLINK,Y	;> uses A,B,X,Y
 	LDD	FOBJKEY		;link-out of screen list and on to free list
 	STD	OFLINK,Y
 	STY	FOBJKEY
@@ -369,5 +369,4 @@ KOBJECT	LDX	OFLINK,Y	;> uses A,B,X,Y
 	INC	SFREE		;add one free screen object
 	JMP	EXEC2		;no swap
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

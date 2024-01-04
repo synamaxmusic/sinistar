@@ -1,6 +1,6 @@
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE "../SAM/START.ASM"
 
-	ORG	ROMSAV		;(Renaming ROMSAVE to ROMSAV for consistency)
+	PUSHORG	ROMSAVE
 	
 ;===============================================================================
 ; EQUs to remove later
@@ -55,8 +55,8 @@
 RTS	RTS
 
 ;* restart
-;	ROUTINE	INITALL
-INITALL	LDS	#STACK		;reset stack
+	ROUTINE	INITALL
+	LDS	#STACK		;reset stack
 	LDA	#D_P		;set direct page
 	TFR	A,DPR
 	CLRD
@@ -72,21 +72,21 @@ INITALL	LDS	#STACK		;reset stack
 	STD	DRCOIN
 	STA	NPLAYER		;zero number of players
 	STA	CUNITS		;zero coinage remainders
-	STB	BUNITS
+	STB	BUNITS									;;This gets patched over in SAM/FIXOPENT.SRC with JMP $8E49 
 	LDX	#PIA		;setup pias
-	STA	$5,X		;select pia DDR's
-	STA	$7,X
+	STA	5,X		;select pia DDR's
+	STA	7,X
 	STA	$D,X
 	STA	$F,X
 	LDB	#$34		;widget
-	STB	$5,X
-	STB	$7,X
+	STB	5,X
+	STB	7,X
 	LDA	#$3F		;sounds
 	STD	$E,X
 	LDD	#$8005
 	STD	$C,X		;coin-door
 	STA	$C,X
-	LDA	PIA+$6		;initialize control panel state
+	LDA	PIA+6		;initialize control panel state				;;This gets patched over in SAM/FIXOPENT.SRC with RTS, leaving behind two junk bytes
 	STA	SCAN
 	LDA	PIA+$C		;initialize coin door scan
 	STA	DSCAN
@@ -94,18 +94,16 @@ INITALL	LDS	#STACK		;reset stack
 	STD	CRYANI
 	LDD	#SCIVELT	;initialize scanner init velocity table pointer
 	STD	SCANIVE
-	;
-	RADIX	10		;(Added RADIX to keep timer value at 60 seconds)
-	LDD	#-60*60		;initialize play timer to time one minute
-	RADIX	16		;(Returning to hex)
-	;
+	RADIX	10
+	LDD	#-60*60		;initialize play timer to time one minute		;;Fixme was: LDD #-60.*60. (Decimal numbers originally used periods but {AS} uses that for floating numbers)
+	RADIX	16
 	STD	PTIME
 	LDX	#CREDST		;recover credit count from cmos
 	JSR	RCMOSA
-	CMPA	#20		;20 or more?
+	CMPA	#$20		;20 or more?
 	BLS	.1S
 	CLRA			;TOO BAD
-.1S	STA	CREDIT		;copy into ram		;Fixme was: STA	CREDITS (another mismatch symbol!)
+.1S	STA	CREDIT		;copy into ram						;;Fixme was: STA CREDITS (another mismatch symbol!)
 	LEAX	-2,X		;reset X to store credits
 	JSR	WCMOSA		;save credits
 	LDA	#-1		;initialize random seeds
@@ -114,14 +112,14 @@ INITALL	LDS	#STACK		;reset stack
 	STD	SEEDS+OSEED2
 	JSR	RCMOSB
 	STD	SEEDS+OSEED1
-	LDA	#30		;enable only player 1 and 2 start buttons
+	LDA	#$30		;enable only player 1 and 2 start buttons
 	STA	PANMASK
 	HOOK	POWVECT		
 	JSR	SYSTINI		;initialize system
 ;* attract mode
 	clr	AMDemo		;* Turn off demonstration (if not already off)
-;	Routine	IAMode
-IAMODE	JSR	SYSTINI		;initialize system
+	Routine	IAMode
+	JSR	SYSTINI		;initialize system
 	HOOK	IAMVECT
 	
 
@@ -133,10 +131,10 @@ STARTS	LDS	#STACK		;set stack
 	JMP	EXEC		;start system
 
 ;* 2 player start
-	BSWITCH	START2,CLOSE	;Fixme was: SWITCH START2,CLOSE
+	BSWITCH	START2,CLOSE							;;Fixme was: SWITCH START2,CLOSE
 	LDX	#COINSL		;in pay play?
 	JSR	RCMOSA
-	CMPA	#9
+	CMPA	#$9
 	BEQ	.1S
 	LDA	CREDIT		;yes, get number of credits
 	CMPA	#2
@@ -149,14 +147,14 @@ STARTS	LDS	#STACK		;set stack
 	LDA	#$13		;player s axis screen address of score
 	JSR	PLAYINI		;initialize player 1
 	JSR	SWPLAY		;switch players
-	LDA	#B4		;player s axis screen address of score
+	LDA	#$B4		;player s axis screen address of score
 	JSR	PLAYINI		;initialize player 2
 	BRA	GAMEINI
 
 ;* 1 player start
 ;	LOCAL
 	SECTION PLAYER1START
- 	BSWITCH	START1,CLOSE	;Fixme was: SWITCH START1,CLOSE
+ 	BSWITCH	START1,CLOSE							;;Fixme was: SWITCH START1,CLOSE
 	LDX	#COINSL		;in pay play?
 	JSR	RCMOSA
 	CMPA	#9
@@ -166,16 +164,16 @@ STARTS	LDS	#STACK		;set stack
 	RTS			;yes, pay buddy!
 .1S	clr	AMDemo		;* Turn off attract mode demo
 	ENDSECTION PLAYER1START
-;	ROUTINE	StartDemo
-StartDemo JSR	CLRSCR		;erase screen
+	ROUTINE	StartDemo
+	JSR	CLRSCR		;erase screen
 	LDA	#1		;set to 1 player
 	STA	NPLAYER
-	LDA	#13		;player s axis screen address of score
+	LDA	#$13		;player s axis screen address of score
 	JSR	PLAYINI		;initialize player 1
 
 ;* game initialization
-;	ROUTINE	GAMEINI
-GAMEINI	CLRD
+	ROUTINE	GAMEINI
+	CLRD
 	STA	PANMASK		;disable switches
 	LDD	#$FC7A		;initialize scanner screen border position
 	STD	PSBORD
@@ -183,14 +181,14 @@ GAMEINI	CLRD
 	LDA	#1		;set read rom/write entire screen
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDA	#1!4		;Fixme was: LDA #1!X4  * * *FOR DMA BUG	draw fins:
+	LDA	#1!4		;* * *FOR DMA BUG	draw fins:			;;Fixme was: LDA #1!X4  
 	STA	DHIGH		;setup dma for horizontal lines
 	LDA	#1		;l axis offset for first fin in pixels
 .1S	STA	TEMP		;save in TEMP
 	JSR	FIN		;draw fin  save none, uses A,B
 	LDA	TEMP		;get fin l axis offset
 	ADDA	#9		;move up for next fin
-	CMPA	#35		;done?
+	CMPA	#$35		;done?
 	BLO	.1S
 	CLR	DCONS		;zero dma constant for erase
 	LDA	#5		;set read rom/dma inihibit on
@@ -200,8 +198,13 @@ GAMEINI	CLRD
 	HOOK	GAMVECT
 
 ;* turn initialization
-;	ROUTINE	TURNINI
-TURNINI	LDA	SHIPS		;get ship count
+	ROUTINE	TURNINI
+;===========================================================
+;; (Local labels don't work when TEXT/PHRASE is
+;; called so .2S, .3S, and .4S are now global labels
+;; "TURN2S","TURN3S", and "TURN4S")
+;===========================================================
+	LDA	SHIPS		;get ship count
 	LDB	#DWBL		;re-draw player up ship (extra precaution)
 	JSR	UPSHIPS		;save none, uses none
 	JSR	UPSCORE		;update score (extra precaution)
@@ -210,8 +213,7 @@ TURNINI	LDA	SHIPS		;get ship count
 	JMP	STARTS
 .TURN1S	LDA	NPLAYER		;two players?
 	DECA
-	BEQ	TURN3S			;;(Local labels don't work when SINTEXT is
-					;; called so .2S, .3S, and .4S are now global)
+	BEQ	TURN3S							
 	LDA	SHIPS		;yes?, is current player finished?
 	IFDEF	DEBUG
 	BRA	TURN2S
@@ -223,11 +225,11 @@ TURNINI	LDA	SHIPS		;get ship count
 	BEQ	TURN4S
 	JSR	ANPLAY		;yes?, announce who died
 	PSHS	Y
-	TEXT	4B,60		
+	TEXT	$4B,$60		
 	PHRASE	RED,68,GAME,OVER
 	PULS	Y
 	RADIX	10
-	LDD	#180		;delay 3 seconds
+	LDD	#180		;delay 3 seconds			;;Fixme was: LDD #180.
 	RADIX	16
 	JSR	TIMER
 TURN2S	LDA	PLNURAM-PLURAM+SHIPS	;is other player still playing?
@@ -247,7 +249,7 @@ TURN4S	LDA	SCOREAD		;is player two the last player
 	TUNE	QGAMEND		;play game over tune
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*
+ROMSAVE	SET	*
 
 	ORG	PHRSAV
 	FDB	_GAME
@@ -255,13 +257,13 @@ ROMSAV	SET	*
 
 PHRSAV	SET	*
 
-	ORG	ROMSAV
+	ORG	ROMSAVE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-	TEXT	4B,60		;display final game over message
+	TEXT	$4B,$60		;display final game over message
 	PHRASE	RED,68,GAME,OVER
-	LDA	#30		;enable 1 and 2 player start buttons
+	LDA	#$30		;enable 1 and 2 player start buttons
 	STA	PANMASK
-HSTDENT	CLR	NPLAYER		;flag as attract mode	;;(This gets overwritten by a JMP patch in HSTDTE.ASM)
+HSTDENT	CLR	NPLAYER		;flag as attract mode			;;(This gets overwritten in HSTDTE.ASM by the ROUTINE macro, which places a JMP $8784 here)
 	JSR	DCREDIT		;display credits, if any
 	PULS	Y
 	RADIX	10
@@ -314,7 +316,7 @@ STATPG	NOP			;status page
 	STD	OSCHAR+SPLAYER	;set characteristics in pseudo-scanner workspace
 	JSR	GETCOBJ		;save none, uses A,B,X
 	STX	OSSCWSA+SPLAYER	;set screen wsa in pseudo-scanner workspace
-	LDD	#277A		;mid screen
+	LDD	#$277A		;mid screen
 	STD	OBOTTOM,X
 	STB	OSPOS,X
 	CLRD			;zero velocity
@@ -349,8 +351,8 @@ STATPG	NOP			;status page
 ;	ERR	Hook to proper location.
 ;	ENDIF	Version
 ;	ENDIF	Level
-;	ROUTINE	Witt1
-Witt1	lda	#%00001111	;* Turn on all but the player start buttons
+	ROUTINE	Witt1
+	lda	#%00001111	;* Turn on all but the player start buttons
 	tst	AMDemo		;*   during normal game play, but during
 	beq	.1S		;*   the attract mode demo, only the player
 	lda	#%00111000	;*   start buttons and scrolling should work.
@@ -359,8 +361,8 @@ Witt1	lda	#%00001111	;* Turn on all but the player start buttons
 	jmp	Die
 
 ;* player initialization	;pass s axis screen address of score in A
-;	ROUTINE	PLAYINI		;> uses A,B
-PLAYINI	STA	SCOREAD		;player s axis screen address of score
+	ROUTINE	PLAYINI		;> uses A,B
+	STA	SCOREAD		;player s axis screen address of score
 	CLRD
 	STA	BOMBS		;zero sinibomb count
 	STD	PSCORE		;zero player score
@@ -386,13 +388,13 @@ PLAYINI	STA	SCOREAD		;player s axis screen address of score
 	TFR	B,A
 	STA	SHIPS
 	LDB	#DWBL		;display initial ships
-PLAY1S	JSR	UPSHIPS		;save A,B, uses none		;;(Had to change local labels)
+PLAY1S	JSR	UPSHIPS		;save A,B, uses none				;;(Had to change local labels)
 	DECA
 	BNE	PLAY1S
 	LDA	#$FF		;store junk in last display score ones and tens
 	STA	LSCORE+3	;and set score flag to display '00'
 	JSR	UPSCORE		;update score
-	LDA	#81		;write 'bonus at' message for the player
+	LDA	#$81		;write 'bonus at' message for the player
 	LDB	SCOREAD
 	TFR	D,X
 	WORD	BLUE,35,BONUS
@@ -409,17 +411,17 @@ PLAY1S	JSR	UPSHIPS		;save A,B, uses none		;;(Had to change local labels)
 	CMPA	#9
 	BEQ	PLAY2S
 	LDA	CREDIT		;yes, get number of credits
-	ADDA	#99		;click off one credits
+	ADDA	#$99		;click off one credits
 	DAA
 	STA	CREDIT		;save new credits
 	LDX	#CREDST
 	JSR	WCMOSA		;back it up
 	LDB	#8		;add a game played to the books
-	JSR	AUD1S		;Fixme was: JSR	AUD1$
+	JSR	AUD1S										;;Fixme was: JSR	AUD1$
 PLAY2S	HOOK	PLAVECT
 	RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*
+ROMSAVE	SET	*
 
 	ORG	PHRSAV
 	FDB	_BONUS
@@ -427,19 +429,19 @@ ROMSAV	SET	*
 
 PHRSAV	SET	*
 
-	ORG	ROMSAV
+	ORG	ROMSAVE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 
 ;* system initialization
-;	ROUTINE	SYSTINI
-SYSTINI	PSHS	CC
-	ORCC	#10		;disable irq
+	ROUTINE	SYSTINI
+	PSHS	CC
+	ORCC	#$10		;disable irq
 	STA	TCLOCK		;zero task clock
 	LDX	#PCRAM		;initialize colors
 .SYS1S	LDD	(PALETTE-PCRAM),X
 	STD	X++
-	CMPX	#PCRAM+10
+	CMPX	#PCRAM+$10
 	BLO	.SYS1S
 	;LOCAL
 	SECTION	SYSTINI
@@ -503,21 +505,21 @@ SYSTINI	PSHS	CC
 ;	SUBTTL	INITIALIZATION SUBROUTINES
 
 ;* announce player up
-;	ROUTINE	ANPLAY
-ANPLAY	PSHS	A,B,X,Y
+	ROUTINE	ANPLAY
+	PSHS	A,B,X,Y
 	LDA	NPLAYER		;two players?
 	DECA
-	BEQ	ANP2S					;Fixme was: BEQ	.2S
+	BEQ	ANP2S					;;Fixme was: BEQ .2S
 	LDA	SCOREAD		;yes, who up?
-	BMI	ANP1S					;Fixme was: BMI	.1S
-	TEXT	62,66
+	BMI	ANP1S					;;Fixme was: BMI .1S
+	TEXT	$62,$66
 	PHRASE	RED,68,PLAYER,1	
-	BRA	ANP2S					;Fixme was: BRA	.2S
-ANP1S	TEXT	62,66					;Fixme was: .1S
+	BRA	ANP2S					;;Fixme was: BRA .2S
+ANP1S	TEXT	$62,$66					;;Fixme was: .1S
 	PHRASE	RED,68,PLAYER,2
-ANP2S	PULS	A,B,X,Y,PC				;Fixme was: .2S
+ANP2S	PULS	A,B,X,Y,PC				;;Fixme was: .2S
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*
+ROMSAVE	SET	*
 
 	ORG	PHRSAV
 	FDB	_PLAYER
@@ -526,34 +528,34 @@ ROMSAV	SET	*
 
 PHRSAV	SET	*
 
-	ORG	ROMSAV
+	ORG	ROMSAVE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;* display game over in player window
-;	ROUTINE	GAMOVER
-GAMOVER	NOP
+	ROUTINE	GAMOVER					;;This gets patched over by MICA/ZGAMOVER.ASM
+	NOP
 	NOP
 	RTS
 
 ;* partial screen clear - playing area and scanner
-;	ROUTINE	PCLRSCR
-PCLRSCR	PSHS	D		;> uses none
+	ROUTINE	PCLRSCR
+	PSHS	D		;> uses none
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4								;;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#1831!404	;Fixme was: LDD	#1831!X404 ;erase scanner region * * * FOR DMA ERROR
+	LDD	#$1831!$404	;erase scanner region * * * FOR DMA ERROR	;;Fixme was: LDD #1831!X404
 	STD	DHIGH
-	LDD	#((DINHIB+1)<<8)+68	;Fixme was: LDD	#(DINHIB+1)!<8+68
+	LDD	#((DINHIB+1)<<8)+$68						;;Fixme was: LDD	#(DINHIB+1)!<8+68
 	STD	DSOUR
 	STD	DDEST
 	LDB	#DWBL+DCNS
 	STB	DCTRL
-	LDA	#1!4		;Fixme was: LDA	#1!X4 ;* * * FOR DMA BUG
+	LDA	#1!4		;* * * FOR DMA BUG				;;Fixme was: LDA #1!X4
 	STA	DHIGH
-	LDA	#8D
+	LDA	#$8D
 	STA	DDEST
 	LDA	#DWBL+DCNS+DXWB
 	STA	DCTRL
@@ -561,18 +563,18 @@ PCLRSCR	PSHS	D		;> uses none
 	BRA	CLRSC1		;erase play area
 	
 ;* clear screen
-;	ROUTINE	CLRSCR
-CLRSCR	PSHS	D		;> uses none
+	ROUTINE	CLRSCR
+	PSHS	D		;> uses none
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4								;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDA	#97		;setup to erase entire screen
-;	ROUTINE	CLRSC1
-CLRSC1	LDB	#1!4		;Fixme was: LDB #1!X4 ;setup to erase one line	* * * FOR DMA ERROR
+	LDA	#$97		;setup to erase entire screen
+	ROUTINE	CLRSC1
+	LDB	#1!4		;setup to erase one line * * * FOR DMA ERROR	;;Fixme was: LDB #1!X4 
 	STB	DHIGH
-	LDB	#$FF!4		;Fixme was: LDB #0FF!X4 ;* * * FOR DMA ERROR
+	LDB	#$FF!4		;* * * FOR DMA ERROR				;;Fixme was: LDB #0FF!X4 
 	STB	DWIDE
 	CLR	DDEST+1
 .1S	STA	DDEST		;erase line loop
@@ -588,16 +590,16 @@ CLRSC1	LDB	#1!4		;Fixme was: LDB #1!X4 ;setup to erase one line	* * * FOR DMA ER
 	PULS	D,PC
 
 ;* initialize sinistar
-;	ROUTINE	INISINI		;> uses none
-INISINI	PSHS	D,X
-	LDD	#SINIMAG 	;Fixme was: LDD	#SINIMAGE	;setup dma to zero sinistar ram image
+	ROUTINE	INISINI		;> uses none
+	PSHS	D,X
+	LDD	#SINIMAG 	;setup dma to zero sinistar ram image		;;Fixme was: LDD #SINIMAGE
 	STD	DSOUR
 	STD	DDEST
-	LDD	#(SINIHIG<<8)+SINIWID!404 	;Fixme was: LDD	#SINIHIG!<8+SINIWID!X404 ;* * *FOR DMA BUG
+	LDD	#(SINIHIG<<8)+SINIWID!$404 					;;Fixme was: LDD #SINIHIG!<8+SINIWID!X404 ;* * *FOR DMA BUG
 	STD	DHIGH
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4								;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDA	#DCNS		;zero it
@@ -606,7 +608,7 @@ INISINI	PSHS	D,X
 	STA	PMEMCTL		;turn on dma inhibit
 	STA	MEMCTL
 	LDX	#SINICLI	;sinistar collision table
-	LDA	#7F-2*SINIHIG	;initialize bottom edge
+	LDA	#$7F-2*SINIHIG	;initialize bottom edge
 	LDB	#SINIWID
 	JSR	INITRAM		;save A,B, uses X
 	NEGA			;initialize top edge
@@ -635,8 +637,8 @@ INISINI	PSHS	D,X
 
 ;* initialize ram to a value
 ;*	pass start addr in X, value in A, # bytes in B, returns end addr+1 in X
-;	ROUTINE	INITRAM
-INITRAM	ABX		;> uses X
+	ROUTINE	INITRAM
+	ABX		;> uses X
 	PSHS	B,X
 .1S	STA	-X
 	DECB
@@ -644,12 +646,12 @@ INITRAM	ABX		;> uses X
 	PULS	B,X,PC
 
 ;* draw a fin		pass l axis offset in temp
-FIN	LDD	#1466		;get width in A, color in B > uses A,B
+FIN	LDD	#$1466		;get width in A, color in B > uses A,B
 	BSR	.1S		;draw bottom color of fin
 	LDA	TEMP		;move l axis offset up 3 pixels
 	ADDA	#3
 	STA	TEMP
-	LDD	#11AA		;get width in A, color in B, draw top color
+	LDD	#$11AA		;get width in A, color in B, draw top color
 .1S	STB	DCONS		;set constant color in dma
 .2S	BSR	.3S		;draw line
 	DECA			;next line
@@ -657,22 +659,22 @@ FIN	LDD	#1466		;get width in A, color in B > uses A,B
 	RTS
 ;*
 .3S	PSHS	A		;save line
-	CMPA	#11		;too wide?
+	CMPA	#$11		;too wide?
 	BLS	.4S
-	LDA	#11		;yes, clip left and right edges
+	LDA	#$11		;yes, clip left and right edges
 .4S	PSHS	A		;save cliped line
 	ASLA			;double it for length
-	ADDA	#35		;add width of scanner
+	ADDA	#$35		;add width of scanner
 	EORA	#4		;* * *FOR DMA BUG
 	STA	DWIDE		;setup dma width
-	LDB	#66		;compute s axis starting position
+	LDB	#$66		;compute s axis starting position
 	SUBB	S+              
 	LDA	S		;compute l axis position
 	ADDA	TEMP		;add l axis offset
 	RORA			;convert to pixels
 	PSHS	CC		;save flavor
 	ADDA	#DINHIB		;add l axis position
-	CMPA	#98		;off top of screen?
+	CMPA	#$98		;off top of screen?
 	BLS	.5S
 	CLRA			;yes, draw line on bottom of screen (invisible)
 .5S	STD	DDEST		;setup dma position
@@ -687,7 +689,7 @@ FIN	LDD	#1466		;get width in A, color in B > uses A,B
 SWPLAY	PSHS	A,X,Y,U
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4								;;Fixme was: ANDA	#!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 PLSIZE	SET	PLNURAM-PLURAM
@@ -695,7 +697,7 @@ PLSIZE	SET	PLNURAM-PLURAM
 ;	MESSG	"TOO MUCH PLAYER RAM"
 ;PLSIZE	SET	0FF
 ;	ENDIF
-	LDX	#100+PLSIZE!404	;Fixme was: LDX	#100+PLSIZE!X404 ;* * *FOR DMA BUG  setup dma size
+	LDX	#$100+PLSIZE!$404	;* * *FOR DMA BUG  setup dma size		;;Fixme was: LDX #100+PLSIZE!X404
 	STX	DHIGH
 	LDX	#PLNURAM	;move other player ram into buffer
 	STX	DSOUR
@@ -719,60 +721,60 @@ PLSIZE	SET	PLNURAM-PLURAM
 ;* display number of credits
 DCREDIT	PSHS	D,X		;> uses none
 	LDA	NPLAYER		;attract mode?
-	BNE	DCRED3S					;Fixme was: BNE	.3S
+	BNE	DCRED3S					;;Fixme was: BNE .3S
 	TST	CREDIT		;yes, any credits?
-	BEQ	DCRED3S					;Fixme was: BEQ	.3S
-	TEXT	10,6D
+	BEQ	DCRED3S					;;Fixme was: BEQ .3S
+	TEXT	$10,$6D
 	PHRASE	WHITE,35,CREDITS
 	LDA	CREDIT		;get number of credits
 	BITA	#$F0		;surpress leading zero
-	BNE	DCRED2S					;Fixme was: BNE	.2S
+	BNE	DCRED2S					;;Fixme was: BNE .2S
 	ORA	#$F0
-DCRED2S	JSR	OUTB35		;display value		;Fixme was: 2$
-DCRED3S	PULS	D,X,PC					;Fixme was: 3$
+DCRED2S	JSR	OUTB35		;display value		;;Fixme was: 2$
+DCRED3S	PULS	D,X,PC					;;Fixme was: 3$
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ROMSAV	SET	*
+ROMSAVE	SET	*
 
 	ORG	PHRSAV
 	FDB	_CREDITS
 
 PHRSAV	SET	*
 
-	ORG	ROMSAV
+	ORG	ROMSAVE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;* draw frame - color depends on zone color
 FRAME	PSHS	A,B		;> uses none
 	LDA	PMEMCTL		;turn off dma inhibit
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4									;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
-	LDD	#1FF!404	;Fixme was: LDD	#1FF!X404 ;* * * FOR DMA ERROR   draw scanner bottom frame
+	LDD	#$1FF!$404	;* * * FOR DMA ERROR   draw scanner bottom frame	;;Fixme was: LDD  #1FF!X404
 	STD	DHIGH
-	LDD	#DINHIB<<8	;Fixme was: LDD	#DINHIB!<8
+	LDD	#DINHIB<<8								;;Fixme was: LDD  #DINHIB!<8
 	STD	DDEST
 	LDA	ZONECOL
 	STA	DCONS
 	LDB	#DWBL+DCNS
 	STB	DCTRL
-	LDB	#35!4		;Fixme was: DB	#35!X4
+	LDB	#$35!4									;;Fixme was: lDB  #35!X4
 	STB	DWIDE		;draw scanner top frame
-	LDD	#8E66
+	LDD	#$8E66
 	STD	DDEST
 	LDB	#DWBL+DCNS+DXWB
 	STB	DCTRL
-	LDA	#8D
+	LDA	#$8D
 	STA	DDEST
 	LDB	#DWBL+DCNS+DXWT
 	STB	DCTRL
-	LDD	#1902!404	;Fixme was: LDD	#1902!X404	;* * * FOR DMA ERROR	draw scanner left frame
+	LDD	#$1902!$404	;* * * FOR DMA ERROR	draw scanner left frame		;;Fixme was: LDD  #1902!X404	
 	STD	DHIGH
-	LDA	#75
+	LDA	#$75
 	STA	DDEST
 	LDB	#DWBL+DCNS
 	STB	DCTRL
-	LDA	#99		;draw scanner right frame
+	LDA	#$99		;draw scanner right frame
 	STA	DDEST+1
 	STB	DCTRL
 	PULS	A		;restore dma inhibit
@@ -793,5 +795,4 @@ TIMER	STD	OTIME,Y		;save sleep time
 	BNE	.1S
 	JMP	[OWAKE,Y]
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

@@ -1,8 +1,8 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	DYNAMIC STORAGE 'TRASH COMPACTING' ROUTINES
+;;	SUBTTL	DYNAMIC STORAGE 'TRASH COMPACTING' ROUTINES
 
 ;* special trash compact after process or collision
 SPTRASH	STX	TEMP		;save X for collision > uses A,B,U
@@ -56,12 +56,12 @@ TRASCOM	LDX	TRASBUB		;get trash compactor bubble  > uses A,B,X,U
 	TSTA			;too much for dma? TEMPORARY
 	BEQ	.5S
 	SWI			;TEMPORARY TRAP
-.5S	LDA	#1!4		;Fixme was: LDA	#1!X4	;* * * TEMPORARY FOR DMA BUG
+.5S	LDA	#1!4		;* * * TEMPORARY FOR DMA BUG			;;Fixme was: LDA  #1!X4	
 	EORB	#4		;* * * TEMPORARY FOR DMA BUG
 	STD	DHIGH
 	LDA	PMEMCTL		;write inhibit off
 	PSHS	A
-	ANDA	#~$4		;Fixme was: ANDA	#!N4
+	ANDA	#~$4								;;Fixme was: ANDA #!N4
 	STA	PMEMCTL
 	STA	MEMCTL
 	LDB	#DSCY		;move data
@@ -77,5 +77,4 @@ TRASCOM	LDX	TRASBUB		;get trash compactor bubble  > uses A,B,X,U
 	SWI			;* * *TEMPORARY TRAP out of dynamic storage ram
 .7S	RTS
 
-;	PULLORG	ROMSAVE
-ROMSAV 	SET	*
+	PULLORG	ROMSAVE

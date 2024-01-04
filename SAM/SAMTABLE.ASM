@@ -1,15 +1,15 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
-;===============================================================================
+;;===============================================================================
 ; EQUs to remove later
 ;TRAP	EQU	$E196		;IRQ
-;===============================================================================
+;;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
 SAMTABLES
 
-;	SUBTTL	CHARACTERISTICS DESCRIPTOR TABLES
+;;	SUBTTL	CHARACTERISTICS DESCRIPTOR TABLES
 
 ;* null object
 CNULL	FDB	8000		;collision mask
@@ -272,7 +272,7 @@ CCRYSTA	FDB	8000		;collision mask
 	FCB	$00,$00		;bottom flavor scanner
 	FCB	$00,$00		;top flavor scanner
 	FCB	$00,$00         
-	fcb	IQCrys		;intelligence type		;Fixme was: fcb	IQCrystal
+	fcb	IQCrys		;intelligence type				;;Fixme was: fcb IQCrystal
 	FCB	0		;percentage of screen spaces for fragments
 	FDB	INULL		;first fragment image descriptor
 	fcb	0		;* Base vibration block address
@@ -335,7 +335,7 @@ CFRAGME	FDB	8000		;collision mask
 	FDB	IPLSHOT		;first image descriptor
 	FDB	KOBJECT		;offscreen routine
 
-;	SUBTTL	TUNE TABLES
+;;	SUBTTL	TUNE TABLES
 
 ;* tunes:
 ;*
@@ -349,11 +349,11 @@ CFRAGME	FDB	8000		;collision mask
 ;*	.STOP				MUST terminate sound
 
 ;* bounce
-QBOUNCE	_IPRIO	10				;Fixme was: .IPRIO	10
-	_SOUND	14                              ;Fixme was: .SOUND	14  
-	_PRIO	2                               ;Fixme was: .PRIO	2       
-	_TIME	03                              ;Fixme was: .TIME	03       
-	_STOP                                   ;Fixme was: .STOP 
+QBOUNCE	_IPRIO	10				;;Fixme was: .IPRIO	10
+	_SOUND	14                              ;;Fixme was: .SOUND	14  
+	_PRIO	2                               ;;Fixme was: .PRIO	2       
+	_TIME	03                              ;;Fixme was: .TIME	03       
+	_STOP                                   ;;Fixme was: .STOP 
 
 ;* player firing
 QFIRE	_IPRIO	13
@@ -563,7 +563,7 @@ ANIMTBL	FDB	AMOUT1,060C
 ANIMEND
 
 ;* sinistar image descriptor
-ISINI	FDB	SINIHIG<<8+SINIWID,SINIMAG,SINICLI,SINILCE<<8+SINISCE	;Fixme was: ISINI	FDB	SINIHIG!<8+SINIWID,SINIMAG,SINICLI,SINILCE!<8+SINISCE
+ISINI	FDB	SINIHIG<<8+SINIWID,SINIMAG,SINICLI,SINILCE<<8+SINISCE	;;Fixme was: ISINI	FDB	SINIHIG!<8+SINIWID,SINIMAG,SINICLI,SINILCE!<8+SINISCE
 	FCB	0
 
 ;* scanner velocity initialization table
@@ -594,7 +594,7 @@ NSCRON	FDB	NONTOP		;scroll onto top edge of screen
 	FDB	NONLEF		;scroll onto left edge of screen
 
 ;* collision 1/2 matrix	(must assemble before collision handling routines)
-CLTABLE	RPT	NCOLLIS*(NCOLLIS+1)/2,FDB TRAP			;Fixme was: CLTABLE	RPT	NCOLLIS*(NCOLLIS+1)/2,<FDB TRAP>
+CLTABLE	RPT	NCOLLIS*(NCOLLIS+1)/2,FDB TRAP			;;Fixme was: CLTABLE	RPT	NCOLLIS*(NCOLLIS+1)/2,<FDB TRAP>
 
 ;* color palette
 	RADIX	8
@@ -623,5 +623,4 @@ ZCOLTBL	FCB	$00		;void zone
 	FCB	$BB		;warrior zone
 	FCB	$66		;planetoid zone
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE

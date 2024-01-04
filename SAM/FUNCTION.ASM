@@ -1,15 +1,15 @@
-	INCLUDE "../SAM/START.ASM"
+;;	INCLUDE "../SAM/START.ASM"
 
-;===============================================================================
+;;===============================================================================
 ; EQUs to remove later
 ;frectan	EQU	$4E98	;SAMTABLE
 ;QUADTBL	EQU	$4E89	;SAMTABLE
 ;SINETBL	EQU	$4E49	;SAMTABLE
-;===============================================================================
+;;===============================================================================
 
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
-	;SUBTTL	MATH FUNCTIONS
+;;	SUBTTL	MATH FUNCTIONS
 
 FUNCTIONS
 
@@ -57,7 +57,7 @@ RECTANG	pshs	B,X		;* Save work registers
 	LDB	S+
 	BPL	.5S
 	NEGA
-	ADDA	#80
+	ADDA	#$80
 .5S	LDB	S+
 	BPL	.6S
 	NEGA
@@ -200,7 +200,7 @@ RAISE	PSHS	X		;save regs > uses D,U
 	ADDA	U		;add upper byte of change to master variable
 	CMPA	U		;check for clip
 	BGE	.5S              
-	LDD	#7FFF		;yes, raise it to the limit
+	LDD	#$7FFF		;yes, raise it to the limit
 	SUBA	U		
 	LEAS	1,S		;restore regs
 	PULS	X		;start routine again
@@ -238,7 +238,7 @@ LOWER	PSHS	X		;save regs > uses D,U
 	ADDA	U		;add upper byte of change to master variable
 	CMPA	U		;check for clip
 	BLE	.5S              
-	LDD	#8000		;yes, lower it to the limit
+	LDD	#$8000		;yes, lower it to the limit
 	SUBA	U               
 	LEAS	1,S		;restore regs
 	PULS	X		;start routine again
@@ -287,8 +287,7 @@ LOWER	PSHS	X		;save regs > uses D,U
 ;*	    (D << N-Bits) for left shifts.
 ;*
 ;*****
-;	ROUTINE	shifts
-SHIFTS	SET	*
+	ROUTINE	shifts
 asrd7
 	asra		;* Signed division.
 	rorb
@@ -313,5 +312,4 @@ asrd1
 asrd0
 	rts
 
-;	PULLORG	ROMSAVE
-ROMSAV	SET	*
+	PULLORG	ROMSAVE
