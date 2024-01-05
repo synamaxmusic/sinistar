@@ -30,9 +30,11 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
  	* [BSO Syntax](#bso-syntax)
   	* [Decimal numbers](#decimal-numbers)
   	* [Common fixes](#common-fixes)
+  * [Source code map](#source-code-map)
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
+* 01/05/2024 - Rich's module is finally complete, we're halfway done!
 * 01/03/2024 - I cleaned up some of my older comments and replaced my old ```PUSH/PULLORG``` hacks with the actual macros.  The same goes for the ```ROUTINE``` macro; it's actually pretty useful as it shows messages in the listing output and makes it easier to understand.  ```PAD``` doesn't work exactly the same with the new assembler so it's only used sparringly in this rewrite when there are no macro arguments; any ```PAD``` macros that need to generate new lable names have been replaced with three lines of code that reproduces exactly what we need (see [PAD](#pad) for more info).
 * 12/30/2023 - I got [several important and heavily-used macros](https://github.com/synamaxmusic/sinistar/commit/f8ace13ec0a8a5db5baac7f346cc17ed26605bbd) to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
 * 11/14/2023 - Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
@@ -159,6 +161,8 @@ Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as i
 I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Any new comments by me will use two semi-colons (```;;```), while original comments will only use one (```;```).
 
 Because we're not using VMS to build this, I made a new file called ```MAKE.ASM```, based off the original ```MAKE.COM``` batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling debug features.
+
+I chose to change the original source filename extensions from *.SRC to *.ASM because 1) Notepad++ displays syntax highlighting with the *.ASM extension and 2) it makes it easier to identify the rewritten files from the original files.
 
 ### PUSHORG and PULLORG 
 
@@ -362,3 +366,30 @@ At first, I tried changing the ```RADIX 16``` at the very beginning of the code 
 * Exclusive OR ```!X``` are now just ```!```.
 * Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
 * ```#!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```#~$4```.
+
+## Source code map
+
+```
+(work in progress)
+SAM/MESSAGE.ASM		;(Taken from Joust and modded to work with a veritical monitor.
+			; Font sprites are also located here)
+../SAM/MESSEQU.ASM
+../SAM/MESSEQU1.ASM
+../SAM/MESSEQU2.ASM
+../SAM/PHRASE.ASM
+
+SAM/EQUATES.ASM
+../WITT/DISPLAY.ASM
+../SAM/MACROS.ASM
+../SAM/START.ASM
+../SAM/SAMEQUAT.ASM
+../SAM/SAMOFFSE.ASM
+../SAM/S1.ASM
+../FALS/N1SYM.ASM
+../FALS/N1.ASM
+../WITT/SYMSAM.ASM
+../WITT/R1.ASM
+
+SAM/IMAGE.ASM
+```
+	
