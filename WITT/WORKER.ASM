@@ -1,6 +1,6 @@
 ;;===============================================================================
 ; EQUs to remove later
-think	EQU	$69DA
+;think	EQU	$69DA
 ;upddtc	EQU	$6496
 ;updflang EQU	$64D2
 ;aniworker EQU	$62C8

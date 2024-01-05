@@ -6,7 +6,7 @@ LHSCROLL EQU	$0010
 RHSCROLL EQU	$00F0
 ;aimwarrior EQU	$6836
 ;screenchk EQU	$68CC
-washodds EQU	$6A57
+;washodds EQU	$6A57
 ;shoot	EQU	$68DD
 BombsAway EQU	$6C5E
 ;aniwarrior EQU	$684C
@@ -696,11 +696,42 @@ WarrMis
 	INCLUDE "../WITT/SCREENCH.ASM"		;* On/Off screen check
 	INCLUDE "../WITT/SHOOT.ASM"		;* Warrior shooting routine
 ;;	INCLVER	RICH,tables		;* Distance/Velocity tables
-;	INCLVER	RICH,think		;* Animate/Intelligence check
+	INCLUDE "../WITT/THINK.ASM"		;* Animate/Intelligence check
 ;;	INCLVER	RICH,upddtc		;* Update Distance to Caller
 ;;	INCLVER	RICH,updflang		;* Update Flight Angle
 ;;	INCLVER	RICH,velocity		;* Velocity computations
-;	INCLVER	RICH,warron		;* On Screen routine
-;	INCLVER	RICH,warroff		;* Warrior off screen routine
-;	INCLVER	RICH,washodds		;* Shooting odds computations
+	INCLUDE "../WITT/WARRON.ASM"		;* On Screen routine
+	INCLUDE "../WITT/WARROFF.ASM"		;* Warrior off screen routine
+	INCLUDE "../WITT/WASHODDS.ASM"		;* Shooting odds computations
+;;===============================================================================
+;;
+;;   There are three separate files that contain two different versions of the
+;;   Warrior Shooting Odds Routine.  Rich initally wrote a slightly longer
+;;   version of the routine (WITT/WASHODDS.SRC), which Sam copied and rewrote.
+;;   Sam's optimized version can be found in SAM/WASHODDS.SRC.
+;;
+;;   Rich then copied Sam's refined code and pasted it into a new file named,
+;;   "ZWASHODD.SRC" that checks first if the game's version is 17, then proceeds
+;;   to patch over the old code with Sam's newer routine.  Because of this
+;;   there are 6 garbage bytes Located at $6A6B-$6A70 that are the remains of
+;;   the old routine.
+;;   
+;;   Interestingly, the AMOA '82 build and the final version of the game (V17)
+;;   both use Sam's WASHODDS so Witt's complete routine only exists in the
+;;   source code.
+;;
+;;   Another interesting finding is that ZWASHODD.SRC is only referenced in
+;;   one other file (WITT/RICH.SRC) and from what I can tell, this file
+;;   is an older unused version of the final WITT/RICHS.SRC, which is what the
+;;   MAKE.COM batch file grabs to build Rich's module.
+;;   
+;;   This means I'm not entirely sure how this patch was implemented exactly.
+;;   I'm including it here as it seems to be the most logical choice:
+;;
+	INCLUDE "../WITT/ZWASHODD.ASM"		;* Shooting odds computations
+;;
+;;   Changing WASHODDS to the older version does not appear to reduce the
+;;   frequency of the warriors shooting at the player.
+;;
+;;===============================================================================
 ;;	INCLVER	RICH,zaprts		;* Copyright check test.
