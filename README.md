@@ -2,21 +2,44 @@
 A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
 
 Source code rewrite by SynaMax, started November 6th, 2023
-
-Current status (as of 12/30/2023):
-
-* On 12/30/2023, I got [several important and heavily-used macros](https://github.com/synamaxmusic/sinistar/commit/f8ace13ec0a8a5db5baac7f346cc17ed26605bbd) to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
-* Rewrite is around 41% complete; 28653 out of 69632 bytes have been assembled in the binary ROM data.  Currently working on main Worker routine found in Witt's module.  This number does not account for final patches that will need to be inserted at the end for various fixes.
-* Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
-
-  ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
-
+****
 
 The original source code for the game can be found at https://github.com/historicalsource/sinistar/
 
 A recreation of the source code for Sinistar's sound roms can be found here: https://github.com/synamaxmusic/Sinistar-Sound-ROM/
 
 Sinistar's speech roms are separate from the sound roms and have not been disassembled yet.
+****
+
+<!-- vim-markdown-toc GFM -->
+
+* [Important Milestones](#important-milestones)
+* [Overview](#overview)
+* [Build Instructions](#build-instructions)
+* [About the source code](#about-the-source-code)
+	* [Macros](#macros)
+	* [Working with the BSO Assembler and VAX/VMS](#working-with-the-bso-assembler-and-vaxvms)
+   	* [Choosing a new assembler](#choosing-a-new-assembler)
+* [Rewriting the source code](#rewriting-the-source-code)
+	* [PUSHORG and PULLORG](#pushorg-and-pullorg)
+ 	* [ROUTINE](#routine)
+  	* [PAD](#pad)
+  	* [TEXT/PHRASE](#textphrase)  
+	* [Inconsistent label names](#inconsistent-label-names)
+ 	* [Local labels](#local-labels)
+ 	* [BSO Syntax](#bso-syntax)
+  	* [Decimal numbers](#decimal-numbers)
+  	* [Common fixes](#common-fixes)
+<!-- vim-markdown-toc -->
+
+## Important Milestones
+* 01/03/2024 - I cleaned up some of my older comments and replaced my old ```PUSH/PULLORG``` hacks with the actual macros.  The same goes for the ```ROUTINE``` macro; it's actually pretty useful as it shows messages in the listing output and makes it easier to understand.  ```PAD``` doesn't work exactly the same with the new assembler so it's only used sparringly in this rewrite when there are no macro arguments; any ```PAD``` macros that need to generate new lable names have been replaced with three lines of code that reproduces exactly what we need (see [PAD](#pad) for more info).
+* 12/30/2023 - I got [several important and heavily-used macros](https://github.com/synamaxmusic/sinistar/commit/f8ace13ec0a8a5db5baac7f346cc17ed26605bbd) to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
+* 11/14/2023 - Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
+
+  ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
+* 11/06/2023 - Rewriting commences.
+* May 2023 - Started looking over the original codebase for the first time.
 
 ## Overview
 
@@ -29,7 +52,7 @@ The four modules that make up the codebase are assembled in this order:
 * FALS
 * MICA
 
-Sam Dicker was the first software engineer to work on the game and his code deals with critical routines related to the game engine, the player's ship, and the Sinistar itself.  This also includes joystick control handling, rendering graphics, sound call tables, and background multi-tasking routines for enemy AI and gameplay logic.  Jack Haeger's pixel artwork is also represented in this module (located in the ```SAM/IMAGE.ASM``` file).  
+Sam Dicker was the first software engineer to work on the game and his code deals with critical routines related to the game engine, the player's ship, and the Sinistar itself.  This also includes joystick control handling, rendering graphics, sound call tables, and background multi-tasking routines for enemy AI and gameplay logic.  Jack Haeger's pixel artwork is also represented in this module (located in the ```SAM/IMAGE.ASM``` file).
 
 After Sam's code, we move on to Rich Witt's files.  He worked a large chunk of the game logic routines, sometimes modifying Sam's pre-existing code.  Rich's work includes the Sinistar death/player warp routines, sinibomb pickups, enemy speed tables and AI, collsion handling, and the Sinistar's lip sync animation.
 
@@ -93,7 +116,9 @@ p2bin sinistar.p sinistar_rom_11-b_16-3004-63.4a -r $F000-$FFFF
 
 Back in May 2023, I stumbled upon the fact that Sinistar's source code was leaked in 2021 and available on Github.  After deliberating for a few months and conducting several tests with various 6809 macro assemblers, I decided to do something I've never done before and accept the challenge of rewriting the source code for Sinistar so that it can be buildable with a newer assembler.  Considering the size of the codebase, this was not an easy or quick task.
 
-Other Williams games have be rewritten before, such as [mwenge's work for Defender](https://github.com/mwenge/defender/) and [Robotron](https://github.com/mwenge/robotron/), both targeting the asm6809 assembler.  His work inspired me to make the attempt at recreating the missing 6800 assembly code for Sinistar's [Video Sound ROM 9 and 10](https://github.com/synamaxmusic/Sinistar-Sound-ROM).  [Here is a video](https://youtu.be/Msc6hqyTW6U) on how I achieved this and how the sound ROMs in Sinistar work.  
+Other Williams games have be rewritten before, such as [mwenge's work for Defender](https://github.com/mwenge/defender/) and [Robotron](https://github.com/mwenge/robotron/), both targeting the asm6809 assembler.  His work inspired me to make the attempt at recreating the missing 6800 assembly code for Sinistar's [Video Sound ROM 9 and 10](https://github.com/synamaxmusic/Sinistar-Sound-ROM).  
+
+[Here is a video](https://youtu.be/Msc6hqyTW6U) on how I achieved this and how the sound ROMs in Sinistar work.  
 
 The goal of both of these Sinistar repositories is to recreate the game's ROMs from scratch.  With Video Sound ROM 9, two disassemblies were heavily relied on in order to piece together the ROM since the source code was missing and had to be cobbled together from looking at the surviving source code and comments from the [other sound roms](https://github.com/historicalsource/williams-soundroms/).  With this project however, we have the [original source code](https://github.com/historicalsource/sinistar), so there's not as much guesswork involved (in theory).  I did tests with several different assemblers, including asm6809 and vasm (which I used previously for Sinistar's sound ROM) but I was running into several issues.  I wondered why Robotron and Defender were able to be retargeted for asm6809, but not Sinistar or even Joust.
 
@@ -109,7 +134,17 @@ Macros do show up for Defender and Robotron, but there's not too many of them, a
 
 Like Joust, Sinistar was written on VAX/VMS workstations.  I'm not sure what assembler was used for Joust, but both codebases appear to use the same syntax and we know that Sinistar was written for a cross-assembler by the now-defunct Boston System Office (BSO).  It had support for several macro instructions that only a few 6809 assemblers still use today, such as ```IRP```, ```IRPC``` and ```REPT```.  This particular assembler is currently lost (which is one of the main reasons why this project was started in the first place).
 
-The BSO assembler also had a very limited symbol table size which made Sinistar's development extra difficult and as a result, additional precautions had to be made in order for the code to build properly.  For example, each of the four main software engineers had to generate their own files that listed every single ```EQU```, ```SET```, and symbol they used in their section of the game.  Extra care was taken to make sure all the symbols matched up with everyone else's library.  At the end of the toolchain, a batch script file written in VAX DCL language collected all of the source files and fed them into the assembler in a specific order.  It was a lot of work to make sure everything matched up but in the end, I'm really glad they were kinda forced to generate all these symbol definitions because it has made a lot of this reverse engineering work much, much easier.  
+The BSO assembler also caused a lot of headaches for the dev team; one of the biggest issues was that the asssembler's symbol table size was very small, which made Sinistar's development even more difficult.  To directly quote the developers from the source code's readme file:
+
+```
+	The problem history with managing sources for 4 people while using
+an assembler with a very limited symbol table size is not amusing.  Let it
+suffice that we did what was neccessary at the time.
+```
+
+As a result, additional precautions had to be made in order for the code to build properly and that all the symbols matched up with everyone else's library.  For example, each of the four main software engineers had to generate their own files that listed every single ```EQU```, ```SET```, and symbol they used in their section of the game.  Due to the limited table size, any symbol in these files that's over 6 characters in length is truncated.
+
+At the end of the toolchain, a batch script file written in VAX DCL language collected all of the source files and fed them into the assembler in a specific order.  It was a lot of work to make sure everything matched up but in the end, I'm really glad they were kinda forced to generate all these symbol definitions because it has made a lot of this reverse engineering work much, much easier.  
 
 ### Choosing a new assembler
 
@@ -119,7 +154,7 @@ Even just taking a quick glance over the code, it quickly becomes apparent that 
 
 Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as it does some things differently from other assemblers that I've come across and the documentation is rather daunting.  Unlike ASxxxx's manual, there's not many examples or concise instructions on how the assembler works.  In fact, I feel I learned more from looking at Sonic 1 and 2 disassemblies targeting {AS} than the manual itself.  Once I got the hang of the new syntax changes though, I started getting into the flow of things and was able to rewrite all of Sam Dicker's code in a week.  It was a rough start but I did get used to how {AS} operates and I'm happy with the results so far.
 
-## Changing the source code
+## Rewriting the source code
 
 I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Any new comments by me will use two semi-colons (```;;```), while original comments will only use one (```;```).
 
@@ -181,7 +216,7 @@ The problem with this macro is that it doesn't say when this symbol renaming occ
 
 ### PAD
 
-```PAD``` is another macro that gets used a lot to create padding or reserve memory bytes and assigning two new labels: ```<label>SAV``` and ```<label>LEN```.  Unfortunately, this won't work with {AS} without having to change the label names to: ```<label>_SAV``` and ```<label>_LEN```.  While this underscore is acceptable for ```ROUTINE```, ```PAD``` is used more often and will require a lot of rewriting to fix mismatching labels with the new underscore character.  I chose to not use this macro when new label names are being defined because of this.
+```PAD``` is another macro that gets used a lot to either create padding or reserve memory bytes and by "bookending" those bytes with two new labels: ```<label>SAV``` and ```<label>LEN```.  Unfortunately, this won't work with {AS} without having to change the label names to: ```<label>_SAV``` and ```<label>_LEN```.  While this underscore is acceptable for ```ROUTINE``` since replacing routines doesn't happen too often, ```PAD``` is used more frequently and will require a lot of rewriting to fix mismatching labels with the new underscore character.  I chose to not use this macro when new label names are being defined because of this.
 
 ### TEXT/PHRASE
 
@@ -211,6 +246,26 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 
 	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+```
+### Inconsistent label names
+
+Thanks to the BSO's small symbol table size, several symbols appear in different files with slightly longer names, creating inconsistenties and assembly errors.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAVE``` exclusively.  To keep edits down to a minimum and leave the original longer symbol names untouched, a new file called ```new_equates.ASM``` was created that defines the longer symbol names and matches them up with their shorter counterparts.
+
+```
+SinIndex EQU	SinInde
+addscore EQU	addscor
+subpiece EQU	subpiec
+PiecePtr EQU	PiecePt
+PieceTbl EQU	PieceTb
+MAXBOMBS EQU	MAXBOMB
+MesgTime EQU	MesgTim
+ScoreAddr EQU	ScoreAd
+SiniSector EQU	SiniSec
+AddBombs EQU	AddBomb
+DCredits EQU	DCredit
+PlaIndex EQU	PlaInde
+PlyrAngl EQU	PlyrAng
+addpiece EQU 	addpiec
 ```
 
 ### Local labels
@@ -300,11 +355,10 @@ These conditional pseudo-ops get used a lot so having this guide was extremely i
 ```
 These periods have been removed and ```RADIX 10``` is used instead when needed.  
 
-At first, I tried changing the ``RADIX 16``` at the very beginning of the code but it created a lot of headaches.  Using the ```RADIX 10``` instructions also helps when browsing through the code as it makes it easier to distinguish the hex values from the decimal ones. 
+At first, I tried changing the ```RADIX 16``` at the very beginning of the code but it created a lot of headaches.  Using the ```RADIX 10``` instructions also helps when browsing through the code as it makes it easier to distinguish the hex values from the decimal ones. 
 
 ### Common fixes
 
 * Exclusive OR ```!X``` are now just ```!```.
 * Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
 * ```#!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```#~$4```.
-* Several symbol appear in different files with slightly longer names, creating inconsistent symbols.  For example, ```ROMSAVE``` and ```ROMSAV``` are used interchangably in the original code, but this rewrite uses ```ROMSAVE``` exclusively.
