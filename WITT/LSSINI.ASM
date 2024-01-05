@@ -9,7 +9,7 @@
 ;;  here and in Sam's files because it's easier to read that way.
 ;;
 ; EQUs to remove later
-taunt	EQU	$6C80 
+;taunt	EQU	$6C80 
 ;;===============================================================================
 
 	PUSHORG	ROMSAVE

@@ -18,5 +18,5 @@
 	INCLUDE "../WITT/SINIBOMB.ASM"
 	INCLUDE "../WITT/SINI.ASM"
 ;*
-	;INCLVER	RICH,stubs		;* To fake Noah's stuff.
+	INCLUDE "../WITT/STUBS.ASM"		;* To fake Noah's stuff.
 ;*

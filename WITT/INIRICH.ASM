@@ -11,7 +11,7 @@
 ;ERASE 	EQU	$55D4
 ;ANISCF	EQU	$5550	;ANISINI
 ;ADDBOMB	EQU	$567E	;COLLISIO
-AMSINI	EQU	$6C59	;STUBS
+;AMSINI	EQU	$6C59	;STUBS
 ;DEATH 	EQU	$5832	;DEATH
 ;EMPTY 	EQU	$52F5
 ;===============================================================================

@@ -7,7 +7,7 @@
 ;getldist EQU	$6338
 ;getsdist EQU	$6349
 ;Nexttarget EQU	$63F7
-KRWorker EQU	$6C73
+;KRWorker EQU	$6C73
 ;;===============================================================================
 
 	PUSHORG	ROMSAVE

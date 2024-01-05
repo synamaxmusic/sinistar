@@ -8,7 +8,7 @@ RHSCROLL EQU	$00F0
 ;screenchk EQU	$68CC
 ;washodds EQU	$6A57
 ;shoot	EQU	$68DD
-BombsAway EQU	$6C5E
+;BombsAway EQU	$6C5E
 ;aniwarrior EQU	$684C
 ;;===============================================================================
 

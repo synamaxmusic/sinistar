@@ -40,4 +40,5 @@ IWARRSHOT EQU	IWARRSH
 
 CWarrior EQU	CWarrio
 
-;STBLSinistar EQU STBLSini
+prebou	EQU	prebounce
+posbou	EQU	posbounce 

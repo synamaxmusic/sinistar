@@ -5,7 +5,7 @@
 ;;
 ;;===============================================================================
 ; EQUs to remove later
-RSTPOP	EQU	$6C7C
+;RSTPOP	EQU	$6C7C
 ;ReTarget EQU	$6438
 ;AimFlang EQU	$64DD	;UPDFLANG
 ;getlodist EQU	$635A	;DISTANCE

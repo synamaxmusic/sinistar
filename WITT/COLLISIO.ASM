@@ -1,11 +1,11 @@
 ;===============================================================================
 ; EQUs to remove later
 ;PREBOY	EQU	$5728	;COLLISIO
-GIVCRYS	EQU	$6C64	;STUBS
-KRCRYS	EQU	$6C70	;STUBS
-PREBOU	EQU	$6C79	;STUBS
-POSBOU	EQU	$6C76	;STUBS
-ADDVIB	EQU	$6C56	;STUBS
+;GIVCRYS	EQU	$6C64	;STUBS
+;KRCRYS	EQU	$6C70	;STUBS
+;PREBOU	EQU	$6C79	;STUBS
+;POSBOU	EQU	$6C76	;STUBS
+;ADDVIB	EQU	$6C56	;STUBS
 ;SUBPART	EQU	$58B9	;SUBPART
 ;===============================================================================
 
