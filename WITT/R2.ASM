@@ -13,8 +13,8 @@
 	INCLUDE "../WITT/KRSINI.ASM"		;* Sinistar Killing routine
 	INCLUDE "../WITT/LEAVESEC.ASM"		;* Leaving sector vectors
 	INCLUDE "../WITT/TABLES.ASM"
-	;INCLVER	RICH,worker
-	;INCLVER	RICH,warrior
+	INCLUDE "../WITT/WORKER.ASM"
+	INCLUDE "../WITT/WARRIOR.ASM"
 	;INCLVER	RICH,sinibomb
 	;INCLVER	RICH,sini
 ;*

@@ -21,3 +21,19 @@ DCredits EQU	DCredit
 PlaIndex EQU	PlaInde
 PlyrAngl EQU	PlyrAng
 addpiece EQU 	addpiec
+
+;;WORKER.ASM fixes
+getlodist EQU	getlodistance
+getsodist EQU	getsodistance
+getldist EQU	GetLDistance
+getsdist EQU	GetSDistance
+
+newvel	EQU	newvelocity
+updlvel EQU	updlvelocity
+updsvel EQU	updsvelocity
+
+PWaShInhibit EQU PWaShIn
+OSFASTEP EQU	OSFAST
+
+CWARSHOT EQU	CWARSHO
+IWARRSHOT EQU	IWARRSH

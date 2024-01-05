@@ -6,15 +6,15 @@
 ;;===============================================================================
 ; EQUs to remove later
 RSTPOP	EQU	$6C7C
-ReTarget EQU	$6438
-AimFlang EQU	$64DD	;UPDFLANG
-getlodist EQU	$635A	;DISTANCE
+;ReTarget EQU	$6438
+;AimFlang EQU	$64DD	;UPDFLANG
+;getlodist EQU	$635A	;DISTANCE
 ;stblimpulse EQU	$5CF6   ;STBLIMP
-NEWVEL	EQU	$6503	;VELOCITY
-updlvel	EQU	$6540	;VELOCITY
-getsodist EQU	$6396	;DISTANCE
-updsvel	EQU	$6569	;DISTANCE
-UnTarget EQU	$6479	;RETARGET
+;NEWVEL	EQU	$6503	;VELOCITY
+;updlvel	EQU	$6540	;VELOCITY
+;getsodist EQU	$6396	;DISTANCE
+;updsvel	EQU	$6569
+;UnTarget EQU	$6479	;RETARGET
 ;===============================================================================
 
 	PUSHORG	ROMSAVE
