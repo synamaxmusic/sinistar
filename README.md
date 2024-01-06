@@ -34,7 +34,7 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
-* 01/05/2024 - Rich's module is finally complete, we're halfway done!
+* 01/06/2024 - Rich's module is finally complete, we're halfway done!
 * 01/03/2024 - I cleaned up some of my older comments and replaced my old ```PUSH/PULLORG``` hacks with the actual macros.  The same goes for the ```ROUTINE``` macro; it's actually pretty useful as it shows messages in the listing output and makes it easier to understand.  ```PAD``` doesn't work exactly the same with the new assembler so it's only used sparringly in this rewrite when there are no macro arguments; any ```PAD``` macros that need to generate new lable names have been replaced with three lines of code that reproduces exactly what we need (see [PAD](#pad) for more info).
 * 12/30/2023 - I got [several important and heavily-used macros](https://github.com/synamaxmusic/sinistar/commit/f8ace13ec0a8a5db5baac7f346cc17ed26605bbd) to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
 * 11/14/2023 - Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
