@@ -42,3 +42,5 @@ CWarrior EQU	CWarrio
 
 prebou	EQU	prebounce
 posbou	EQU	posbounce 
+
+Credits EQU	Credit
