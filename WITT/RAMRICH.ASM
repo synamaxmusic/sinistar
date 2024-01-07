@@ -41,7 +41,7 @@ SiniKills	rmb	1	;* The number of Sinistars killed.
 ;*	R   R  A   A  M   M  SSSS   A   A    V    EEEEE
 ;*
 ;*****
-	PUSHORG	RamSav
+	PUSHORG	RamSav							;;Fixme was: PUSHORG	RamSave (It's important to note that RAMSAVE and RAMSAV are different)
 KeyClee
 KeyWorker	rmb	2		;* Keystone for workers
 KeyWarrior	rmb	2		;* Keystone for Warriors
@@ -79,7 +79,7 @@ InImpulse	rmb	1	;* The following timeline applies to the
 ;*	+ End of warp sequence.
 ;***
 HSTDMRQ	RMB	1		;Flag set when HSTD/Marquee page is displayed
-	PULLORG	RamSave
+	PULLORG	RamSav							;;Fixme was: PULLORG  RamSave (this was messing up Noah's RAM stuff)
 
 ;	SUBTTL	SRAMSAVE
 ;*****
