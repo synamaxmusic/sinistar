@@ -17,6 +17,12 @@
 ;Shatter	EQU	$7074
 PLXQUE	EQU	$7C6A
 WRXQUE	EQU	$7C67
+HanSolo	EQU	$7965
+DTimer	EQU	$7A3C
+POPFIL	EQU	$7900
+ADJPOP	EQU	$78EC
+SINCON	EQU	$79BB 
+InWorker EQU	$7574
 ;;===============================================================================
 
 ;	Include	[Sam]Start
@@ -871,15 +877,13 @@ PrePlo	Sleep	.1S		;* Go back to sleep for another cycle
 .6S	puls	D,X,Y
 	jmp	Die		;* Then die too
 ;	local
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	END
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;	SubTtl	- Initialization
 
 ;*
 ;*		Player Initialization
 ;*
-	Vector	PlaVec
+	Vector	PlaVect								;;Fixme was: Vector  PlaVec
 
 	clr	SiniKills	;* I clear it so initial rstpop is correct
 	jsr	RstPop		;* Reset population and difficulty tables
@@ -889,14 +893,14 @@ PrePlo	Sleep	.1S		;* Go back to sleep for another cycle
 ;*				Turn Initialization
 ;*
 
-	Vector	IniVec
+	Vector	IniVect								;;Fixme was: Vector  IniVec
 
 ;*			Entry Point for Turn initialization
 	ldu	#Pop
-1$	clr	,U		;* Zero out current number of things in sector
+.1S	clr	,U		;* Zero out current number of things in sector
 	leau	3,U		;* Point to next thing
 	cmpu	#Pop+21		;* See if we are at end of list
-	blt	1$		;* If not keep going
+	blt	.1S		;* If not keep going
 ;*
 ;	local
 	ldx	#Ground
@@ -926,31 +930,30 @@ PrePlo	Sleep	.1S		;* Go back to sleep for another cycle
 ;*
 ;*		If in Void zone (sinikill mod 4 = 0) do not have swarms
 ;*
-	local
-	lda	SiniKill
-	beq	1$		;* do it on first time
+;	local
+	lda	SiniKills							;;Fixme was: lda  SiniKill
+	beq	.SWRM1S		;* do it on first time				;;Fixme was: beq  1$
 	anda	#$03		;* Mod 4
-	beq	2$
+	beq	.SWRM2S								;;Fixme was: beq  2$
 ;*				Start swarms
 
-1$	New_Sleep	Task256,HanSolo
+.SWRM1S	New_Sleep	Task256,HanSolo
 
-2$	nop			;* Probably unnecessary
+.SWRM2S	nop			;* Probably unnecessary
 ;*
 ;	local
 ;	IFN	Version-Final
-;	Local			* Patch for Rich to add workCR at init
-;RicPat	lda	#0
-;	ldu	#CWorkCr
-;	sta	Temp
-;1$	dec	Temp
-;	bmi	2$
-;	jsr	[OInvec,U]	;* Make a WorkCr
-;	jmp	1$
+;	Local			;* Patch for Rich to add workCR at init
+RicPat	lda	#0
+	ldu	#CWorkCr
+	sta	Temp
+.1S	dec	Temp
+	bmi	.2S
+	jsr	[OInvec,U]	;* Make a WorkCr
+	jmp	.1S
 ;	ENDIF
 ;
-;2$	rts
-
+.2S	rts
 
 
 ;	SubTtl	- Initialization Subroutines
@@ -972,6 +975,9 @@ PrePlo	Sleep	.1S		;* Go back to sleep for another cycle
 IRWork	New_Scan	CWorker		;* Get scanner WS
 	jsr	InWorker		;* Give it Worker primary intelligence
 	rts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	END
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;*
 ;*		IRWarr - Warriors
 ;*

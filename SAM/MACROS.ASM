@@ -55,7 +55,7 @@ SS	SET	*					;; .$$ was previously defined in MESSEQU.SRC (Had to rename to "SS"
 ;* first occurance	- creates symbol
 ;* second occurance	- types 'REPLACING' message
 ;* first occurance	- types 'DUP REPLACE' error message
-ROUTINE	MACRO	N1
+ROUTINE	MACRO	N1,{GLOBAL}
 ;	BLIST
 	IFNDEF	N1
 N1	SET	*
@@ -68,12 +68,10 @@ Z_N1	SET	*									;; Macroassembler AS also needs an "_" to attach macro argume
 ;	LOCAL
 	MESSAGE	"DUP						REPLACE N1"
 	ENDIF	
-	SECTION DUPLROUT								;; Needed a local section
 SS	SET	*
 	ORG	N1
 	JMP	SS
 	ORG	SS
-	ENDSECTION DUPLROUT
 	ENDIF
 ;	MLIST
 	ENDM
@@ -373,7 +371,7 @@ CHANGE_SLEEP MACRO SL,WU
 	LDD	#WU
 	JMP	C2SLEEP
 	ENDIF
-	ENDIF
+;	ENDIF					;; This is not needed.
 ;	MLIST
 	ENDM
 
