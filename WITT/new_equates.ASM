@@ -44,3 +44,7 @@ prebou	EQU	prebounce
 posbou	EQU	posbounce 
 
 Credits EQU	Credit
+
+;;For Noah
+CCrystal EQU	CCRYSTA
+OPDrwVec EQU	OPDRWVE
