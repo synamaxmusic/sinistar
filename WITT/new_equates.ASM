@@ -48,3 +48,7 @@ Credits EQU	Credit
 ;;For Noah
 CCrystal EQU	CCRYSTA
 OPDrwVec EQU	OPDRWVE
+
+CFragment EQU	CFragme
+
+DeathFlag EQU	DeathFl

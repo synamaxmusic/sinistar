@@ -15,14 +15,24 @@
 ;TosCrys	EQU	$711E
 ;VIBSTP	EQU	$70DE
 ;Shatter	EQU	$7074
-PLXQUE	EQU	$7C6A
-WRXQUE	EQU	$7C67
-HanSolo	EQU	$7965
-DTimer	EQU	$7A3C
-POPFIL	EQU	$7900
-ADJPOP	EQU	$78EC
-SINCON	EQU	$79BB 
-InWorker EQU	$7574
+;PLXQUE	EQU	$7C6A
+;WRXQUE	EQU	$7C67
+;HanSolo	EQU	$7965
+;DTimer	EQU	$7A3C
+;POPFIL	EQU	$7900
+;ADJPOP	EQU	$78EC
+;SINCON	EQU	$79BB 
+;InWorker EQU	$7574
+;PlSecIn	EQU	$7899
+;CrSecIn	EQU	$77EC
+;PreCal	EQU	$764F
+;Quota	EQU	$7A48
+;PRIOS 	EQU	$7A5C
+;MisAss	EQU	$7A52
+;EPOPVL	EQU	$A03C
+;ScOCDT	EQU	$7AA8
+;RSOEND	EQU	$7AB6
+;DifTmr	EQU	$A03F
 ;;===============================================================================
 
 ;	Include	[Sam]Start
@@ -466,7 +476,7 @@ RndScl	pshs	A
 ;*
 ;*		KRWork - Workers
 ;*
-	Routine	KRWork
+	Routine	KRWorker							;;Fixme was: Routine  KRWork
 	jsr	KilWor
 	rts
 ;*
@@ -975,9 +985,6 @@ RicPat	lda	#0
 IRWork	New_Scan	CWorker		;* Get scanner WS
 	jsr	InWorker		;* Give it Worker primary intelligence
 	rts
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	END
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;*
 ;*		IRWarr - Warriors
 ;*
@@ -1056,14 +1063,14 @@ IRSBomb	pshs	U
 	New_Scan	CSbomb		;* Get scanner WS
 	pshs	X			;* Save scanner WS
 
-1$	RANDOM	OSEED1,BYTE	;* Give the Sinibomb a (pseudo) random
+.1S	RANDOM	OSEED1,BYTE	;* Give the Sinibomb a (pseudo) random
 	sta	OSPERS,X	;*   personality so that it THINKS better.
 ;***
 ;*	The personality must be set so that all the Sinibombs don't "think"
 ;*	at the same time.
 ;***
 	jsr	InCaller		;* Give it Caller primary intelligence
-	New_Sleep	Task8,SiniBo,OWISLen	;* Start secondary intelligence
+	New_Sleep	Task8,SiniBomb,OWISLen	;* Start secondary intelligence	;;Fixme was: New_Sleep	Task8,SiniBo,OWISLen
 	ldu	,S			;* Get sinibomb scanner WS
 	ldd	OIndex,U		;* Get index to scanner WS
 	std	OWSCon,X		;* This is controlled WS of sec. intel.
@@ -1078,7 +1085,7 @@ IRSini	New_Scan	CSini		;* Get scanner WS
 ;*
 ;*				This section from RICH
 	RANDOM	OSEED1,BYTE
-	anda	#~(PSiniInhibit)								;;Fixme was: anda  #!N(PSiniInhibit)
+	anda	#~(PSiniInhibit)						;;Fixme was: anda  #!N(PSiniInhibit)
 	ora	#MaxSinOrbit
 	sta	OSPERS,X
 ;*
@@ -1100,14 +1107,14 @@ SiniPa	Change_Sleep	Task8,Sini	;* Make it wake on faster list
 	pshs	A,B,X,Y,U	;* Save work registers
 	ldx	[PlaIndex]	;* X -> Player's scanner workspace.
 	tst	AMDemo		;* If in attract mode demo
-	bne	1$		;*   then create a special player.
+	bne	.1S		;*   then create a special player.
 	jsr	InCaller	;* Give the player calling intelligence.
-	bra	99$		;* Exit
+	bra	.99S		;* Exit
 ;***
 ;*	Start the auto pilot.
 ;***
-1$	jsr	InWarrior	;* <<< Temporary, as a warrior >>>
-99$	puls	A,B,X,Y,U	;* Restore work registers
+.1S	jsr	InWarrior	;* <<< Temporary, as a warrior >>>
+.99S	puls	A,B,X,Y,U	;* Restore work registers
 	rts
 
 
@@ -1180,11 +1187,11 @@ InWorker
 	clrd
 	ldu	OSChar,X	;*
 	cmpu	#CCrystal	;*
-	bne	1$		;*
+	bne	.INCA1S		;*						;;Fixme was: bne  1$
 	tst	AMDemo		;* Ask Sam about this.
-	bne	1$		;*
+	bne	.INCA1S		;*						;;Fixme was: bne  1$
 	incb			;* Fake out the quota as filled.
-1$	std	OQuota,X	;* Then zero quotas - none filled so far
+.INCA1S	std	OQuota,X	;* Then zero quotas - none filled so far
 	ldd	OIndex,X	;* Get the index to this Caller
 	New_Sleep	Task1,PreCal,OWISLen	;* Start intelligence sleep task
 ;* X now has WS of intelligence sleep task, not Scanner task
@@ -1229,10 +1236,10 @@ PreCal	clr	CalOne
 PosCal	clr	CalOne		;* Now we are no longer on first call
 	ldd	#SPlayer
 	cmpd	OWSCon,Y	;* See if it is the player being called
-	bne	1$
+	bne	.1S
 	Change_Sleep	Task64,Caller	;* Player calls twice as often as others
 ;*
-1$	Change_Sleep	Task256,Caller	;* Make them wake at caller routine
+.1S	Change_Sleep	Task256,Caller	;* Make them wake at caller routine
 ;	Local
 
 ;* Enter from sleep - Y points to Sleep Task of Caller
@@ -1245,24 +1252,24 @@ Caller	pshs	Y			;* Save pointer for sleep at exit
 	lda	#OWorker		;* Start out by calling Workers
 	sta	Temp+OClee		;* To keep track of Callee type
 ;* See if we have our quota of callees yet
-1$	adda	Temp+OCler		;* Add Caller to Callee now in A
+.1S	adda	Temp+OCler		;* Add Caller to Callee now in A
 	sta	Temp+OCombo		;* This is our combined calling code
 	ldx	#Quota			;* Quota table `Eventually in RAM`
 	ldb	A,X			;* Load correct quota for this Combo
 	lda	Temp+OClee		;* Get Callee offset again
 	leax	OQuota,Y		;* Point to Quota slots for caller
 	cmpb	A,X			;* See if number of callees equals quota
-	bhi	4$			;* If quota greater, quota is unfilled
+	bhi	.4S			;* If quota greater, quota is unfilled
 ;* A pass is completed, see if another is to be done
-2$	lda	Temp+OClee		;* See who our callee is
-	beq	3$			;* if still worker, keep on going
-	jmp	17$			;* If not zero (worker) is warrior, done
+.2S	lda	Temp+OClee		;* See who our callee is
+	beq	.3S			;* if still worker, keep on going
+	jmp	.17S			;* If not zero (worker) is warrior, done
 ;* First pass - workers - done, now check for warriors
-3$	lda	#OWarrior		;* Get offset for Warriors
+.3S	lda	#OWarrior		;* Get offset for Warriors
 	sta	Temp+OClee		;* They are callee type now
-	jmp	1$			;* Go back to quota checking loop
+	jmp	.1S			;* Go back to quota checking loop
 ;* Quota unfilled, calculate our modified priority
-4$	ldb	A,X			;* Number of Callees of type on call
+.4S	ldb	A,X			;* Number of Callees of type on call
 	lda	#QuoMod			;* How importance quota is to priority
 	mul				;* Scale current quota filled
 	stb	Temp+OQtaFct		;* Save this modified quota factor
@@ -1283,37 +1290,37 @@ Caller	pshs	Y			;* Save pointer for sleep at exit
 	asla				;* Double it for 2 byte offset
 	ldx	#KeyClee		;* Point to keystone lookup for callees
 	ldx	A,X			;* Grab the appropriate Callee Keystone
-	jmp	6$			;* On first pass, skip type pointer load
+	jmp	.6S			;* On first pass, skip type pointer load
 ;* Top of search loop - look through callees
-5$	ldx	OScTyPt,X		;* get pointer to next callee of type
-6$	cmpx	#Ground			;* Does next callee exist?
-	beq	11$			;* If not, see if we found real one yet
+.5S	ldx	OScTyPt,X		;* get pointer to next callee of type
+.6S	cmpx	#Ground			;* Does next callee exist?
+	beq	.11S			;* If not, see if we found real one yet
 	ldx	,X			;* Point X to Scanner WS of next callee
 	ldd	OScWCr,X		;* See if this callee's caller
 	cmpd	OIndex,Y		;* Is the caller now trying to call it
-	beq	5$			;* If so, go on to next callee
+	beq	.5S			;* If so, go on to next callee
 	lda	Temp+OPriMax		;* Check our best possible priority
 	cmpa	OCalPri,X		;* Against callee's mission priority
-	bls	5$			;* If less, we can't possibly override
+	bls	.5S			;* If less, we can't possibly override
 	lda	#$FF			;* Check for 'override' value
 	cmpa	OCalPri,X		;* In callee priority slot
-	beq	5$			;* If FF, is on special call, ignore
+	beq	.5S			;* If FF, is on special call, ignore
 ;* May be possible to call this one - check dist, make sure
 	lda	OSLPos,X		;* Get his long position
 	cmpa	OSLPos,Y		;* Compare it with our long position
-	blt	7$			;* If ours is higher (signed)
+	blt	.7S			;* If ours is higher (signed)
 	suba	OSLPos,Y		;* Then subtract his
-	jmp	8$
-7$	lda	OSLPos,Y		;* Else subtract us from him
+	jmp	.8S
+.7S	lda	OSLPos,Y		;* Else subtract us from him
 	suba	OSLPos,X
-8$	ldb	OSSPos,X		;* Get his short position
+.8S	ldb	OSSPos,X		;* Get his short position
 	cmpb	OSSPos,Y		;* Compare it with our short position
-	blt	9$			;* If ours is higher (signed)
+	blt	.9S			;* If ours is higher (signed)
 	subb	OSSPos,Y		;* Then subtract his
-	jmp	10$
-9$	ldb	OSSPos,Y		;* Else subtract us from him
+	jmp	.10S
+.9S	ldb	OSSPos,Y		;* Else subtract us from him
 	subb	OSSPos,X
-10$	std	Temp+OHisDs		;* Save his distance, he may be best
+.10S	std	Temp+OHisDs		;* Save his distance, he may be best
 	jsr	CalDm			;* Then calculate the distance modifier
 	sta	Temp+OMoDst		;* This is modified distance factor
 	adda	Temp+OPriMod		;* Add it to modified priority
@@ -1325,10 +1332,10 @@ Caller	pshs	Y			;* Save pointer for sleep at exit
 	sta	Temp+OHisPri
 	lda	Temp+OurPri		;* Get our priority
 	cmpa	Temp+OHisPri		;* Compare it with his current priorty
-	bls	5$			;* If no better, look at next callee
+	bls	.5S			;* If no better, look at next callee
 ;* Eligible Callee found, see if it is the best so far
 	cmpa	Temp+OBstPri		;* Compare this prio with best so far
-	bls	5$			;* If no better, keep going
+	bls	.5S			;* If no better, keep going
 	sta	Temp+OBstPri		;* Else this is now the best priority
 	ldd	OIndex,X		;* Get index to the callee
 	std	Temp+OBstClee		;* Save it as index to best callee
@@ -1337,51 +1344,51 @@ Caller	pshs	Y			;* Save pointer for sleep at exit
 ;* Do Minimum Unconditional Acceptance Distance modifier check
 	lda	Temp+OMoDst		;* Get the distance mod to this callee
 	cmpa	#MUAD			;* This should be RAM location `
-	bls	5$			;* if not over MUAD, keep looking
+	bls	.5S			;* if not over MUAD, keep looking
 ;* Got one - or checked all without finding one within MUAD
-11$	lda	Temp+OBstPri		;* Look at the best priority we found
+.11S	lda	Temp+OBstPri		;* Look at the best priority we found
 	cmpa	#WrstPri		;* Is it better than worst acceptable?
-	lbls	2$			;* If not, see if we need another pass
+	lbls	.2S			;* If not, see if we need another pass
 ;* Valid Callee found - update him, his caller, this caller
 	ldx	[Temp+OBstClee]		;* Point X to best callee's workspace
 	ldu	[OScWCr,X]		;* Point to former caller of callee
 	cmpu	[OIndex,X]		;* See if it's calling itself (uncalled)
-	beq	16$			;* If so, no list to delete it from
+	beq	.16S			;* If so, no list to delete it from
 	lda	Temp+OClee		;* Get offset for this callee type
 	adda	#OQuota			;* Point A to right callee/quota
 	dec	A,U			;* One less callee of that type now
-	bpl	12$			;* Error check - should not be needed`
+	bpl	.12S			;* Error check - should not be needed`
 	swi		;*	'No Callee in list'`
 ;* In final version, delete the bpl 12$ and swi`
-12$	lda	Temp+OClee		;* Get callee offset
+.12S	lda	Temp+OClee		;* Get callee offset
 	lsla				;* Double it for two byte offset
 	adda	#OCleLs			;* Point to start of proper callee list
 	ldu	A,U			;* Look at first callee
 	cmpu	OIndex,X		;* See if he is the one we want
-	bne	13$			;* If not, search down list
+	bne	.13S			;* If not, search down list
 ;* First callee is one we want
 	ldu	[OScWCr,X]		;* Point to former caller of callee
 	leau	A,U			;* Point to its first callee entry
 	ldd	OScSqI,X		;* Get next member of callee's squadron
 	std	,U			;* Now is new first callee of old caller
-	jmp	16$			;* Go attend to callee
+	jmp	.16S			;* Go attend to callee
 ;* Not first callee - look down list til you find it
-13$	ldd	OIndex,X		;* This is our callee's ID
+.13S	ldd	OIndex,X		;* This is our callee's ID
 	ldu	,U			;* Point U to Workspace of first callee
-14$	cmpd	OScSqI,U		;* Compare each callee in list to ours
-	beq	15$
+.14S	cmpd	OScSqI,U		;* Compare each callee in list to ours
+	beq	.15S
 	ldu	[OScSqI,U]		;* Point to WS of next squadron member
-;	IFE	VERSION-FINAL
-	bra	14$
+;	IFE	VERSION-FINAL							;;Commenting this out makes the code match up.
+;	bra	.14S
 ;	ELSE
-;	cmpu	#Ground			;* See if we missed it somehow
-;	bne	14$
-;	swi		;*	'Callee not present on Caller list'`
+	cmpu	#Ground			;* See if we missed it somehow
+	bne	.14S
+	swi		;*	'Callee not present on Caller list'`
 ;	ENDIF
-15$	ldd	OScSqI,X		;* Get next member of callee's squadron
+.15S	ldd	OScSqI,X		;* Get next member of callee's squadron
 	std	OScSqI,U		;* Now it takes place of callee
 ;* Now update our Caller's quota and list
-16$	lda	Temp+OClee
+.16S	lda	Temp+OClee
 	adda	#OQuota			;* Calculate proper quota byte addr.
 	inc	A,Y			;* Update our caller's quota total
 	lda	Temp+OClee
@@ -1405,12 +1412,12 @@ Caller	pshs	Y			;* Save pointer for sleep at exit
 	lda	Temp+OCombo		;* Get our unique combination code
 	lda	A,U			;* Get mission
 	sta	OSMis,X			;* Give it to new callee
-	jmp	2$			;* See if we need another pass
-17$	puls	Y			;* Restore index to sleep task
+	jmp	.2S			;* See if we need another pass
+.17S	puls	Y			;* Restore index to sleep task
 	lda	CalOne			;* See if its the first call for caller
-	beq	20$
+	beq	.20S
 	jmp	PosCal			;* Do changesleep if so, else
-20$	Sleep	LOOP			;* Return to sleep
+.20S	Sleep	LOOP			;* Return to sleep
 
 
 ;*	CALDM -	Calculate squared distance between scanner coords and modify
@@ -1431,82 +1438,82 @@ CalDm	coma				;* Reverse the magnitude of A and B to
 	ldb	#DstMod			;* Scale it by distance modifier
 	mul
 	rts
-
+	
 ;	SubTtl	- Secondary Intelligences - Crystals, Planets
 ;****
 ;*
 ;*			CrSecIn - Crystal secondary intelligence - WS in Y
 ;*
 CrSecIn	inc	OCrAge,Y	;* Age it
-	bvc	1$		;* No problem if no overflow
+	bvc	.1S		;* No problem if no overflow
 	dec	OCrAge,Y	;* Else bring it back down to FF
-1$	lda	OCrAge,Y	;* Then grab it for later
+.1S	lda	OCrAge,Y	;* Then grab it for later
 	ldx	[OWSCon,Y]	;* Get scanner WS this intelligence controls
 	ldu	OSScWSA,X	;* Look at its object WS
-	bne	7$		;* If onscreen, zero its age and return
+	bne	.7S		;* If onscreen, zero its age and return
 	cmpa	#MaxCrA		;* Compare this age to maximum crystal age
-	blo	3$		;* If this age is lower, don't kill the crystal
-*
+	blo	.3S		;* If this age is lower, don't kill the crystal
+;*
 	jsr	KRCrys		;* Crystal dies of old age
-	jmp	2$		;* Then return
-*
-7$	clr	OCrAge,Y	;* Crystal back on screen - new lease on life
+	jmp	.2S		;* Then return
+;*
+.7S	clr	OCrAge,Y	;* Crystal back on screen - new lease on life
 	JMP	CRONSEC
-*
-3$	lda	OQuota,X	;* Look at quota of workers now called
-	beq	2$		;* If zero, forget it
+;*
+.3S	lda	OQuota,X	;* Look at quota of workers now called
+	beq	.2S		;* If zero, forget it
 	FRANDOM	OSEED1,BYTE
 	cmpa	#CatPrb		;* Do a random check against catching probabil.
-	bhi	2$		;* If higher, no one has caught this crystal
+	bhi	.2S		;* If higher, no one has caught this crystal
 ;*				  else someone gets it if they're near enough
 	ldu	[OCleLs,X]	;* Point to WS of first worker
 ;*
-4$	lda	#CryDis		;* Get minimum crystal catch distance acceptable
+.4S	lda	#CryDis		;* Get minimum crystal catch distance acceptable
 	cmpa	OScLDC,U	;* Compare to long dist. to caller
-	blo	5$		;* If too far, look at next worker
+	blo	.5S		;* If too far, look at next worker
 	cmpa	OScSDC,U	;* Else check short distance too
-	blo	5$		;* With same consequences
+	blo	.5S		;* With same consequences
 ;*
 	ldd	OSScWSA,U	;* It is close enough - see if it is on screen
-	beq	6$		;* If not on screen, go give it the crystal
+	beq	.6S		;* If not on screen, go give it the crystal
 ;*
-5$	ldu	[OScSqI,U]	;* Look at WS of next squadron member
-	bne	4$		;* If not at end of list, check him out
+.5S	ldu	[OScSqI,U]	;* Look at WS of next squadron member
+	bne	.4S		;* If not at end of list, check him out
 ;*
-2$	Sleep	LOOP		;* Exit point
+.2S	Sleep	LOOP		;* Exit point
 ;*
-6$	jsr	KRCrys		;* Kill the crystal off
+.6S	jsr	KRCrys		;* Kill the crystal off
 	tfr	U,X		;* Point to worker getting crystal
 	jsr	GivCrys		;* Give it to him
-	jmp	2$		;* All done
+	jmp	.2S		;* All done
 ;* crystal onscreen secondary intelligence
 CRONSEC	CHANGE_SLEEP TASK8,HERE	;switch to faster list for flashing
-	BSR	2$		;still on screen?
+	BSR	.2S		;still on screen?
 	FRANDOM	OSEED1,BYTE	;50% chance of flashing
-	BMI	1$		;flash this time?
+	BMI	.1S		;flash this time?
 	SLEEP	LOOP		;no, try again next time
-1$	RANDOM	OSEED1,WORD	;yes, don't all flash at once
+.1S	RANDOM	OSEED1,WORD	;yes, don't all flash at once
 	CHANGE_SLEEP TASK1,HERE	;switch to one list for effect
-	BSR	2$		;still on screen?, get screen WS address in U
+	BSR	.2S		;still on screen?, get screen WS address in U
 	LDD	#ICFLASH	;change crystal image to flash image
 	STD	ONIDESC,U
 	LDD	#CHGOBJ
 	STD	ODRWVEC,U
 	TUNE	QCRYFLA		;play crystal flash tune
 	SLEEP	HERE		;wait one screen before erasing
-	BSR	2$		;still on screen?, get screen WS address in U
+	BSR	.2S		;still on screen?, get screen WS address in U
 	LDD	#ICRYSTA	;change crystal image back to normal image
 	STD	ONIDESC,U
 	LDD	#CHGOBJ
 	STD	ODRWVEC,U
 	BRA	CRONSEC		;back to flashing list
 ;*
-2$	LDX	[OWSCON,Y]	;get scanner WS this intelligence controls
+.2S	LDX	[OWSCON,Y]	;get scanner WS this intelligence controls
 	LDU	OSSCWSA,X	;get at its object WS in U
-	BEQ	3$		;if offscreen, switch to offscreen sec intel
+	BEQ	.3S		;if offscreen, switch to offscreen sec intel
 	RTS
 ;*
-3$	LEAS	2,S		;offscreen, forget about returninig
+.3S	LEAS	2,S		;offscreen, forget about returninig
 	CHANGE_SLEEP TASK64,CRSECIN ;change back to offscreen intelligence
 ;	LOCAL
 ;*
@@ -1515,16 +1522,16 @@ CRONSEC	CHANGE_SLEEP TASK8,HERE	;switch to faster list for flashing
 ;*
 PlSecIn	ldx	[OWSCon,Y]	;* Get scanner WS this intelligence controls
 	ldu	OSScWSA,X	;* Look at its object WS
-	bne	2$		;* If onscreen, ignore it and return
+	bne	.2S		;* If onscreen, ignore it and return
 ;*
 	lda	OQuota+OWorker,X	;* Look at quota of workers now called
-	beq	2$		;* If zero, forget it
+	beq	.2S		;* If zero, forget it
 ;*
 	lda	OQuota+OWarrior,X	;* Look at quota of warriors now called
-	beq	2$		;* If zero, forget it
+	beq	.2S		;* If zero, forget it
 	RANDOM	OSEED1,BYTE
 	cmpa	#MinPrb		;* Do a random check against mining probabil.
-	bhi	2$		;* If higher, no mining this check
+	bhi	.2S		;* If higher, no mining this check
 ;*				  else someone gets it if they're near enough
 ;*
 ;*			Check to see if the warrior is nearby
@@ -1533,33 +1540,33 @@ PlSecIn	ldx	[OWSCon,Y]	;* Get scanner WS this intelligence controls
 ;*
 	lda	#MinDis		;* Get minimum mining distance acceptable
 	cmpa	OScLDC,U	;* Compare to long dist. to caller
-	blo	2$		;* If too far, forget it
+	blo	.2S		;* If too far, forget it
 	cmpa	OScSDC,U	;* Else check short distance too
-	blo	2$		;* With same consequences
+	blo	.2S		;* With same consequences
 ;*
 ;*			Warrior close, look for a worker close enough
 ;*
 	ldu	[OCleLs,X]	;* Point to WS of first worker
 ;*
-4$	lda	#MinDis		;* Get minimum crystal catch distance acceptable
+.4S	lda	#MinDis		;* Get minimum crystal catch distance acceptable
 	cmpa	OScLDC,U	;* Compare to long dist. to caller
-	blo	5$		;* If too far, look at next worker
+	blo	.5S		;* If too far, look at next worker
 	cmpa	OScSDC,U	;* Else check short distance too
-	blo	5$		;* With same consequences
+	blo	.5S		;* With same consequences
 ;*
 	ldd	OSScWSA,U	;* It is close enough - see if it is on screen
-	beq	6$		;* If not on screen, go give it the crystal
+	beq	.6S		;* If not on screen, go give it the crystal
 ;*
-5$	ldu	[OScSqI,U]	;* Look at WS of next squadron member
-	bne	4$		;* If not at end of list, check him out
+.5S	ldu	[OScSqI,U]	;* Look at WS of next squadron member
+	bne	.4S		;* If not at end of list, check him out
 ;*
-2$	Sleep	LOOP		;* Exit point
+.2S	Sleep	LOOP		;* Exit point
 ;*
-6$	ldd	OSLPos,U	;* Get scanner position of this worker
+.6S	ldd	OSLPos,U	;* Get scanner position of this worker
 	tfr	U,X		;* Put his WS in X
-	jsr	KRWork		;* Kill him
+	jsr	KRWorker	;* Kill him					;;Fixme was: jsr  KRWork
 	jsr	IRWoCr		;* Make a worker with crystal in his place
-	jmp	2$		;* All done
+	jmp	.2S		;* All done
 ;	LOCAL
 
 ;*
@@ -1587,58 +1594,58 @@ AdjPop	pshs	Y
 	Routine	PopFil
 	pshs	D,X,U
 	LDA	EDGE		;is this initialization?
-	BEQ	6$
+	BEQ	.6S
 	CLRA			;no, determine how far behind we are: total in A
 	LDX	#POP		;get start of population table in X
-4$	LDB	1,X		;get number needed
+.4S	LDB	1,X		;get number needed
 	SUBB	X		;subtract number in existance
-	BLS	5$		;need more?
+	BLS	.5S		;need more?
 	PSHS	B		;add to total needed
 	ADDA	S+
-	BCC	5$		;over 255?
-	IFE	VERSION-FINAL
-	LDA	#-1		;are you kidding?
-	ELSE
+	BCC	.5S		;over 255?
+;	IFE	VERSION-FINAL
+;	LDA	#-1		;are you kidding?
+;	ELSE
 	SWI
-	ENDIF
-5$	LEAX	3,X		;next entry
+;	ENDIF
+.5S	LEAX	3,X		;next entry
 	CMPX	#EPOPVL		;done
-	BLO	4$
+	BLO	.4S
 	TSTA			;any to populate?
-	BEQ	3$
+	BEQ	.3S
 	RPT	3,LSRA		;divide by 8 (create about 16 at a time max.)
-	BEQ	6$		;only need a few? zero flags create all
+	BEQ	.6S		;only need a few? zero flags create all
 	LDX	#INVTBL		;find inverse
 	LDA	A,X
-6$	STA	TEMP		;save percentage to create (or zero for 100%)
+.6S	STA	TEMP		;save percentage to create (or zero for 100%)
 	ldx	#ScOCDT		;* X points at scanner object CD table
 	ldu	#Pop		;* U points at Population current/desired table
 ;*
-2$	LDA	1,U		;get desired pop level for this type
+.2S	LDA	1,U		;get desired pop level for this type
 	SUBA	U		;subtract current level
-	BLS	1$		;if we are at or past desired level, do next
+	BLS	.1S		;if we are at or past desired level, do next
 	LDB	TEMP		;get percentage to create
-	BEQ	7$		;flaged as create all?
+	BEQ	.7S		;flaged as create all?
 	MUL			;no, compute how many to create
-7$	TSTA			;make any?
-	BEQ	1$
+.7S	TSTA			;make any?
+	BEQ	.1S
 	pshs	X,A		;* Save pointer to SCOCDTable and number to make
-8$	ldd	Free		;* Check free space
+.8S	ldd	Free		;* Check free space
 	cmpd	#MinFree	;* Don't create if less than a minimum
-	blt	9$
+	blt	.9S
 	ldx	[1,S]		;* Put Char. Desc. in X
 	tfr	Y,D		;* Put it on the edge of the screen if so told
 	jsr	[OInVec,X]	;* Initialize the object
 	DEC	S		;more to create
-	BNE	8$
-9$	puls	X,A		;* Restore pointer
+	BNE	.8S
+.9S	puls	X,A		;* Restore pointer
 ;*
-1$	leau	3,U		;* Point at next entry
+.1S	leau	3,U		;* Point at next entry
 	leax	2,X		;* Point to next CD
 	cmpx	#RSOEnd		;* At the end of the replacable scanner objects?
-	bne	2$		;* If not, look at next
+	bne	.2S		;* If not, look at next
 ;*
-3$	puls	D,X,U
+.3S	puls	D,X,U
 	rts
 
 ;	Local
@@ -1647,16 +1654,16 @@ AdjPop	pshs	Y
 ;*
 HanSolo	lda	Pop+0D		;* Look at number of smallest planetoids desrd.
 	cmpa	20		;* See if it is at swarm value
-	blt	1$		;* If not, we are OK
+	blt	.1S		;* If not, we are OK
 ;*
 	lda	#2		;* Otherwise put desired number of two
 	sta	Pop+0D		;* In smallest
 	sta	Pop+0A		;* And second smallest planet 'desired' count
-	jmp	2$
+	jmp	HANS2S								;;Fixme was: jmp  2$ (Had to make label global for PHRASE)
 ;*
-1$	Random	OSeed1,BYTE
+.1S	Random	OSeed1,BYTE
 	cmpa	#SwrPrb		;* See if we are within swarm probability
-	bhi	2$		;* if not just return
+	bhi	HANS2S		;* if not just return
 ;*
 	lda	20		;* Else put a whole mess of small planets
 	sta	Pop+0D
@@ -1667,38 +1674,52 @@ HanSolo	lda	Pop+0D		;* Look at number of smallest planetoids desrd.
 	Tune	QMesg
 ;*				Warn the player
 ;*
-2$	sleep	LOOP		;* Go back to sleep while they multiply
+HANS2S	sleep	LOOP		;* Go back to sleep while they multiply
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ROMSAVE	SET	*		;; Save the current address
 
-*
-*		SinCon	- SiniStar controlling process - speech and O-Sec build
-*
+	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
+;	FDB	_ENTERING
+	FDB	_SWARM
+	FDB	_OF
+;	FDB	_PLANETOIDS
+
+PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
+				;; more phrases later
+
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;*
+;*		SinCon	- SiniStar controlling process - speech and O-Sec build
+;*
 SinCon	pshs	D
 	ldd	Finish
 	cmpd	#Alive
-	beq	1$		;* See if SiniStar is alive yet
+	beq	.1S		;* See if SiniStar is alive yet
 ;*
 ;*			SiniStar dormant
 ;*
 	tst	SiniSec		;* not alive yet, see if in sector
-	beq	4$		;* if not, no action this iteration
+	beq	.4S		;* if not, no action this iteration
 	RANDOM	OSEED2,BYTE
 	cmpa	#$40		;* Some of the time build him up automatically
 	nop
 	nop
 	nop		;* room for operator adjust stuff
-	bhi	4$		;* Sometimes don't
+	bhi	.4S		;* Sometimes don't
 ;*
 	jsr	AddPart
-	jmp	4$
+	jmp	.4S
 ;*
 ;*			SiniStar LIVES!
 ;*
-1$	RANDOM	OSEED2,BYTE
+.1S	RANDOM	OSEED2,BYTE
 	cmpa	#$38		;* Toss a random number
-	bhi	4$		;* sometimes don't say anything
+	bhi	.4S		;* sometimes don't say anything
 	jsr	Taunt		;* Else say something nasty
 ;*
-4$	puls	D
+.4S	puls	D
 	SLEEP	LOOP
 
 ;*
@@ -1712,37 +1733,37 @@ SinCon	pshs	D
 	sta	RnSpch			;* Update it for next time
 ;*
 	cmpa	#$28
-	bhi	1$
+	bhi	.TAUN1S
 
 	Speak	3
-	jmp	10$
+	jmp	.TAUN10S
 ;*
-1$	cmpa	#$50
-	bhi	2$
+.TAUN1S	cmpa	#$50
+	bhi	.TAUN2S
 
 	Speak	4
-	jmp	10$
+	jmp	.TAUN10S
 ;*
-2$	cmpa	#$78
-	bhi	3$
+.TAUN2S	cmpa	#$78
+	bhi	.TAUN3S
 
 	Speak	5
-	jmp	10$
+	jmp	.TAUN10S
 ;*
-3$	cmpa	#$A0
-	bhi	4$
+.TAUN3S	cmpa	#$A0
+	bhi	.TAUN4S
 
 	Speak	6
-	jmp	10$
+	jmp	.TAUN10S
 ;*
-4$	cmpa	#$C8
-	bhi	5$
+.TAUN4S	cmpa	#$C8
+	bhi	.TAUN5S
 
 	Speak	7
-	jmp	10$
+	jmp	.TAUN10S
 ;*
-5$	Speak	8
-10$	puls	A
+.TAUN5S	Speak	8
+.TAUN10S puls	A
 	rts		;* End of TAUNT
 
 ;	Local
@@ -1752,7 +1773,7 @@ SinCon	pshs	D
 	Routine	DTimer
 	lda	#01
 	jsr	ChgA
-	fdb	.DifTmr
+	fdb	DifTmr						;;Fixme was: fdb  .DifTmr
 	Sleep	LOOP
 
 ;* Temporary tables for caller intelligence
@@ -1787,8 +1808,8 @@ Quota	fcb	3,1		;* 3 workers, 1 warrior for planets
 MisAss		fcb	OMWoTail,OMWaMine	;* Planets
 		fcb	OMWoTail,OMWaAttack	;* Player
 		fcb	OMWoDrift,OMWaTail	;* Sinistar
-		fcb	OMWoInt,OMWaInt		;* Sinibombs
-		fcb	OMWoInt,OMWaInt		;* Crystals
+		fcb	OMWoIntercept,OMWaInt		;* Sinibombs		;;Fixme was: fcb  OMWoInt,OMWaInt
+		fcb	OMWoIntercept,OMWaInt		;* Crystals		;;Fixme was: fcb  OMWoInt,OMWaInt
 
 ;*			Base Priorities - temporarily in ROM
 Prios	fcb	$58,$58		;* Temporary base priorities for planets
@@ -1818,7 +1839,7 @@ KExplo	ldx	[OScan,Y]
 
 	PULLORG	ROMSAVE
 
-	PushOrg	CExplo+OOffSc
+	PushOrg	CExplo+OOffScr						;;Fixme was: PushOrg  CExplo+OOffSc
 	fdb	KExplo	;* Offscreen routine
 	PullOrg
 
@@ -1862,7 +1883,7 @@ KExplo	ldx	[OScan,Y]
 	fdb	Pop+15
 	PullOrg
 ;*
-	Pushorg	CCryst+OCDInd
+	Pushorg	CCrystal+OCDInd						;;Fixme was: Pushorg  CCryst+OCDInd
 	fdb	Pop+18
 	PullOrg
 ;*
@@ -1875,7 +1896,7 @@ KExplo	ldx	[OScan,Y]
 	PullOrg
 ;*
 
-	PushOrg	RomSav
+	PushOrg	RomSave							;;Fixme was: PushOrg  RomSav
 
 ScoCdt	fdb	CWorker		;* Scanner Object Charac. Descrip. Table
 	fdb	CWarrior
@@ -1886,10 +1907,11 @@ ScoCdt	fdb	CWorker		;* Scanner Object Charac. Descrip. Table
 	fdb	CPlan5
 RSOEnd	equ	*		;* End of replaceable scanner objects
 	fdb	CSBomb
-	fdb	CCryst
+	fdb	CCrystal						;;Fixme was: fdb  CCryst
 	fdb	CSini
 	fdb	CPlayer
 CdtEnd	equ	*		;* End of table
+
 ;*
 ;*			Initial Population table
 ;*
@@ -1905,9 +1927,11 @@ CdtEnd	equ	*		;* End of table
 
 ;*		InPop0 - Initial population for first wave only
 
+	RADIX	10							;;Need this for the decimal values
+
 InPop0	fcb	0,6,0		;* Workers
 	fcb	0,0,0		;* Warriors
-	fcb	0,10.,0		;* Type 1 planets
+	fcb	0,10,0		;* Type 1 planets			;;Fixme was: fcb  0,10.,0
 	fcb	0,2,0		;* Type 2 planets
 	fcb	0,2,0		;* Type 3 planets
 	fcb	0,2,0		;* Type 4 planets
@@ -1927,17 +1951,17 @@ IP0End	rmb	0		;* Marks end of table
 ;*
 InDif0	fdb	DTime
 	fcb	6
-	fdb	.PWor		;* Workers
-	fcb	10
-	fdb	.PWar		;* Warriors
+	fdb	_PWor		;* Workers				;;Fixme was: fdb  .PWor
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PWar		;* Warriors				;;Fixme was: fdb  .PWar
 	fcb	-8
-	fdb	.PPl1		;* Plan1's
-	fcb	10
-	fdb	.PPl3		;* Plan3's
+	fdb	_PPl1		;* Plan1's				;;Fixme was: fdb  .PPl1
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PPl3		;* Plan3's				;;Fixme was: fdb  .PPl3
 	fcb	3
-	fdb	.PPl5		;* Plan5's
+	fdb	_PPl5		;* Plan5's				;;Fixme was: fdb  .PPl5
 	fcb	$7F
-	fdb	.WAgg		;* Warrior aggression
+	fdb	_WAgg		;* Warrior aggression			;;Fixme was: fdb  .WAgg
 	fcb	0
 
 ID0End	rmb	0		;* Marks end of diff. table
@@ -1964,26 +1988,26 @@ InPop1	fcb	6		;* Workers
 ;*
 	fdb	DTime
 	fcb	6
-	fdb	.PWor		;* Workers
-	fcb	10
-	fdb	.PWar		;* Warriors
+	fdb	_PWor		;* Workers				;;Fixme was: fdb  .PWor
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PWar		;* Warriors				;;Fixme was: fdb  .PWar
 	fcb	-1
-	fdb	.PPl1		;* Plan1's
+	fdb	_PPl1		;* Plan1's				;;Fixme was: fdb  .PPl1
 	fcb	-1
-	fdb	.PPl3		;* Plan3's
+	fdb	_PPl3		;* Plan3's				;;Fixme was: fdb  .PPl3
 	fcb	3
-	fdb	.PPl5		;* Plan5's
+	fdb	_PPl5		;* Plan5's				;;Fixme was: fdb  .PPl5
 	fcb	$7F
-	fdb	.WAgg		;* Warrior aggression
+	fdb	_WAgg		;* Warrior aggression			;;Fixme was: fdb  .WAgg
 	fcb	0
 
 ID1End	rmb	0		;* Marks end of diff. table
 
 ;*		InPop2 - Worker Zone
 
-InPop2	fcb	10		;* Workers
+InPop2	fcb	$10		;* Workers				;;Fixme was: fcb  10
 	fcb	3		;* Warriors
-	fcb	10.		;* Type 1 planets
+	fcb	10		;* Type 1 planets			;;Fixme was: fcb  10.
 	fcb	2		;* Type 2 planets
 	fcb	2		;* Type 3 planets
 	fcb	2		;* Type 4 planets
@@ -2000,25 +2024,25 @@ InPop2	fcb	10		;* Workers
 ;*		Difficulty increase figures for this population
 ;*
 	fdb	DTime
-	fcb	10.
-	fdb	.PWor		;* Workers
-	fcb	10
-	fdb	.PWar		;* Warriors
+	fcb	10							;;Fixme was: fcb  10.
+	fdb	_PWor		;* Workers				;;Fixme was: fdb  .PWor
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PWar		;* Warriors				;;Fixme was: fdb  .PWar
 	fcb	-8
-	fdb	.PPl1		;* Plan1's
-	fcb	10
-	fdb	.PPl3		;* Plan3's
+	fdb	_PPl1		;* Plan1's				;;Fixme was: fdb  .PPl1
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PPl3		;* Plan3's				;;Fixme was: fdb  .PPl3
 	fcb	3
-	fdb	.PPl5		;* Plan5's
+	fdb	_PPl5		;* Plan5's				;;Fixme was: fdb  .PPl5
 	fcb	$7F
-	fdb	.WAgg		;* Warrior aggression
+	fdb	_WAgg		;* Warrior aggression			;;Fixme was: fdb  .WAgg
 	fcb	0
 
 ;*		InPop3 - Warrior Zone
 
 InPop3	fcb	4		;* Workers
-	fcb	10.		;* Warriors
-	fcb	10.		;* Type 1 planets
+	fcb	10		;* Warriors				;;Fixme was: fcb  10.
+	fcb	10		;* Type 1 planets			;;Fixme was: fcb  10.
 	fcb	2		;* Type 2 planets
 	fcb	2		;* Type 3 planets
 	fcb	2		;* Type 4 planets
@@ -2036,26 +2060,26 @@ InPop3	fcb	4		;* Workers
 ;*
 	fdb	DTime
 	fcb	4
-	fdb	.PWor		;* Workers
-	fcb	10
-	fdb	.PWar		;* Warriors
+	fdb	_PWor		;* Workers				;;Fixme was: fdb  .PWor
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PWar		;* Warriors				;;Fixme was: fdb  .PWar
 	fcb	-8
-	fdb	.PPl1		;* Plan1's
-	fcb	10
-	fdb	.PPl3		;* Plan3's
+	fdb	_PPl1		;* Plan1's				;;Fixme was: fdb  .PPl1
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PPl3		;* Plan3's				;;Fixme was: fdb  .PPl3
 	fcb	3
-	fdb	.PPl5		;* Plan5's
+	fdb	_PPl5		;* Plan5's				;;Fixme was: fdb  .PPl5
 	fcb	$7F
-	fdb	.WAgg		;* Warrior aggression
+	fdb	_WAgg		;* Warrior aggression			;;Fixme was: fdb  .WAgg
 	fcb	0
 
 ;*		InPop4 - Planetoid Zone
 
 InPop4	fcb	6		;* Workers
 	fcb	8		;* Warriors
-	fcb	10		;* Type 1 planets
+	fcb	$10		;* Type 1 planets			;;Fixme was: fcb  10
 	fcb	2		;* Type 2 planets
-	fcb	10		;* Type 3 planets
+	fcb	$10		;* Type 3 planets			;;Fixme was: fcb  10
 	fcb	2		;* Type 4 planets
 	fcb	5		;* Type 5 planets
 ;*			NOTE: objects past this point are NOT initialized
@@ -2071,17 +2095,17 @@ InPop4	fcb	6		;* Workers
 ;*
 	fdb	DTime
 	fcb	6
-	fdb	.PWor		;* Workers
-	fcb	10.
-	fdb	.PWar		;* Warriors
-	fcb	10
-	fdb	.PPl1		;* Plan1's
-	fcb	10
-	fdb	.PPl3		;* Plan3's
+	fdb	_PWor		;* Workers				;;Fixme was: fdb  .PWor
+	fcb	10							;;Fixme was: fcb  10.
+	fdb	_PWar		;* Warriors				;;Fixme was: fdb  .PWar
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PPl1		;* Plan1's				;;Fixme was: fdb  .PPl1
+	fcb	$10							;;Fixme was: fcb  10
+	fdb	_PPl3		;* Plan3's				;;Fixme was: fdb  .PPl3
 	fcb	3
-	fdb	.PPl5		;* Plan5's
+	fdb	_PPl5		;* Plan5's				;;Fixme was: fdb  .PPl5
 	fcb	$7F
-	fdb	.WAgg		;* Warrior aggression
+	fdb	_WAgg		;* Warrior aggression			;;Fixme was: fdb  .WAgg
 	fcb	0
 
 
@@ -2110,25 +2134,27 @@ InPopD	fcb	0,2,0		;* Workers
 ;*
 	fdb	DTime
 	fcb	6
-	fdb	.PWor		;* Workers
+	fdb	_PWor		;* Workers				;;Fixme was: fdb  .PWor
 	fcb	1
-	fdb	.PWar		;* Warriors
+	fdb	_PWar		;* Warriors				;;Fixme was: fdb  .PWar
 	fcb	1
-	fdb	.PPl1		;* Plan1's
+	fdb	_PPl1		;* Plan1's				;;Fixme was: fdb  .PPl1
 	fcb	1
-	fdb	.PPl3		;* Plan3's
+	fdb	_PPl3		;* Plan3's				;;Fixme was: fdb  .PPl3
 	fcb	3
-	fdb	.PPl5		;* Plan5's
+	fdb	_PPl5		;* Plan5's				;;Fixme was: fdb  .PPl5
 	fcb	$7F
-	fdb	.WAgg		;* Warrior aggression
+	fdb	_WAgg		;* Warrior aggression			;;Fixme was: fdb  .WAgg
 	fcb	0
+	
+	RADIX	16							;;Switching back to hex
 ;*
 InOEnd	rmb	0		;* End of table
 
-.PPL1	fdb	Pop+7		;* Type 1 planet difficulty table root
+_PPL1	fdb	Pop+7		;* Type 1 planet difficulty table root	;;Fixme was: .PPL1  fdb  Pop+7
 	fcb	0
 
-.PPL3	fdb	Pop+0D		;* Type 3 planet difficulty table root
+_PPL3	fdb	Pop+0D		;* Type 3 planet difficulty table root	;;Fixme was: .PPL3  fdb  Pop+0D
 	fcb	0
 
 
@@ -2146,43 +2172,43 @@ InOEnd	rmb	0		;* End of table
 	std	WAgg
 
 	tst	AmDemo		;* See if we are in demo mode
-	beq	5$		;* Go see sinikills if not in demo mode
+	beq	.RST5S		;* Go see sinikills if not in demo mode		;;Fixme was: beq  5$
 
 	ldx	#InPopD		;* And load X with beginning of demo for loading
-	jmp	2$		;* Go load demo table in
+	jmp	.RST2S		;* Go load demo table in
 
-5$	lda	SiniKills	;* See how many SiniStars have been killed
-	bne	1$		;* Go do special init if we are not on first
+.RST5S	lda	SiniKills	;* See how many SiniStars have been killed
+	bne	.RST1S		;* Go do special init if we are not on first
 
 	ldx	#InPop0
-	jmp	2$		;* Go load in Pop 0 tables
+	jmp	.RST2S		;* Go load in Pop 0 tables
 
-1$	anda	#$03		;* Screen out lowest two bits for wave value
+.RST1S	anda	#$03		;* Screen out lowest two bits for wave value
 	ldb	#(ID1End-InPop1)
 	mul			;* Multiply wave (0-3) by length of table
 	addd	#InPop1		;* Add in beginning location
 	tfr	D,X		;* Put it in X for special load beginning loc
 
 	LDU	#POP		;special load: start at beginning of population
-7$	LDA	X+		;get population value
+.RST7S	LDA	X+		;get population value
 	CLRB			;no fraction
 	STD	1,U		;reset population to new value
 	LEAU	3,U		;next extry
 	CMPU	#EPOPVL		;done?
-	BLO	7$
-	BRA	6$		;now load difficulty
+	BLO	.RST7S
+	BRA	.RST6S		;now load difficulty
 
-2$	ldu	#Pop		;* Tell it to start at the beg of the population
+.RST2S	ldu	#Pop		;* Tell it to start at the beg of the population
 	ldd	#EPopVl		;* Tell it to stop at the end of the population
 	std	EndPop          
 	jsr	SloLod		;* Load the chosen init pop table
-6$	ldu	#.DifTmr	;* Tell it to start at beg of diff. table
+.RST6S	ldu	#DifTmr		;* Tell it to start at beg of diff. table	;;Fixme was: 6$  ldu  #.DifTmr
 	ldd	#EDifVl		;* Tell it to stop at end of diff. table
 	std	EndPop          
 	jsr	SloLod		;* Load the diff table following the pop table
 
-4$	cmpb	SiniKills	;* in number of sinistars killed
-	bhs	3$		;* If so, return
+.RST4S	cmpb	SiniKills	;* in number of sinistars killed
+	bhs	.RST3S		;* If so, return
 	stb	Temp		;* Save it for next try
 				
 	lda	#06		;* Else take a number
@@ -2195,29 +2221,29 @@ InOEnd	rmb	0		;* End of table
 	mul			;* Calculate difficulty add based on oper. diff.
 	tfr	B,A		;* Put result in A (will be 30. for avg. diff.)
 	jsr	ChgA		;* Add that difficulty
-	fdb	.DifTmr		;* To difficulty timing structure
+	fdb	DifTmr		;* To difficulty timing structure		;;Fixme was: fdb  .DifTmr	
 	ldb	Temp		;* Get counter of difficulty waves advanced
 	addb	#4		;* Set it ahead another set of waves
-	jmp	4$		;* And see if that is enough for now
+	jmp	.RST4S		;* And see if that is enough for now
 				
 				
-3$	pshs	X               
+.RST3S	pshs	X               
 	ldx	#GA1		;* Operator difficulty adjust
 	jsr	RCmosA		;* Read from CMOS
 	puls	X               
 				
 				
 	jsr	ChgA		;* bump up the difficulty a bit at the beginning
-	fdb	.DifTmr		;* depending on operator setting 
+	fdb	DifTmr		;* depending on operator setting 		;;Fixme was: fdb  .DifTmr
 				
-	LDA	SINIKIL		;get number of sinistars killed
-	BNE	11$             
+	LDA	SINIKILLS	;get number of sinistars killed			;;Fixme was: LDA  SINIKIL
+	BNE	.RST11S             
 	LDA	#99		;first zone use blue
-	BRA	22$             
-11$	LDX	#ZCOLTBL	;get address of zone color table
+	BRA	.RST22S             
+.RST11S	LDX	#ZCOLTBL	;get address of zone color table
 	ANDA	#3		;offset into table # of sinistar kills mod 4
 	LDA	A,X		;get color
-22$	STA	ZONECOL		;save as new color
+.RST22S	STA	ZONECOL		;save as new color
 	JSR	FRAME		;re-draw frame with new color
 ;* * *
 	PULS	D,X,Y,U
@@ -2239,12 +2265,12 @@ SloLod	ldb	,X+
 	PullOrg	RomSav
 
 	PushOrg	PlaySav
-.DifTmr	rmb	(ID0End-InDif0)
+DifTmr	rmb	(ID0End-InDif0)						;;Fixme was: DifTmr	rmb	(ID0End-InDif0)
 ;*				 reserve space for difficulty table
 	PullOrg	PlaySav
 
 EPopVl	equ	Pop+(IP0End-InPop0)
-EDifVl	equ	.DifTmr+(ID0End-InDif0)
+EDifVl	equ	DifTmr+(ID0End-InDif0)					;;Fixme was: EDifVl	equ	.DifTmr+(ID0End-InDif0)
 
 	PushOrg	RomSav
 

@@ -259,7 +259,6 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 	rts
 
 ;	LOCAL
-	SECTION CRYSTALWORKER
 ;*****
 ;*
 ;* COLLIDE CRYSTAL,WORKER
@@ -286,7 +285,6 @@ CRYWO1S	TUNE	QWorkCr		;* Play a tune when worker picks up a crystal
 	jsr	KRCrys		;* Kill it
 	ldx	[OScan,Y]	;* Get scanner WS of worker
 	jmp	GivCrys		;* Gives crystal to worker, on or off screen
-	ENDSECTION CRYSTALWORKER
 ;*                               
 ;	LOCAL                   
 	COLLIDE	PLAYER,PLANET	;* Vib. Bounce

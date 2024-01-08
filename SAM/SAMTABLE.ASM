@@ -28,7 +28,7 @@ CPLAYER	FDB	8000		;collision mask
 	FDB	TRAP		;* Vector to killing routine
 	FCB	5		;object mass
 	FDB	IPLAYER		;first image descriptor
-	FDB	TRAP		;offscreen routine
+	FDB	TRAP		;offscreen routine				;;This gets patched over in FALS/LAST.SRC ($4BCF)
 	FDB	VSCRON		;onscreen routine
 	FDB	TRAP		;vector to leave-sector routine
 	fdb	0		;* Index to scanner object CD Table
@@ -159,7 +159,7 @@ CSBOMB	FDB	8000		;collision mask
 	FDB	TRAP		;* Vector to initialization routine
 	FDB	TRAP		;* Vector to killing routine
 	FCB	1		;object mass
-	FDB	ISBOMB		;first image descriptor
+	FDB	ISBOMB		;first image descriptor				;;This gets patched over in WITT/FIXRISBO ($4C99)
 	FDB	SCROFF		;offscreen routine
 	FDB	VSCRON		;onscreen routine
 	FDB	TRAP		;vector to leave-sector routine
