@@ -34,10 +34,14 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
+* 01/08/2024 - Noah's module is complete!  Gameplay now works, but with some caveats: the Sinistar spawns but the last skull piece is invincible and doesn't bite the player ship.  Only warriors can kill the player.  Sinibombs fire but they are only visible in the scanner and produce graphical glitches when near the Sinistar (one of Rich's patches is needed to fix these issues).  Currently working on rewriting RJ's module: this includes the attract mode, service menu, high score and status screens, and explosion effects.
+
+  ![sinistar_noah_module](https://github.com/synamaxmusic/sinistar/assets/11140222/7a4302db-d0fc-480a-8408-cecb6ca4da69)
+
 * 01/06/2024 - Rich's module is finally complete, we're halfway done!
 * 01/03/2024 - I cleaned up some of my older comments and replaced my old ```PUSH/PULLORG``` hacks with the actual macros.  The same goes for the ```ROUTINE``` macro; it's actually pretty useful as it shows messages in the listing output and makes it easier to understand.  ```PAD``` doesn't work exactly the same with the new assembler so it's only used sparringly in this rewrite when there are no macro arguments; any ```PAD``` macros that need to generate new lable names have been replaced with three lines of code that reproduces exactly what we need (see [PAD](#pad) for more info).
 * 12/30/2023 - I got [several important and heavily-used macros](https://github.com/synamaxmusic/sinistar/commit/f8ace13ec0a8a5db5baac7f346cc17ed26605bbd) to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
-* 11/14/2023 - Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work.
+* 11/14/2023 - Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work (because there are no enemies nearby).
 
   ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
 * 11/06/2023 - Rewriting commences.
