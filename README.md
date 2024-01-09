@@ -34,9 +34,15 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
-* 01/08/2024 - Noah's module is complete!  Gameplay now works, but with some caveats: the Sinistar spawns but the last skull piece is invincible and doesn't bite the player ship.  Only warriors can kill the player.  Sinibombs fire but they are only visible in the scanner and produce graphical glitches when near the Sinistar (one of Rich's patches is needed to fix these issues).  Currently working on rewriting RJ's module: this includes the attract mode, service menu, high score and status screens, and explosion effects.
 
-  ![sinistar_noah_module](https://github.com/synamaxmusic/sinistar/assets/11140222/7a4302db-d0fc-480a-8408-cecb6ca4da69)
+{Warning: flashing images below)
+
+* 01/08/2024 - Noah's module is complete!  Gameplay finally works, but with some caveats: the Sinistar now appears in the sector but with RJ's explosion routine missing, it behaves differently and is ultimately invincible as a result.  If the player hits the Sinistar with enough bombs, the Sinistar will "think" it's dead, however the warp sequence never starts and the Sinistar will stay stunned until the player gets killed by a warrior.  Once the player respawns, the Sinistar (still with one piece remaining) returns to its chasing state. Unless it is hit by another sinibomb again, it can bite the player.
+
+  Also worth pointing out is that the sinibombs fire but they are only visible in the scanner and produce graphical glitches when near the Sinistar (one of Rich's patches is needed to fix these issues).  Currently working on rewriting RJ's module: this includes the attract mode, service menu, high score and status screens, and explosion effects.
+
+  ![sinistar_noah_module](https://github.com/synamaxmusic/sinistar/assets/11140222/7a4302db-d0fc-480a-8408-cecb6ca4da69) ![sinistar_noah_module_sinibomb_glitch](https://github.com/synamaxmusic/sinistar/assets/11140222/9b66ca0a-c4b7-42f3-b3fd-917f6b291642)
+
 
 * 01/06/2024 - Rich's module is finally complete, we're halfway done!
 * 01/03/2024 - I cleaned up some of my older comments and replaced my old ```PUSH/PULLORG``` hacks with the actual macros.  The same goes for the ```ROUTINE``` macro; it's actually pretty useful as it shows messages in the listing output and makes it easier to understand.  ```PAD``` doesn't work exactly the same with the new assembler so it's only used sparringly in this rewrite when there are no macro arguments; any ```PAD``` macros that need to generate new lable names have been replaced with three lines of code that reproduces exactly what we need (see [PAD](#pad) for more info).
