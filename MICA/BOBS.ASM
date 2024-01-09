@@ -15,7 +15,7 @@
 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 ;SINISTA	SET	*
 ;	INCLUDE	[SAM]tSTART
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE "../SAM/START.ASM"
 
 ;*	NLIST
 
@@ -25,8 +25,8 @@
 ;	INCLVER	BOB,BOBS.SET
 ;*	LIST
 
-	;INCLVER	BOB,B0
-	;INCLVER	BOB,B1		<< TAKEN OUT ON SAM'S REQUEST 27 FEB 83 >>
+;	INCLVER	BOB,B0
+	INCLUDE "../MICA/B1.ASM"		;<< TAKEN OUT ON SAM'S REQUEST 27 FEB 83 >>
 	INCLUDE "../MICA/B2.ASM"
 
 	;ENDTEST

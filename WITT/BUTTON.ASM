@@ -176,7 +176,7 @@ PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
 ;*	SWITCH	SBOMBB,CLOSED
 ;*
 ;*****
-	BSWITCH	SBOMBB,CLOSED						;;Fixme was: SWITCH  SBOMBB,CLOSED
+	BSWITCH	SBOMBB,CLOSE						;;Fixme was: SWITCH  SBOMBB,CLOSED (needs to be "CLOSE" not "CLOSED"!)
 	tst	AMDemo		;* If sinibomb button is hit while
 	lbne	rts		;*   in attract mode, do nothing.
 	lda	Bombs		;* If there are any bombs available for launch,
@@ -356,27 +356,32 @@ ROMSAVE	SET	*		;; Save the current address
 	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
 	FDB	_SAM
 	FDB	_DICKER
+	
 	FDB	_N
 	FDB	_O
 	FDB	_A
 	FDB	_H
 	FDB	_F
-	FDB	_A
+;	FDB	_A
 	FDB	_L
 	FDB	_S
 	FDB	_T
 ;	FDB	_E		;;(Already defined)
 	FDB	_I
-	FDB	_N
+;	FDB	_N
+
 	FDB	_RICHARD
 	FDB	_WITT
+	
 	FDB	_R
 ;	FDB	_O
 	FDB	_B
 ;	FDB	_E
 ;	FDB	_R
 ;	FDB	_T
+
 	FDB	_J
+	
 	FDB	_M
 ;	FDB	_I
 	FDB	_C

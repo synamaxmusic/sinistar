@@ -40,6 +40,21 @@
 ;
 ;
 ;===============================================================================
+;
+;   Sinistar's source code is split into four "modules" (one for each programmer).
+;
+;   With the exception of Sam's, it is not possible to build a programmer's section of code
+;   separately.  If you want to build Noah's files, you need to build Sam's and Rich's as well.
+;
+;   The order of the modules is as follows:
+;   SAM > WITT > FALS > MICA
+;
+;   If you want to emulate a version of Sinistar with missing modules, you will need to
+;   modify ROM 11 so that the game can boot.  Simply copy the last 16 bytes of ROM 10:
+;   E0 00 E0 00 E0 00 E0 00 E0 0B E0 00 E0 00 E0 00
+;   and paste them at ROM 11 address $0FF0.  This will give the correct IRQ vectors to the CPU.
+;
+;===============================================================================
 ;  Macro Assembler AS Instructions
 	CPU 6809
 	
@@ -50,7 +65,6 @@
 ;DIAGNOSE EQU	1		;* Define this symbol to include Graphic Diagnostics
 ;PROMS	EQU	1		;* Define before burning proms
 ;KENSMARQ EQU	1		;Adds AMOA '82 title screen "Marquee" graphic
-
 ;===============================================================================
 ;
 ;   SSSS   AAA   M   M
@@ -60,10 +74,10 @@
 ;  SSSS   A   A  M   M
 ;
 
-	INCLUDE SAM/MESSAGE.ASM
+	INCLUDE SAM/MESSAGE.ASM		;This is based off of code from Joust but modified to work wtih a vertical screen
 	INCLUDE SAM/EQUATES.ASM
 
-	INCLUDE SAM/IMAGE.ASM
+	INCLUDE SAM/IMAGE.ASM		;Sprites by Jack Haeger
 	INCLUDE	SAM/SAMS.ASM
 	
 ;===============================================================================
@@ -78,7 +92,7 @@
 	INCLUDE	WITT/new_equates.ASM	;Added to support longer symbol names
 
 	INCLUDE WITT/RICHS.ASM
-;	;INCLUDE WITT/RICHS2.ASM
+	INCLUDE WITT/RICHS2.ASM		;(Control Panel Button handling with Easter Egg routine)
 
 ;===============================================================================
 ;
@@ -89,14 +103,10 @@
 ;  N   N   OOO   A   A  H   H
 ;
 
-
-
-
-
-
-
-
-
+	INCLUDE FALS/NOAHS.ASM
+	
+	INCLUDE FALS/disable_kenchk.ASM		;Noah's module isn't playable unless this new file is included.
+						;(Be sure to not include this when building the original ROM)
 
 ;===============================================================================
 ;
@@ -118,5 +128,4 @@
 ;  F      IIIII  N   N  A   A  LLLLL
 
 ;	INCLUDE WITT/AOE.ASM
-	;INCLUDE FALS/LAST.ASM
-;	INCLUDE SAM/!TEST.ASM
+;	INCLUDE FALS/LAST.ASM
