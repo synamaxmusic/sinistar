@@ -18,17 +18,23 @@ LEVEL	SET	0
 
 ;* Color nibbles
 BLACK		EQU	$00
-;;BLUE		EQU	$99	;(Already defined in PHRASE.ASM)
+;;BLUE		EQU	$99	;;(Already defined in PHRASE.ASM)
 BLUEGREY	EQU	$66
 BURGANDY	EQU	$CC
 CREAM		EQU	$22
 GREY		EQU	$AA
 PINK		EQU	$33
 PURPLE		EQU	$BB
-;;RED		EQU	$DD	;(Already defined in PHRASE.ASM)
+;;RED		EQU	$DD	;;(Already defined in PHRASE.ASM)
 TANGREY		EQU	$44
 WHITE		EQU	$11
 YELLOW		EQU	$FF
+
+;;=============================================================================== 
+SILVER		EQU	$55 	;; This EQU instruction (which only exists in BOBS.EQU)
+				;;   was not originally defined here,
+				;;   but is referenced in MICA/STATUS.ASM
+;;=============================================================================== 
 
 	RADIX	10		;;(needed to add this)
 CIRCLE	EQU	256		;* There are 256 degrees in our circles.

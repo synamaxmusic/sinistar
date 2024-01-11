@@ -720,13 +720,12 @@ WarrMis
 ;;   both use Sam's WASHODDS so Witt's complete routine only exists in the
 ;;   source code.
 ;;
-;;   Another interesting finding is that ZWASHODD.SRC is only referenced in
-;;   one other file (WITT/RICH.SRC) and from what I can tell, this file
-;;   is an older unused version of the final WITT/RICHS.SRC, which is what the
-;;   MAKE.COM batch file grabs to build Rich's module.
+;;   At first, I wasn't sure how ZWASHODD was patched into the ROM.  I eventually
+;;   found the answer in WITT/AOE.ASM, where an INCLVER for RICH.SRC is located.
+;;   The only valid INCLVER in the file is for ZWASHODD; mystery solved.
 ;;   
-;;   This means I'm not entirely sure how this patch was implemented exactly.
-;;   I'm including it here as it seems to be the most logical choice:
+;;   Even though it's a patch, including it in RICH.SRC kinda makes things confusing
+;;   so I'm including it here instead:
 ;;
 	INCLUDE "../WITT/ZWASHODD.ASM"		;* Shooting odds computations
 ;;

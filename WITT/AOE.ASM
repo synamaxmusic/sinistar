@@ -60,7 +60,7 @@ Demo
 ;*
 ;* * *	INCLVER	RICH,fixdist	* Orbit alterations
 	;;;;;;;INCLVER	RICH,fixsini
-	;;;;;;;INCLVER	RICH,rich
+;	INCLVER	RICH,rich						;;This is where ZWASHODD was originally patched.  Moved over to WARRIOR.ASM.
 ;***
 ;*	<<< NOAH >>>
 ;***
@@ -179,12 +179,18 @@ BCF	MACRO	A1,A2,A3
 	ENDIF
 	RMB	7
 	ENDM
-	IF	1 = 1								;;Fixme was: IFE  1
+;;===============================================================================
+;;
+;;   Here's something I've never seen before.  Changing the IF to 1=1 here
+;;   draws the letters "WITT" over the tiny Planetoid sprite in dark purple pixels.
+;;
+;;===============================================================================
+	IF	1 = 0								;;Fixme was: IFE  1
 	PUSHORG	$E4E
-	BCF	$5B,$BB,$BB							;; Okay, this is really cool.
-	BCF	$B5,$00,$00							;; Changing the IF to 1=1 here
-	BCF	$5B,$B5,$00							;; draws over the tiny Planetoid sprite
-	BCF	$B6,$00,$00							;; with "WITT", in dark purple pixels.
+	BCF	$5B,$BB,$BB
+	BCF	$B5,$00,$00
+	BCF	$5B,$B5,$00
+	BCF	$B6,$00,$00
 	BCF	$AB,$BB,$BB							
 	BCF	$00,$00,$00
 	BCF	$AB,$BB,$BB
