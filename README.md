@@ -37,6 +37,8 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 
 {Warning: flashing images below)
 
+* 01/11/2024 - All four modules and Sam's patches are finished.  This means all that's left are the patches from the three remaining programmers, plus seeing how much debug stuff we can get working again.  We're getting really close to wrapping this up!
+
 * 01/08/2024 - Noah's module is complete!  Gameplay finally works, but with some caveats: the Sinistar now appears in the sector but with RJ's explosion routine missing, it behaves differently and is ultimately invincible as a result.  If the player hits the Sinistar with enough bombs, the Sinistar will "think" it's dead, however the warp sequence never starts and the Sinistar will stay stunned until the player gets killed by a warrior.  Once the player respawns, the Sinistar (still with one piece remaining) returns to its chasing state. Unless it is hit by another sinibomb again, it can bite the player.
 
   Also worth pointing out is that the sinibombs fire but they are only visible in the scanner and produce graphical glitches when near the Sinistar (one of Rich's patches is needed to fix these issues).  Currently working on rewriting RJ's module: this includes the attract mode, service menu, high score and status screens, and explosion effects.
