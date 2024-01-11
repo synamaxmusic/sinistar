@@ -1,14 +1,14 @@
-;	INCLUDE "../SAM/START.ASM"
+;	INCLUDE	START
 ;	INCLVER	SAM,SINISTAR.EQU
 SAMFIXES
 
 ;* fixes live sinistar leaving sector
-	;INCLVER	SAM,FIXLSSINI
+	INCLUDE "../SAM/FIXLSSIN.ASM"
 ;* fixes player bounce damping during the attract mode demo
-	;INCLVER	SAM,FIXDAMPDM
+	INCLUDE "../SAM/FIXDAMPD.ASM"
 ;* fixes playes getting smashed off the screen
-	;INCLVER	SAM,FIXSMASH
+	INCLUDE "../SAM/FIXSMASH.ASM"
 ;* fixes operator entry system initialization
 	INCLUDE "../SAM/FIXOPENT.ASM"
 ;* fixes player starting position
-	;INCLVER	SAM,FIXPLUNIT
+	INCLUDE "../SAM/FIXPLUNI.ASM"

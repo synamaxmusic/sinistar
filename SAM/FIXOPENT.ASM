@@ -1,46 +1,34 @@
-	INCLUDE "../SAM/START.ASM"
+;	INCLUDE	START
 ;	INCLVER	SAM,SINISTAR.EQU
-
-;====================================
-;  Equates to remove later
-
-NPLAYERS EQU	$988A
-
-;====================================
-
 FIXOPENT
-	ORG	ROMSAV
+	PUSHORG	ROMSAVE
 
 ;* fixes operator entry
-	ORG	$8995
-	JSR	FIXOPENT.100S
-;	PULLORG
-	ORG	$8E3D		;(This had to be added in order to get
-				; the alignment right.)
-FIXOPENT.100S
-;* * *	
+	PUSHORG	$8995
+	JSR	FIXOT100S					;;($8E3D)
+	PULLORG
+FIXOT100S							;;Fixme was: 100$ (Needed to convert to global labels)
+;* * *
 	LDA	#98		;set direct page
-	TFR	A,DPR
-	CLR	NPLAYERS	;zeros number of players
+	TFR	A,DP
+	CLR	NPLAYER		;zeros number of players	;;Fixme was: CLR  NPLAYERS
 	JSR	INIPIAS		;initialize pias
 ;* * *
 	JMP	SYSTINI		;Wipe clean thy slate, oh master
 
 ;* make pia initialization a subroutine
-	ORG	$2E6E
-	JMP	FIXOPENT.1S
-;	PULLORG		
-	ORG	$8E49		;(This had to be added in order to get
-				; the alignment right.)
-FIXOPENT.1S	STB	BUNITS
+	PUSHORG	$2E6E
+	JMP	FXOT1S						;;($8E49)
+	PULLORG		
+FXOT1S	STB	BUNITS						;;Fixme was: 1$
 ;* * *
 	JSR	INIPIAS
 ;* * *
 	LDA	PIA+6		;initialize control panel state
 	JMP	$2E90
 INIPIAS	EQU	$2E71
-	ORG	$2E8D
+	PUSHORG	$2E8D
 	RTS
-;	PULLORG
+	PULLORG
 
-;	PULLORG	ROMSAVE
+	PULLORG	ROMSAVE

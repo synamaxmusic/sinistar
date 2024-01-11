@@ -50,7 +50,7 @@ RED	EQU	$DD		;* Red
 ;	PFCB	CBRKR
 ;	ELSE
 ;	IFIDN	<CHAR>,<->
-;	PFCB	CDSH
+;	PFCB	CDSH			;;This should be CDASH so MICA/ZZATTRAC.ASM can use it
 ;	ELSE
 ;	IFIDN	<CHAR>,<.>
 ;	PFCB	CPER

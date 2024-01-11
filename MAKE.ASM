@@ -59,12 +59,22 @@
 	CPU 6809
 	
 ;===============================================================================
-;  Build Options
-;ROM	EQU	1		;Change to 1 to build the final ROM
+;  <<< IMPORTANT DEFINES >>>
+
+PROMS	EQU	1		;* Define before burning proms
+
+;;  PROMS is on by DEFAULT!  Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes
+;;  white for a frame whenever the game starts up or transitions to a status screen.
+;;  If PROMS is not defined, then the screen flashing bug returns (to help remind us that is not the final game)
+;;  It also DISABLES KENCHK so that copyright protection doesn't trigger during debugging!
+;;  Put a semi-colon in front of PROMS if you want to mess around with the code.
+
+;ROM	EQU	1		;;Change to 1 to build the final ROM
 ;DEBUG	EQU	1		;* Define this symbol to include test code
 ;DIAGNOSE EQU	1		;* Define this symbol to include Graphic Diagnostics
 ;PROMS	EQU	1		;* Define before burning proms
-;KENSMARQ EQU	1		;Adds AMOA '82 title screen "Marquee" graphic
+;KENSMARQ EQU	1		;;Adds AMOA '82 title screen "Marquee" graphic
+
 ;===============================================================================
 ;
 ;   SSSS   AAA   M   M
@@ -74,10 +84,10 @@
 ;  SSSS   A   A  M   M
 ;
 
-	INCLUDE SAM/MESSAGE.ASM		;This is based off of code from Joust but modified to work wtih a vertical screen
+	INCLUDE SAM/MESSAGE.ASM		;;This is based off of code from Joust but modified to work wtih a vertical screen
 	INCLUDE SAM/EQUATES.ASM
 
-	INCLUDE SAM/IMAGE.ASM		;Sprites by Jack Haeger
+	INCLUDE SAM/IMAGE.ASM		;;Sprites by Jack Haeger
 	INCLUDE	SAM/SAMS.ASM
 	
 ;===============================================================================
@@ -89,10 +99,10 @@
 ;  R   R  IIIII   CCCC  H   H
 ;
 
-	INCLUDE	WITT/new_equates.ASM	;Added to support longer symbol names
+	INCLUDE	WITT/new_equates.ASM	;;Added to support longer symbol names
 
 	INCLUDE WITT/RICHS.ASM
-	INCLUDE WITT/RICHS2.ASM		;(Control Panel Button handling with Easter Egg routine)
+	INCLUDE WITT/RICHS2.ASM		;;(Control Panel Button handling with Easter Egg routine)
 
 ;===============================================================================
 ;
@@ -105,8 +115,8 @@
 
 	INCLUDE FALS/NOAHS.ASM
 	
-	INCLUDE FALS/disable_kenchk.ASM		;Noah's module isn't playable unless this new file is included.
-						;(Be sure to not include this when building the original ROM)
+;	INCLUDE FALS/disable_kenchk.ASM		;;Noah's module isn't playable unless this new file is included.
+						;;(Be sure to not include this when building the original ROM)
 
 ;===============================================================================
 ;
@@ -117,7 +127,7 @@
 ;  BBBB    OOO   BBBB
 ;
 	
-;	INCLUDE MICA/BOBS.ASM
+	INCLUDE MICA/BOBS.ASM
 		
 ;===============================================================================
 ;
@@ -127,5 +137,5 @@
 ;  F        I    N  NN  A   A  L
 ;  F      IIIII  N   N  A   A  LLLLL
 
-;	INCLUDE WITT/AOE.ASM
-;	INCLUDE FALS/LAST.ASM
+	INCLUDE WITT/AOE.ASM
+;	INCLUDE FALS/LAST.ASM			;Final patches found in (Revision 3) rom

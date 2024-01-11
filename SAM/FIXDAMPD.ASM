@@ -1,36 +1,31 @@
-;;	INCLUDE "../SAM/START.ASM"
+;	INCLUDE	START
 ;	INCLVER	SAM,SINISTAR.EQU
 FIXDAMPDM
-;	ORG	ROMSAV
+	PUSHORG	ROMSAVE							;;($8E31)
 
 ;* romove old task initialization
-	ORG	$5156
-	JMP	.100S
-;	PULLORG
-	ORG	$8E31		;;(needed to add this, maybe fix later?)
-.100S  	jsr	StartDemo	;* Fake the Player 1 button hit.
+	PUSHORG	$5156
+	JMP	FIXDAM1
+	PULLORG
+FIXDAM1	jsr	StartDemo	;* Fake the Player 1 button hit.	;;Fixme was: 100$ (Needed to convert to global labels...decided to go with easier-to-understand labels this time)
   	jmp	Starts		;* Sieze control of the system.
-PATCHSAV SET	*		;;(added new scratch address here to keep track)
 	
 ;* make old task initialization a subroutine to save rom in patch
-	ORG	$5167
+	PUSHORG	$5167
 	RTS
-;	PULLORG
+	PULLORG
 
 ;* patch task initialization into correct place
-	ORG	$527E
-	JSR	.101S
-;	PULLORG
-	ORG PATCHSAV		;;(needed to add this)
-.101S	CLRB
+	PUSHORG	$527E
+	JSR	FIXDAM2							;;($8E37)
+	PULLORG
+FIXDAM2	CLRB								;;Fixme was: 101$
 	std	OMTLen+2,X
 	JMP	$5159
-PATCHSAV SET	*		;;(added new scratch address here to keep track)
 	
 ;* fix garbage velocity save
-	ORG	$517C
+	PUSHORG	$517C
 	ADDD	OMTLEN+2,Y	;*   add it to previous s velocity
-;	PULLORG
+	PULLORG
 
-;	PULLORG	ROMSAVE	
-;ROMSAV	SET	*
+	PULLORG	ROMSAVE	
