@@ -59,12 +59,12 @@ richfixes
 ;	ENDTBL
 	PULLORG									;;Adding PULLORG, per TABLE macro.
 
-;	INCLVER	RICH,fixbutton	;* FIREB version editing correction
-;	INCLVER	RICH,fixiniric	;* SINIB demo error and timing correction
-;	INCLVER	RICH,fixkrsini	;* Dead man's warp correction
+	INCLUDE "../WITT/FIXBUTTO.ASM"	;* FIREB version editing correction
+	INCLUDE "../WITT/FIXINIRI.ASM"	;* SINIB demo error and timing correction
+	INCLUDE "../WITT/FIXKRSIN.ASM"	;* Dead man's warp correction
 	INCLUDE "../WITT/FIXRISBO.ASM"	;* Value error correction
-;	INCLVER	RICH,fixsini	;* Sinistar death motion correction
-;	INCLVER	RICH,zstblimp	;* Impulse engine speed table tuned
-;	INCLVER	RICH,zstblbomb	;* Demo bombing run speed table tuned
+;	INCLVER	RICH,fixsini	;* Sinistar death motion correction		;;(Already included in AOE.ASM)
+	INCLUDE "../WITT/ZSTBLIMP.ASM"	;* Impulse engine speed table tuned
+	INCLUDE "../WITT/ZSTBLBOM.ASM"	;* Demo bombing run speed table tuned
 
 ;	ENDIF	Version-17.

@@ -70,6 +70,25 @@
 	TEXT	$31,$59
 	PHRASE	BLUE,68,15000
 	WORD	SILVER,68,POINTS
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ROMSAVE	SET	*		;; Save the current address
+
+	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
+
+	FDB	_5
+	FDB	_POINTS
+	FDB	_150
+	FDB	_200
+	FDB	_500
+	FDB	_15000
+	
+
+PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
+				;; more phrases later
+
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	PULS	A,Y		;Fetch DMA inhibit and workspace pointer
 	STA	PMEMCTL		;Restore DMA

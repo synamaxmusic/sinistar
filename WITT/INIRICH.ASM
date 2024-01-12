@@ -208,7 +208,6 @@ IEVBomb	sty	,X++		;* Save the new image pointer and descriptor.
 ;*
 ;*****
 ;	LOCAL
-	SECTION	SINIBOMB2RAM
 	VECTOR	IniVect
 	ldx	#RISBomb+1+2
 	ldy	#ISBomb		;* Y -> the "first" image descriptor
@@ -222,7 +221,6 @@ IEVBomb	sty	,X++		;* Save the new image pointer and descriptor.
 	stu	,X++
 	ldx	#RISBomb+1	;* X -> RAM image descriptor block
 	jsr	IEVBomb		;* Initialize the animation.
-	ENDSECTION SINIBOMB2RAM
 ;*
 	jsr	dispe		;* Erase the player message area
 ;*

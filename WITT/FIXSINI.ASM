@@ -1,34 +1,35 @@
-newvel equ $6503
-SinGrave equ $A1BB
-ScreenChk equ $68CC
-;===============================================================================
 ;	IFE	Version-17.
 fixsini
-	ORG	$6C2B		;* Remove 4 lines from SiStopChk
-	RPT	$A,nop			;Fixme was: RPT 10,nop (we're using RADIX 16)
-;	PULLORG
+	PUSHORG	$6C2B		;* Remove 4 lines from SiStopChk
+	RADIX	10							;;(decimal value ahead)
+	RPT	10,nop							;;Fixme was: RPT  10.,nop
+	RADIX	16							;;(back to hex)
+	PULLORG
 ;***
 ;*	to be replaced by ...
 ;***
-	ORG	$6BC5
-	jsr	fixsini.100		;* Patch LONG vel.
-;	PULLORG
-	ORG	$6BD2
-	jsr	fixsini.100		;* Patch SHORT vel.
-
-	ORG	CR2SAVE
-fixsini.100	jsr	newvel		;* < Patched over >
+	PUSHORG	$6BC5
+	jsr	FIXSIN1		;* Patch LONG vel.
+	PULLORG
+	PUSHORG	$6BD2
+	jsr	FIXSIN1		;* Patch SHORT vel.
+	PULLORG
+;;===============================================================================
+;;
+;;   The devs were running out of space so this patch overwrites the first
+;;   Copyright string that appears in the Sinistar ROM ($2DFB).
+;;
+;;===============================================================================
+	PUSHORG	CR_2							;;Fixme was: PUSHORG	CR2SAVE
+FIXSIN1	jsr	newvel		;* < Patched over >			;;Fixme was: 100$
 	tst	SinGrave
-	beq	fixsini.99
+	beq	FIXSIN2
 	jsr	ScreenChk
-	bcs	fixsini.99
-	CLRA
-	CLRB
-fixsini.99	rts
-;	PULLORG	CR2SAVE
-CR2SAVE SET	*
-	;IFGT	CR2SAVE-CR2LEN
-	;ERR	CR2 OVFL
-	;ENDIF	CR2
-	;ENDIF	Version-17.
-
+	bcs	FIXSIN2
+	CLRD
+FIXSIN2	rts								;;Fixme was: 99$
+	PULLORG	CR_2							;;Fixme was: PULLORG	CR2SAVE
+;	IF CR_2SAVE-CR2LEN						;;Fixme was: IFGT	CR2SAVE-CR2LEN
+;	ERROR	CR2 OVFL						;;Fixme was: ERR	CR2 OVFL
+;	ENDIF	;CR2
+;	ENDIF	Version-17.

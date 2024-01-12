@@ -11,6 +11,8 @@
 ;;   perhaps the devs moved this patch over to prevent operators from running
 ;;   the game without the diagnostic/watchdog ROM.
 ;;
+;;   To avoid double symbol errors, FORCEON has been renamed to ZFORCEON
+;;
 ;;===============================================================================
 
 ;	INCLUDE	START
@@ -19,13 +21,13 @@ FIXSMASH
 
 ;* patch offscreen routine to keep player on screen
 	PUSHORG	CPLAYER+OOFFSCR							;;($4BCF)
-	FDB	FORCEON
+	FDB	ZFORCEON							;;Fixme was: FDB  FORCEON
 	PULLORG
 
 ;* * *	PUSHORG	ROMSAVE
 	PUSHORG	HISAV
 ;* keep player on screen
-FORCEON	LDD	#387A		;stick the player at mid screen			;;($E1C7)
+ZFORCEON LDD	#387A		;stick the player at mid screen			;;Fixme was: FORCEON LDD  #387A  ;;($E1C7)
 	STD	OBOTTOM,Y
 	STB	OSPOS,Y
 	CLR	OSTATUS,Y	;clear his clipping flags

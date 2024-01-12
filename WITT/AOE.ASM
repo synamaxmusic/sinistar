@@ -37,8 +37,8 @@ Demo
 ;***
 	INCLUDE "../SAM/SAMFIXES.ASM"
 	INCLUDE "../WITT/RICHFIXE.ASM"
-	;;;;;;INCLVER	NOAH,noahfixes
-	;;;;;;INCLVER	BOB,bobfixes
+;	INCLVER	NOAH,noahfixes						;;NOAHFIXE.SRC's only patch (FIXBOMCA) was commented out and not used.
+	INCLUDE "../MICA/BOBFIXES.ASM"
 ;***
 ;*	<<< SAM >>>
 ;***
@@ -59,7 +59,7 @@ Demo
 ;	ENDIF	Version-17.
 ;*
 ;* * *	INCLVER	RICH,fixdist	* Orbit alterations
-	;;;;;;;INCLVER	RICH,fixsini
+	INCLUDE "../WITT/FIXSINI.ASM"
 ;	INCLVER	RICH,rich						;;This is where ZWASHODD was originally patched.  Moved over to WARRIOR.ASM.
 ;***
 ;*	<<< NOAH >>>
@@ -112,7 +112,7 @@ JUNKTIME	rmb	2						;*
 	asla								;*
 	sta	Graph+GMinutes						;*
 	stb	Graph+GSeconds						;*
-	IF	1 = 0	;***************** This is turned off! ***********	;;Fixme was: IFE  1
+	IF	1 = 1	;***************** This is turned off! ***********	;;Fixme was: IFE  1
 ;**									*
 ;*	Monitor Warrior Aggression					*
 ;**									*
@@ -204,41 +204,39 @@ BCF	MACRO	A1,A2,A3
 	BCF	$00,$00,$AB
 	PULLORG
 	ENDIF
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	END
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;	LIST
-	IFDEF	Debug		;*****************************************
-	PUSHORG	ROMSAVE							;*
-;*	Routine	Witt1							;*
-;*	lda	#$FF							;*
-;*	sta	PANMASK							;*
-;*	puls	Y							;*
-;*	jmp	DIE							;*
-;*									;*
-;	LOCAL								;*
-	SWITCH	START2,CLOSE	;* Fake out pickup			;*
-	LDA	BOMBS		;get sinibomb count			;*
-	INCA			;add one				;*
-	cmpa	#MAXBOMBS	;* If too many bombs are being held	;*
-	ble	1$		;*   then the crystal cannot be picked	;*
-	DISPLAY								;*
-	PHRASE	BLUE,35,CAPTAIN,OUR					;*
-	PHRASE	BLUE,35,BOMB,BAY,IS,FULL				;*
-	jsr	addpart							;*
-	DISPLAY								;*
-	PHRASE	WHITE,35,DEVELOPMENT					;*
-	PHRASE	WHITE,35,PIECE,ADDED					;*
-	rts								;*
-1$	STA	BOMBS		;save new sinibomb count		 *
-	LDB	#DWBL		;get dma constant to write sbomb display *
-	JSR	UPBOMBS		;update sinibomb display, save Y, uses A *
-	DISPLAY								;*
-	PHRASE	TANGREY,35,DEVELOPMENT					;*
-	PHRASE	TANGREY,35,BOMBS,ADDED					;*
-	rts								;*
-	PULLORG	ROMSAVE							;*
-	ENDIF	Debug		;*****************************************
+;	IFDEF	Debug		;*****************************************
+;	PUSHORG	ROMSAVE							;*
+;;*	Routine	Witt1							;*
+;;*	lda	#$FF							;*
+;;*	sta	PANMASK							;*
+;;*	puls	Y							;*
+;;*	jmp	DIE							;*
+;;*									;*
+;;	LOCAL								;*
+;	SWITCH	START2,CLOSE	;* Fake out pickup			;*
+;	LDA	BOMBS		;get sinibomb count			;*
+;	INCA			;add one				;*
+;	cmpa	#MAXBOMBS	;* If too many bombs are being held	;*
+;	ble	WITDBG1		;*   then the crystal cannot be picked	;*
+;	DISPLAY								;*
+;	PHRASE	BLUE,35,CAPTAIN,OUR					;*
+;	PHRASE	BLUE,35,BOMB,BAY,IS,FULL				;*
+;	jsr	addpart							;*
+;	DISPLAY								;*
+;	PHRASE	WHITE,35,DEVELOPMENT					;*
+;	PHRASE	WHITE,35,PIECE,ADDED					;*
+;	rts								;*
+;WITDBG1	STA	BOMBS		;save new sinibomb count		 *	;;Fixme was: 1$
+;	LDB	#DWBL		;get dma constant to write sbomb display *
+;	JSR	UPBOMBS		;update sinibomb display, save Y, uses A *
+;	DISPLAY								;*
+;	PHRASE	TANGREY,35,DEVELOPMENT					;*
+;	PHRASE	TANGREY,35,BOMBS,ADDED					;*
+;	rts								;*
+;	PULLORG	ROMSAVE							;*
+;	ENDIF	;Debug		;*****************************************
 
 	IFDEF	Debug		;*****************************************
 	PUSHORG	ROMSAVE							;*
@@ -246,7 +244,7 @@ BCF	MACRO	A1,A2,A3
 	inc	Ships		;Player won't run out of ships		;*
 	rts								;*
 	PULLORG	ROMSAVE							;*
-	ENDIF	Debug		;*****************************************
+	ENDIF	;Debug		;*****************************************
 
 	IFDEF	WitPop	;*************************************************
 ;	IFE	VERSION-9
@@ -291,14 +289,14 @@ BCF	MACRO	A1,A2,A3
 	lda	#0
 	ldu	#CWarrior
 	sta	Temp
-1$	dec	Temp
-	bmi	2$
+RICPAT1	dec	Temp								;;Fixme was: 1$
+	bmi	RICPAT2
 	jsr	[OInvec,U]
-	jmp	1$
-2$	rts
+	jmp	RICPAT1
+RICPAT2	rts									;;Fixme was: 2$
 	PULLORG
 
-	ENDIF	WitPop	;*************************************************
+	ENDIF	;WitPop	;*************************************************
 
 	IFNDEF	Proms	;*************************************************
 	PUSHORG	ROMSAVE							;*
@@ -308,14 +306,14 @@ BCF	MACRO	A1,A2,A3
 ;*	sta	Credits							 *
 ;*	rts								 *
 	PULLORG	ROMSAVE							;*
-	ENDIF	Proms	;*************************************************
+	ENDIF	;Proms	;*************************************************
 
 	IFNDEF	Demo
 	PUSHORG	DEATH
 	rts		;************ TURN OFF PLAYER DEATHS *************
 	PULLORG
-	ENDIF	Demo
-*
+	ENDIF	;Demo
+;*
 	IFDEF	Witt	;*************************************************
 	PUSHORG	ROMSAVE							;*
 	LOCAL								;*

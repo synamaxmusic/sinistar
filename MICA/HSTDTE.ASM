@@ -39,8 +39,9 @@
 ;* High Score To Date Master Task
 ;*   This one runs until the others are die, and then restarts the system
 ;*
-
+	RADIX	10								;;(decimal value ahead)
 HSTDMS	LDD	#(60*1)								;;Fixme was: LDD  #(60.*1)
+	RADIX	16									;;(back to hex)
 	JSR	TIMER
 
 	LDX	#ALHSTD		;Test if operator allows HSTD entry

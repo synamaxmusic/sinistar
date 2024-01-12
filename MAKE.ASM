@@ -138,4 +138,6 @@ PROMS	EQU	1		;* Define before burning proms
 ;  F      IIIII  N   N  A   A  LLLLL
 
 	INCLUDE WITT/AOE.ASM
-;	INCLUDE FALS/LAST.ASM			;Final patches found in (Revision 3) rom
+	INCLUDE FALS/LAST.ASM			;Final patches found in (Revision 3) rom
+	
+	END
