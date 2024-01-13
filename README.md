@@ -37,6 +37,11 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 
 {Warning: flashing images below)
 
+* 01/12/2024 - 2:23pm, I fixed the last remaining byte in the ROM that was different from the source code.  We can finally produce a bit-perfect copy of the final version of Sinistar!
+
+  I added a new file called ```BURN.BAT``` for those who want to quickly generate the ROM files from the ```sinistar.p``` file.  ROM 11 is handled slightly differently from the other ROMs so an additional option for P2BIN has to be given.
+  Already implemented some debug functions and hope to add more soon, along with a fix to re-enable the original Marquee title screen from the AMOA build.  The debug defines are found in ```MAKE.ASM```.
+
 * 01/12/2024 - At 12:23am, I finally finished rewriting all the game's code, with the exception of the diagnostic ROM (which is treated separately from the game).  This means 10 of Sinistar's 11 ROMs match up perfectly with this rewrite and that the game should be completely playable.  Once T13.ASM is rewritten, we should be all done.
 
 * 01/11/2024 - All four modules and Sam's patches are finished.  This means all that's left are the patches from the three remaining programmers, plus seeing how much debug stuff we can get working again.  We're getting really close to wrapping this up!
