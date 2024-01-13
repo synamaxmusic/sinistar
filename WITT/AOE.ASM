@@ -75,6 +75,16 @@ Demo
 ;	IFNDEF	FastAsm
 ;	INCLVER	BOB,bob
 ;	ENDIF	FastAsm
+;;===============================================================================
+;;
+;;   To separate the important fixes from the debug stuff, I have moved these
+;;   debug routines over to a new file "WITT/debug_utilities.ASM".
+;;
+;;   This was done because with all the various patches, we run out of space
+;;   in ROMSAVE.  By trying to include the debug code, we start going pass
+;;   $8EA0, which breaks everything.
+;;
+;;===============================================================================
 ;*****
 ;*
 ;* WORK UTILITIES
@@ -112,7 +122,7 @@ JUNKTIME	rmb	2						;*
 	asla								;*
 	sta	Graph+GMinutes						;*
 	stb	Graph+GSeconds						;*
-	IF	1 = 1	;***************** This is turned off! ***********	;;Fixme was: IFE  1
+	IF	1 = 0	;***************** This is turned off! ***********	;;Fixme was: IFE  1
 ;**									*
 ;*	Monitor Warrior Aggression					*
 ;**									*
@@ -161,28 +171,31 @@ JUNKTIME	rmb	2						;*
 	ENDIF	;Diagnose	;*****************************************
 ;	LOCAL
 ;	NLIST
-BCF	MACRO	A1,A2,A3
-	IF 	A1 <> 0								;;Fixme was: IFN	A1
-	FCB	A1
-	ELSE
-	RMB	1
-	ENDIF
-	IF 	A2 <> 0								;;Fixme was: IFN	A2
-	FCB	A2
-	ELSE
-	RMB	1
-	ENDIF
-	IF	A3 <> 0								;;Fixme was: IFN	A3
-	FCB	A3
-	ELSE
-	RMB	1
-	ENDIF
-	RMB	7
-	ENDM
+;BCF	MACRO	A1,A2,A3							;;Commented this out to avoid duplicate macros.  Moved to debug_utilities.ASM
+;	IF 	A1 <> 0								;;Fixme was: IFN	A1
+;	FCB	A1
+;	ELSE
+;	RMB	1
+;	ENDIF
+;	IF 	A2 <> 0								;;Fixme was: IFN	A2
+;	FCB	A2
+;	ELSE
+;	RMB	1
+;	ENDIF
+;	IF	A3 <> 0								;;Fixme was: IFN	A3
+;	FCB	A3
+;	ELSE
+;	RMB	1
+;	ENDIF
+;	RMB	7
+;	ENDM
 ;;===============================================================================
 ;;
 ;;   Here's something I've never seen before.  Changing the IF to 1=1 here
 ;;   draws the letters "WITT" over the tiny Planetoid sprite in dark purple pixels.
+;;
+;;   To make it easier to enable, I added a new define called "WittRock" in MAKE.ASM
+;;   that allows this to be included.
 ;;
 ;;===============================================================================
 	IF	1 = 0								;;Fixme was: IFE  1
@@ -228,7 +241,7 @@ BCF	MACRO	A1,A2,A3
 ;	PHRASE	WHITE,35,DEVELOPMENT					;*
 ;	PHRASE	WHITE,35,PIECE,ADDED					;*
 ;	rts								;*
-;WITDBG1	STA	BOMBS		;save new sinibomb count		 *	;;Fixme was: 1$
+;WITDBG1 STA	BOMBS		;save new sinibomb count		 *	;;Fixme was: 1$
 ;	LDB	#DWBL		;get dma constant to write sbomb display *
 ;	JSR	UPBOMBS		;update sinibomb display, save Y, uses A *
 ;	DISPLAY								;*
@@ -238,98 +251,98 @@ BCF	MACRO	A1,A2,A3
 ;	PULLORG	ROMSAVE							;*
 ;	ENDIF	;Debug		;*****************************************
 
-	IFDEF	Debug		;*****************************************
-	PUSHORG	ROMSAVE							;*
-	VECTOR	IniVect							;*
-	inc	Ships		;Player won't run out of ships		;*
-	rts								;*
-	PULLORG	ROMSAVE							;*
-	ENDIF	;Debug		;*****************************************
+;	IFDEF	InfiniteShips		;*****************************************	;;Fixme was: IFDEF  Debug (duplicate symbol)
+;	PUSHORG	ROMSAVE							;*
+;	VECTOR	IniVect							;*
+;	inc	Ships		;Player won't run out of ships		;*
+;	rts								;*
+;	PULLORG	ROMSAVE							;*
+;	ENDIF	;Debug		;*****************************************
 
-	IFDEF	WitPop	;*************************************************
-;	IFE	VERSION-9
-;	ENDIF	VERSION
-	PUSHORG	InPop0							;*
-	fcb	0,2,0			;* Workers			;*
-	fcb	0,2,0			;* Warriors			;*
-	fcb	0,1,0			;* Type 1 Planets		;*
-	fcb	0,1,0			;* Type 2 Planets		;*
-	fcb	0,1,0			;* Type 3 Planets		;*
-	fcb	0,1,0			;* Type 4 Planets		;*
-	fcb	0,1,0			;* Type 5 Planets		;*
-	PULLORG
+;	IFDEF	WitPop	;*************************************************
+;;	IFE	VERSION-9
+;;	ENDIF	VERSION
+;	PUSHORG	InPop0							;*
+;	fcb	0,2,0			;* Workers			;*
+;	fcb	0,2,0			;* Warriors			;*
+;	fcb	0,1,0			;* Type 1 Planets		;*
+;	fcb	0,1,0			;* Type 2 Planets		;*
+;	fcb	0,1,0			;* Type 3 Planets		;*
+;	fcb	0,1,0			;* Type 4 Planets		;*
+;	fcb	0,1,0			;* Type 5 Planets		;*
+;	PULLORG
 ;*									;*
-	PUSHORG	Quota							;*
-;*	     Work,Warr							;*
-	fcb	1,0			;* For testing, planet quota	;*
-	fcb	1,1			;* For testing, player quota	;*
-	fcb	1,0			;* For testing, sinistar quota	;*
-	fcb	9,9			;* For testing, sinibomb quota	;*
-	PULLORG
-;*									;*
-	PUSHORG	MisAss			;*<<< MESSED UP! >>>		;*
-;*		 Workers,Warriors			**  WARRIORS    ;*
-	fcb	OMWoTail,OMWaDrift	;* Planets	* 0 = Drift	;*
-	fcb	OMWoTail,OMWaDrift	;* Player	* 2 = Attack	;*
-	fcb	OMWoTail,OMWaDrift	;* Sinistar	* 4 = Mine	;*
-	fcb	OMWoInt,OMWaDrift	;* Sinibombs	* 6 = Guard	;*
-	fcb	OMWoInt,OMWaInt		;* Crystals	* 8 = Intercept	;*
-	PULLORG
-;*
-	PUSHORG	WarrMis			;*********************************
-	rts				;* Drift			 *
-;*	rmb	2			;* Attack Player		 *
-;*	rmb	2			;* Mine Planet			 *
-;*	rmb	2			;* Guard Object			 *
-;*	rmb	2			;* Intercept Object		 *
-	PULLORG
-;*
-	PUSHORG	RicPat
-;	Local
-	lda	#0
-	ldu	#CWarrior
-	sta	Temp
-RICPAT1	dec	Temp								;;Fixme was: 1$
-	bmi	RICPAT2
-	jsr	[OInvec,U]
-	jmp	RICPAT1
-RICPAT2	rts									;;Fixme was: 2$
-	PULLORG
-
-	ENDIF	;WitPop	;*************************************************
-
-	IFNDEF	Proms	;*************************************************
-	PUSHORG	ROMSAVE							;*
-	LOCAL								;*
-;*	VECTOR	PowVect							 *
-;*	lda	#$1		For development, give lots of credits	 *
-;*	sta	Credits							 *
-;*	rts								 *
-	PULLORG	ROMSAVE							;*
-	ENDIF	;Proms	;*************************************************
-
-	IFNDEF	Demo
-	PUSHORG	DEATH
-	rts		;************ TURN OFF PLAYER DEATHS *************
-	PULLORG
-	ENDIF	;Demo
-;*
-	IFDEF	Witt	;*************************************************
-	PUSHORG	ROMSAVE							;*
-	LOCAL								;*
-	VECTOR	IniVect		;****** BUILD THE SINISTAR ******	;*
-	RADIX	10								;;(decimal value ahead)
-	lda	#20							;*	;;Fixme was: lda	#20
-	RADIX	16								;;(back to hex)
-WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$	
-	deca								;*
-	bgt	WITT1S							;*
-	rts								;*
-	PULLORG	ROMSAVE							;*
-	PUSHORG	SHOOT
-	rts
-	PULLORG
-	ENDIF	;Witt	;*************************************************
+;	PUSHORG	Quota							;*
+;;*	     Work,Warr							;*
+;	fcb	1,0			;* For testing, planet quota	;*
+;	fcb	1,1			;* For testing, player quota	;*
+;	fcb	1,0			;* For testing, sinistar quota	;*
+;	fcb	9,9			;* For testing, sinibomb quota	;*
+;	PULLORG
+;;*									;*
+;	PUSHORG	MisAss			;*<<< MESSED UP! >>>		;*
+;;*		 Workers,Warriors			**  WARRIORS    ;*
+;	fcb	OMWoTail,OMWaDrift	;* Planets	* 0 = Drift	;*
+;	fcb	OMWoTail,OMWaDrift	;* Player	* 2 = Attack	;*
+;	fcb	OMWoTail,OMWaDrift	;* Sinistar	* 4 = Mine	;*
+;	fcb	OMWoInt,OMWaDrift	;* Sinibombs	* 6 = Guard	;*
+;	fcb	OMWoInt,OMWaInt		;* Crystals	* 8 = Intercept	;*
+;	PULLORG
+;;*
+;	PUSHORG	WarrMis			;*********************************
+;	rts				;* Drift			 *
+;;*	rmb	2			;* Attack Player		 *
+;;*	rmb	2			;* Mine Planet			 *
+;;*	rmb	2			;* Guard Object			 *
+;;*	rmb	2			;* Intercept Object		 *
+;	PULLORG
+;;*
+;	PUSHORG	RicPat
+;;	Local
+;	lda	#0
+;	ldu	#CWarrior
+;	sta	Temp
+;RICPAT1	dec	Temp								;;Fixme was: 1$
+;	bmi	RICPAT2
+;	jsr	[OInvec,U]
+;	jmp	RICPAT1
+;RICPAT2	rts									;;Fixme was: 2$
+;	PULLORG
+;
+;	ENDIF	;WitPop	;*************************************************
+;
+;	IFNDEF	Proms	;*************************************************
+;	PUSHORG	ROMSAVE							;*
+;;	LOCAL								;*
+;;*	VECTOR	PowVect							 *
+;;*	lda	#$1		For development, give lots of credits	 *
+;;*	sta	Credits							 *
+;;*	rts								 *
+;	PULLORG	ROMSAVE							;*
+;	ENDIF	;Proms	;*************************************************
+;
+;	IFNDEF	Demo
+;	PUSHORG	DEATH
+;	rts		;************ TURN OFF PLAYER DEATHS *************
+;	PULLORG
+;	ENDIF	;Demo
+;;*
+;	IFDEF	Witt	;*************************************************
+;	PUSHORG	ROMSAVE							;*
+;;	LOCAL								;*
+;	VECTOR	IniVect		;****** BUILD THE SINISTAR ******	;*
+;	RADIX	10								;;(decimal value ahead)
+;	lda	#20							;*	;;Fixme was: lda	#20
+;	RADIX	16								;;(back to hex)
+;WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$	
+;	deca								;*
+;	bgt	WITT1S							;*
+;	rts								;*
+;	PULLORG	ROMSAVE							;*
+;	PUSHORG	SHOOT
+;	rts
+;	PULLORG
+;	ENDIF	;Witt	;*************************************************
 ;*
 ;	LIST
 ;* * *	INCLVER	witt.dark,work0		* SYMVER checks

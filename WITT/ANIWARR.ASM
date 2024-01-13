@@ -61,7 +61,7 @@
 .5S	adda	OSANANG,Y		;*   direction of swing.
 	stb	OSPERS,Y	;* Mark whether or not the turret has swung.
 
-	IFDEF	DIAGNOSE
+	IFDEF	BargraphEnable								;;Fixme was: IFDEF	DIAGNOSE
 	pshs	A		;* Save work registers
 	adda	#(CIRCLE/2)	;* Range A from 0 to +256
 	sta	GRAPH+GANANG	;* Plot the flight angle

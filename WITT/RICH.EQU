@@ -13,7 +13,7 @@ LOOPATTACK	EQU	2	;* Attack type for conditional assembly
 ZOOMATTACK	EQU	3	;* Attack type for conditional assembly
 ATTACK	EQU	CIRCATTACK
 
-	IFDEF	DIAGNOSE
+	IFDEF	BargraphEnable						;;Fixme was: IFDEF	DIAGNOSE
 	PUSHORG	0
 	rmb	1		;* 0 Invisible graph
 GMinutes	rmb	1	;* 1 Play time in minutes
@@ -42,7 +42,7 @@ GMWaInt		rmb	1	;* D The # of Intercepting warriors
 ;*	Offsets from TEMP
 ;***
 	PUSHORG	0
-	IFDEF	Diagnose
+	IFDEF	BargraphEnable						;;Fixme was: IFDEF	DIAGNOSE
 TGMWaDrift	rmb	1	;* The # of Drifting warriors
 TGMWaAttack	rmb	1	;* The # of Attacking warriors
 TGMWaMine	rmb	1	;* The # of Mining warriors

@@ -393,7 +393,7 @@ WarrMis
 ;*****
 .130S	ldx	[OSCWCR,Y]	;* X -> scanner workspace of caller
 
-	IFDEF	DIAGNOSE
+	IFDEF	BargraphEnable								;;Fixme was: IFDEF	DIAGNOSE
 	pshs	A		;* Save work registers
 	lda	OSFLANG,Y	;* A = the Flight angle
 	adda	#(CIRCLE/2)	;* Range A from 0 to +256

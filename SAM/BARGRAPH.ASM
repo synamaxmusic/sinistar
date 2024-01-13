@@ -1,15 +1,16 @@
 ;	INCLUDE	START
 ;	INCLVER	SAM,SINISTAR
 
-BARGRAPH
+
 	PUSHORG	RAMSAV								;;Fixme was: PUSHORG	RAMSAVE (Should be $A1E1, don't go past $A225)
 PGRAPH	RMB	10	;\	previous bar graph lengths ( values/4)
 GRAPH	RMB	10	;/	bar graph values
 	PULLORG	RAMSAV								;;Fixme was: PULLORG	RAMSAVE
 
-	PUSHORG	ROMSAVE
+	PUSHORG	GRAFORG								;;Fixme was: PUSHORG	ROMSAVE (to get this to work, we need to overwrite the rug test)
 
 	VECTOR	INIVECT
+BARGRAPH set	*
 	LDD	#$9999		;draw bar graph right end line
 	LDX	#$75DA		
 .BAR1S	STD	X								;;Fixme was: 1$	STD	X
@@ -78,4 +79,4 @@ GRAPH	RMB	10	;/	bar graph values
 	STA 	MEMCTL
 	RTS
 
-	PULLORG	ROMSAVE
+	PULLORG	GRAFORG								;;Fixme was: PULLORG	ROMSAVE
