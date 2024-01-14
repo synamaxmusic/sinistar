@@ -1,5 +1,5 @@
 ;	include	start
-	INCLUDE "../WITT/RICH.EQU"						;;Rich's work EQUs
+;	INCLUDE "../WITT/RICH.EQU"						;;Rich's work EQUs
 ;	INCLVER	RICH,Table		* Macro
 ;PROMS	EQU	1		;* Define before burning proms			;;(Moving this to MAKE.ASM since it's important)
 richfixes

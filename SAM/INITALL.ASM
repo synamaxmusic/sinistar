@@ -215,7 +215,7 @@ STARTS	LDS	#STACK		;set stack
 	DECA
 	BEQ	TURN3S							
 	LDA	SHIPS		;yes?, is current player finished?
-	IFDEF	DEBUG
+	IFDEF	SAMDEBUG						;;Fixme was: IFDEF  DEBUG (duplicate symbol found)
 	BRA	TURN2S
 	ELSE
 	BNE	TURN2S
@@ -237,7 +237,7 @@ TURN2S	LDA	PLNURAM-PLURAM+SHIPS	;is other player still playing?
 	JSR	SWPLAY		;yes?, switch players
 	BRA	INITURN
 TURN3S	LDA	SHIPS		;one player, is player finished?
-	IFDEF	DEBUG
+	IFDEF	SAMDEBUG						;;Fixme was: IFDEF  DEBUG (duplicate symbol found)
 	BRA	INITURN
 	ELSE
 	BNE	INITURN

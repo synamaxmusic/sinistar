@@ -14,6 +14,8 @@
 ;	ENDIF	VERSION							;*
 	INCLUDE "../WITT/RICH.EQU"						;;We need Rich's work EQUs
 	
+	
+	
 GRAFORG	SET	$F09F								;;Let's overwrite the ROM/RAM test 
 
 	INCLUDE "../SAM/bargraph.ASM"		;* <<< Bar Graphs >>>	 *       
@@ -91,10 +93,15 @@ JUNKTIME	rmb	2						;*
 	SLEEP	LOOP							;*
 	PULLORG GRAFORG								;;Fixme was: PULLORG	ROMSAVE
 
-	
+	IFNDEF	ROM
 	PUSHORG	$FFF0								;; Let's restore the IRQ vectors in ROM 11 so that MAME can boot
 	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
 	PULLORG
+	ELSE
+	PUSHORG	$FFF0
+	FDB	PWRUP,PWRUP,PWRUP,PWRUP,IRQ,PWRUP,PWRUP,PWRUP	
+	PULLORG
+	ENDIF
 				;*
 	ENDIF	;Diagnose	;*****************************************
 	
@@ -249,7 +256,7 @@ RICPAT2	rts									;;Fixme was: 2$
 	PULLORG	ROMSAVE							;*
 	ENDIF	;Proms	;*************************************************
 
-	IFNDEF	Demo
+	IFDEF	NoDeath								;;Fixme was: IFNDEF	Demo
 	PUSHORG	DEATH
 	rts		;************ TURN OFF PLAYER DEATHS *************
 	PULLORG
@@ -278,3 +285,183 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 
 ;	ENDTEST
 ;	END
+
+;;===========================================================================
+;;
+;;     SSSS  Y   Y  N   N   AAA   M   M   AAA   X   X
+;;    S       Y Y   NN  N  A   A  MM MM  A   A   X X 
+;;     SSS     Y    N N N  AAAAA  M M M  AAAAA    X
+;;        S    Y    N  NN  A   A  M   M  A   A   X X 
+;;    SSSS     Y    N   N  A   A  M   M  A   A  X   X
+;;
+;;  This is new code that I put in for fixes and mods to make the game easier.
+;;
+;;===========================================================================
+;;
+;;   To avoid triggering KenChk, we force the program to skip the rug test
+;;   on start up.  This is done by by overwriting the jump addresses that
+;;   start the test with NOPs. 
+;;
+	IFDEF	EnableMods
+	
+	PUSHORG	$F063
+	NOP
+	NOP
+	PULLORG
+	
+	PUSHORG $F069
+	NOP
+	NOP
+	PULLORG
+	
+	PUSHORG $F06B
+	NOP
+	PULLORG
+	
+;;   We need this if the user wants to go into the operator service menu.
+;;   A checksum test is done upon entering so let's reuse the debug code
+;;   from T13.ASM that allows us to fake the ROM test.
+	
+	PUSHORG ROMTAB
+	FCB	$00,$0	;0000
+	FCB	$10,$0	;1000
+	FCB	$20,$0	;2000
+	FCB	$30,$0	;3000
+	FCB	$40,$0	;4000
+	FCB	$50,$0	;5000
+	FCB	$60,$0	;6000
+	FCB	$70,$0	;7000
+	FCB	$80,$0	;8000
+	FCB	$90,$0	;9000
+	FCB	$A0,$0	;A000
+	FCB	$B0,$0	;B000
+	FCB	$C0,$0	;C000
+	FCB	$D0,$0	;D000
+	FCB	$E0,$0	;E000
+	FCB	$F0,$0	;F000
+	FCB	0
+	FCB	$0	;CHECK BYTE (FUDGER) FOR THIS PART ($F000)
+	PULLORG
+	
+;;   Let's skip the ROM and RAM tests when we hit the service button.
+;;   This has the side-effect of wiping away the screen graphics as the
+;;   CMOS test runs.  Continue hitting the service button to get to the 
+;;   Game Adjustments screen.
+	
+	IFDEF 	DiagnosticTestFix
+	PUSHORG	$F003	;;This restores access to the diagnostic menu!
+	JMP	DIAG3	;;Instead of JMP  ADVSWS, we're skiping the deleted RAM/ROM tests and going straight to CMOS test.
+;	JMP	AUTO2   ;;(Do we need to replace Auto-cycle?)
+	PULLORG
+	ENDIF
+	
+	ENDIF
+
+;;===========================================================================
+;;
+;;   The DEFALT table in SAM/TB13.ASM defines the default values for the
+;;   game adjustments in the operator service menu. Here's a section of what
+;;   it looks like:
+;
+;	DEFALT	FCB	$30	FIRST EXTRA SHIP AT
+;		FCB	$30	ADDITIONAL POINTS PER EXTRA SHIP
+;		FCB	$03	SHIPS PER GAME
+;		FCB	$05	DIFFICULTY OF PLAY
+;		FCB	$01	CONTINUOUS FIRE
+;		...
+;;
+;;   Note that these are hex numbers, but are treated as decimal values.
+;;   The default for "ADDITIONAL POINTS PER EXTRA SHIP" is 30.  In the menu,
+;;   it's displayed as "Additional Extra Ship Point Factor" and is at 30,000.
+;;   
+;;   Extra ships are really difficult to score in Sinistar as opposed to other
+;;   Williams titles. If you know what you're doing, you can easily rack up 
+;;   extra lives in Robotron or Joust, but with the exponential bonus scores 
+;;   in Sinistar (30k, 90k, 180k, etc), it's much harder to do so. 
+;;
+;;   Lowering this value all the way to zero treats the bonus scores
+;;   in a more linear fashion: (30k, 60k, 90k, 120k, etc...).
+;;
+;;   In an amazing stroke of luck, we have confirmation that this value was
+;;   not the original one intended.  In SAM/DEFAULT.SRC, we have an earlier
+;;   version of the DEFALT table that's unused.  Let's take a look and compare:
+;;
+;	* * *DEFALT	
+;		FCB	$30	FIRST EXTRA SHIP AT
+;	* * *	FCB	$05	ADDITIONAL POINTS PER EXTRA SHIP
+;	* * *	FCB	$03	SHIPS PER GAME
+;	* * *	FCB	$05	DIFFICULTY OF PLAY
+;	* * *	FCB	$01	CONTINUOUS FIRE
+;		...
+;;
+;;   As you can see, additional points per extra ship is the only value
+;;   that has changed and it's set to a much lover number of $05.
+;;   The following code restores this number so that extra ships are
+;;   easier to get.
+;;
+	IFDEF	ExtraShipFix
+	
+	PUSHORG	DEFALT+1	;;($493B)
+	FCB	$05	;ADDITIONAL POINTS PER EXTRA SHIP
+	PULLORG
+	
+	ENDIF
+
+;;===========================================================================
+	
+	IFDEF	DisableSinistarCollision
+	
+	PUSHORG collision+$0A  ;;Skip to COLLIDE PLAYER,SINI
+;;	COLLIDE	PLAYER,SINI
+	rts		;;Make the player pass through the Sinistar
+	PULLORG
+	
+	ENDIF
+
+;;===========================================================================
+
+	IFDEF	DifficultyMod
+	
+	PUSHORG CR_7
+	
+	NOP
+	FCC	"POP. FIX MOD BY SYNAMAX 10/7/23 "
+	RPT	8,NOP
+	
+	PULLORG
+	
+	PUSHORG	$7ae4	;;Reduce Warrior Increase rate for First Zone
+	fcb	$04
+	PULLORG
+	
+	PUSHORG	$7b04	;;Reduce Warrior Increase rate for Void Zone
+	fcb	$04
+	PULLORG
+	
+	PUSHORG	$7b24	;;Reduce Warrior Increase rate for Worker Zone
+	fcb	$04
+	PULLORG
+	
+	PUSHORG	$7b44	;;Reduce Warrior Increase rate for Warrior Zone
+	fcb	$04
+	PULLORG
+	
+	PUSHORG	$7b64	;;Reduce Warrior Increase rate for Planetoid Zone
+	fcb	$04
+	PULLORG
+	
+	PUSHORG $7b15	;;Reduce Warrior Desired Population for Worker Zone
+	fcb	$00
+	PULLORG
+	
+	PUSHORG	$7b35	;;Reduce Warrior Desired Population for Warrior Zone
+	fcb	$03
+	PULLORG
+	
+	PUSHORG	$7b55	;;Reduce Warrior Desired Population for Planetoid Zone
+	fcb	$05
+	PULLORG
+	
+;; Void Zone Warrior Initial Population is unmodified.
+	
+	ENDIF

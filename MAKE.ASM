@@ -91,16 +91,36 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;NOTEST	EQU	1
 
-;;  NOTEST disables the power up ROM/RAM rug test.  Uncommenting this EQU is great for 
-;;  debugging and greatly decreases wait times.
+;;  Uncommenting this EQU can be useful for debugging and greatly decreases wait times
+;;  by skipping the power up ROM/RAM Rug Test.  It does not disable the ROM/RAM "Rug" test
+;;  itself, as it is still accessible by hitting the service button.
+
+;SAMDEBUG EQU	1
+
+;;  This debug define found in Sam's module allows the player to respawn forever, even
+;;  if they run out of extra ships.  This only changes two bytes and doesn't mess up any
+;;  symbol addresses.
 
 ;InfiniteShips EQU 1
 
-;;  Enable this to never run out of lives.
+;;  Enable this to never run out of lives.  This is from Rich's module and while it
+;;  takes up more space, it increases the player's number of ships upon every Turn
+;;  initialization so the player never runs out. 
+
+;NoDeath	EQU	1
+
+;;  This disables player deaths.  Warrior shots don't hurt anymore (yay!), but if
+;;  the player gets caught by the Sinistar, they'll get soft-locked (boo!).
+
+;DisableSinistarCollision EQU	1
+
+;;  Define this to make the player pass through the Sinistar and prevent getting
+;;  soft-locked while NoDeath is enabled.
 
 ;Witt	EQU	1
 
-;;  Uncomment "Witt" to force the Sinistar to spawn instantly.
+;;  Uncomment "Witt" to force the Sinistar to spawn instantly and prevent the
+;;  warriors from shooting at the player.
 
 ;WittRock EQU	1
 
@@ -108,16 +128,66 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  Planetoid image that was used to denote Rich's developmental build
 ;;  from the final ROM.
 
+;  <<< MOD DEFINES >>>
+
+;EnableMods EQU 1
+
+;;  Turn this on if you want to enable mods like the Marquee Fix or Difficulty Mod.
+;;  Please leave PROMS defined!
+;;
+;;  This disables the Rug test, just like NOTEST, but this also zeros out the
+;;  ROMTBL checksum table, so that we don't trigger the copyright protection.
+;;  If the ROM/RAM tests have been untouched, hitting the service button should
+;;  still work.  With the advance switch enabled, pressing the button will
+;;  take you directly to the Bookkeeping and Game Adjustment screens.
+
+;DiagnosticTestFix EQU 1
+
+;;  Only works if EnableMods is defined.  Restores access to diagnostic tests for
+;;  CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is
+;;  automatically enabled for MarqueeFix.  This is needed for any mods that overwrite
+;;  the RAM/ROM rug test area ($F09F-$F371).
+
+;MarqueeFix EQU 1
+
+;;  This restores the awesome original "Marquee" title screen found in the prototype
+;;  AMOA '82 build.  
+;;
+;;  To get this to work, I had to overwrite the ROM/RAM tests in ROM 11 and then 
+;;  patched ROM 9 to allow RJ's attract mode routines load the new graphics.
+;;
+;;  Finally a new patch was inserted to restore access to the Game Adjustments menu
+;;  and to prevent the game from trying to load the trashed tests upon hitting the
+;;  service button.
+;;  
+;;  Due to space constraints, this was not included in the final build of the game.
+;;  
+
+;ExtraShipFix EQU 1
+
+;;  This restores the original "Additional Extra Ship Point Factor" to it's original
+;;  value of 5,000 (per SAM/DEFAULT.SRC).  This makes it much easier to score extra lives!
+;;  PROMS can be enabled as this fix also automatically adds a Rug test skip and
+;;  zeros out the checksum table to avoid triggering copyright protection.
+;;
+;;  You'll need to do a factory reset or clear/delete your NVRAM in order for the
+;;  new default value to be copied over.
+
+;DifficultyMod EQU 1
+
+;;  This reduces the difficulty of the game by modifying the enemy population values
+;;  starting at $7ABE.  You can watch my video For more detailed info on how this mod works
+;;  and why I chose these new values: https://youtu.be/HnfcAudPPS4
+
+;  <<< EXPERIMENTAL BROKEN DEFINES >>>
+
 ;BargraphEnable EQU 1		;* Define this symbol to include Graphic Diagnostics
 
 ;;  This was originally called "DIAGNOSE" but I renamed it to BargraphEnable because
 ;;  it better describes what this define does.  Some changes had to be made to get
-;;  the Debug Graphs working again.
-
-;ROM	EQU	1		;;Change to 1 to build the final ROM
-;DEBUG	EQU	1		;* Define this symbol to include test code
-;DIAGNOSE EQU	1		;* Define this symbol to include Graphic Diagnostics
-;KENSMARQ EQU	1		;;Adds AMOA '82 title screen "Marquee" graphic
+;;  the Debug Graphs functional again but the game starts acting weird when this is enabled.
+;;  AOE.ASM must be disabled in order for the game to boot.  Disabling DIAG.ASM is
+;;  a good idea as well.
 
 ;===============================================================================
 ;
@@ -158,9 +228,6 @@ PROMS	EQU	1		;* Define before burning proms
 ;
 
 	INCLUDE FALS/NOAHS.ASM
-	
-;	INCLUDE FALS/disable_kenchk.ASM		;;Noah's module isn't playable unless this new file is included.
-						;;(Be sure to not include this when building the original ROM)
 
 ;===============================================================================
 ;
@@ -180,9 +247,9 @@ PROMS	EQU	1		;* Define before burning proms
 ;  FFF      I      X    EEEE    SSS 
 ;  F        I     X X   E          S
 ;  F      IIIII  X   X  EEEEE  SSSS 
+;
 
 	INCLUDE WITT/AOE.ASM		
-	INCLUDE WITT/debug_utilities.ASM
 	
 ;===============================================================================
 ;  
@@ -195,5 +262,17 @@ PROMS	EQU	1		;* Define before burning proms
 
 	INCLUDE SAM/DIAG.ASM		;;Build the diagnostic ROM first
 	INCLUDE FALS/LAST.ASM		;;Final patches found in Revision 3 rom, can be built without DIAG.ASM
+	
+;===============================================================================
+;
+;  EEEEE  X   X  TTTTT  RRRR    AAA    SSSS  
+;  E       X X     T    R   R  A   A  S      
+;  EEEE     X      T    RRRR   AAAAA   SSS   
+;  E       X X     T    R  R   A   A      S  
+;  EEEEE  X   X    T    R   R  A   A  SSSS   
+;
+	
+	INCLUDE WITT/debug_utilities.ASM
+	INCLUDE MICA/marquee_fix.ASM
 	
 	END

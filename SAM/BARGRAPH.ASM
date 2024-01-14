@@ -10,6 +10,11 @@ GRAPH	RMB	10	;/	bar graph values
 	PUSHORG	GRAFORG								;;Fixme was: PUSHORG	ROMSAVE (to get this to work, we need to overwrite the rug test)
 
 	VECTOR	INIVECT
+	;;
+;	ORG	$8E55		;; insert hook for INIVECT by
+;	JSR	GRAFORG		;; overwriting three NOPs at $8E55
+;	ORG	GRAFORG		;; and then we go back to $F09F
+	;;
 BARGRAPH set	*
 	LDD	#$9999		;draw bar graph right end line
 	LDX	#$75DA		
@@ -80,3 +85,35 @@ BARGRAPH set	*
 	RTS
 
 	PULLORG	GRAFORG								;;Fixme was: PULLORG	ROMSAVE
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+;; Patch to avoid triggering copyright protection and to skip
+;; ROM/RAM "Rug" test which has been overwritten by this new code.
+	ORG	$F063
+	NOP
+	NOP
+	ORG	$F069
+	NOP
+	NOP
+	NOP
+
+;; Patch to clear out ROM checksum table (this is probably unnecessary in this mod)
+
+	ORG	$F34F
+	FDB	$0000    
+	FDB	$1000    
+	FDB	$2000   
+	FDB	$3000  
+	FDB	$4000  
+	FDB	$5000  
+	FDB	$6000  
+	FDB	$7000  
+	FDB	$8000  
+	FDB	$9000  
+	FDB	$A000  
+	FDB	$B000  
+	FDB	$C000  
+	FDB	$D000  
+	FDB	$E000  
+	FDB	$F000  
