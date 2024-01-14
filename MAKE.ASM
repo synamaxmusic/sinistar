@@ -85,7 +85,8 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  PROMS is on by DEFAULT!  Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes
 ;;  white for a frame whenever the game starts up or transitions to a status screen.
-;;  If PROMS is not defined, then the screen flashing bug returns (to help remind us that is not the final game)
+;;  If PROMS is not defined, then the screen flashing bug returns (to help remind us that we're
+;;  playing a dev build).
 ;;  It also DISABLES KENCHK so that copyright protection doesn't trigger during debugging!
 ;;  Put a semi-colon in front of PROMS if you want to mess around with the code.
 
@@ -93,13 +94,13 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  Uncommenting this EQU can be useful for debugging and greatly decreases wait times
 ;;  by skipping the power up ROM/RAM Rug Test.  It does not disable the ROM/RAM "Rug" test
-;;  itself, as it is still accessible by hitting the service button.
+;;  itself, as it is still accessible by pressing the service button.
 
 ;SAMDEBUG EQU	1
 
 ;;  This debug define found in Sam's module allows the player to respawn forever, even
-;;  if they run out of extra ships.  This only changes two bytes and doesn't mess up any
-;;  symbol addresses.
+;;  if they run out of extra ships.  This only changes two bytes in the code and doesn't
+;;  mess up any symbol addresses.
 
 ;InfiniteShips EQU 1
 
@@ -111,10 +112,11 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  This disables player deaths.  Warrior shots don't hurt anymore (yay!), but if
 ;;  the player gets caught by the Sinistar, they'll get soft-locked (boo!).
+;;  This was taken from Rich's module.
 
 ;DisableSinistarCollision EQU	1
 
-;;  Define this to make the player pass through the Sinistar and prevent getting
+;;  This new hack makes the player pass through the Sinistar and prevent getting
 ;;  soft-locked while NoDeath is enabled.
 
 ;Witt	EQU	1
