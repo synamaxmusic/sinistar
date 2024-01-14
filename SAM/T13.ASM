@@ -1950,6 +1950,7 @@ RAND	PSHS	B
 	PULLORG	ROMSAVE
 
 ;* * *	ORG	TSTORG+$FF0
+IRQVectors								;;(New label for checking if DIAG/T13 is assembled or not)
 	IFDEF	ROM
 	PUSHORG	$FFF0
 	FDB	PWRUP,PWRUP,PWRUP,PWRUP

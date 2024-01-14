@@ -1,20 +1,39 @@
 ;	INCLUDE	START
 ;	INCLVER	SAM,SINISTAR
 
+	INCLUDE "../WITT/RICH.EQU"						;;We need Rich's work EQUs
+
+;;===============================================================================
 
 	PUSHORG	RAMSAV								;;Fixme was: PUSHORG	RAMSAVE (Should be $A1E1, don't go past $A225)
 PGRAPH	RMB	10	;\	previous bar graph lengths ( values/4)
 GRAPH	RMB	10	;/	bar graph values
 	PULLORG	RAMSAV								;;Fixme was: PULLORG	RAMSAVE
 
-	PUSHORG	GRAFORG								;;Fixme was: PUSHORG	ROMSAVE (to get this to work, we need to overwrite the rug test)
+;;===============================================================================
+
+;	PUSHORG	GrafxSAV							;;Fixme was: PUSHORG	ROMSAVE (to get this to work, we need to overwrite the rug test)
+;										;;We need to disable KenChk entirely for this to work.
+;	VECTOR	POWVECT
+;;	SYMVER	KENCHK,KENCHK
+;	clr	KENCHK
+;	rts
+;	VECTOR	IniVect
+;	clr	KenChk
+;	rts
+;	PULLORG
+;	
+;;	SYMVER	ZAPSIN,ZAPSini
+;	PUSHORG	ZAPSini		;* In the PowVect routine, ignore the
+;	tst	$0		;*   copyright violation test routine.
+;	PULLORG
+
+;;===============================================================================
+
+	PUSHORG	GrafxSAV							;;Now we start off with Sam's Bargraph code
 
 	VECTOR	INIVECT
-	;;
-;	ORG	$8E55		;; insert hook for INIVECT by
-;	JSR	GRAFORG		;; overwriting three NOPs at $8E55
-;	ORG	GRAFORG		;; and then we go back to $F09F
-	;;
+
 BARGRAPH set	*
 	LDD	#$9999		;draw bar graph right end line
 	LDX	#$75DA		
@@ -84,36 +103,114 @@ BARGRAPH set	*
 	STA 	MEMCTL
 	RTS
 
-	PULLORG	GRAFORG								;;Fixme was: PULLORG	ROMSAVE
+	PULLORG GrafxSAV
 	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;===============================================================================	
+;; Rich's stuff taken from AOE.ASM
 	
-;; Patch to avoid triggering copyright protection and to skip
-;; ROM/RAM "Rug" test which has been overwritten by this new code.
-	ORG	$F063
-	NOP
-	NOP
-	ORG	$F069
-	NOP
-	NOP
-	NOP
+	PUSHORG	Palette							;*
+	fcb	@067,@377,@277,@256,@255,@244,@232,@067			;*
+	fcb	@377,@311,@120,@113,@005,@007,@007,@067			;*
+	PULLORG                                                         
+;*									;*
+	PUSHORG	RAMSAV							;*	;;Fixme was: PUSHORG	RAMSAVE	
+JUNKTIME	rmb	2						;*
+	PULLORG	RAMSAV							;*	;;Fixme was: PULLORG	RAMSAVE
+;*									;*
+	PUSHORG	GrafxSAV                                                
+;	LOCAL								;*
+	VECTOR	IniVect							;*
+	clr	JUNKTIME						;*
+	clr	JUNKTIME+1						;*
+	New_Sleep	Task64,.JUNK1S					;*	;;Fixme was: New_Sleep	Task64,1$
+	rts								;*
+;**									;*
+;*	Time clock							;*
+;**									;*
+.JUNK1S	pshs	D,X,U							;*	;;Fixme was: 1$	pshs	D,X,U
+	ldd	JUNKTIME						;*
+	addd	#(1*4)		;* Or (2*4) on the 128 list.		;*
+	std	JUNKTIME						;*
+	asla								;*
+	asla								;*
+	sta	Graph+GMinutes						;*
+	stb	Graph+GSeconds						;*
+	IF	1 = 1	;***************** This is turned off! ***********	;;Fixme was: IFE  1
+;**									*
+;*	Monitor Warrior Aggression					*
+;**									*
+	lda	WAgg			;* Monitor the high byte of	*
+	asla				;*   (shifted to scale)		*
+	sta	Graph+GAggression	;*   the warrior aggression	*
+;**
+;*	Monitor Missions
+;**
+	ldx	#Temp
+	clr	TGMWaDrift,X
+	clr	TGMWaAttack,X
+	clr	TGMWaMine,X
+	clr	TGMWaTail,X
+	clr	TGMWaInt,X
 
-;; Patch to clear out ROM checksum table (this is probably unnecessary in this mod)
+	ldu	#Ground
+	cmpu	KeyClee+2
+	beq	.4S
+	ldu	[KeyClee+2]
+.2S	lda	OSMIS,U
+	cmpa	#OMWaSav
+	bge	.3S
+	asra
+	ldb	A,X	
+	addb	#(4*4)								;;Fixme was: addb  #(4.*4.)  (Is decimal really needed here?)
+	stb	A,X	
+.3S	ldu	[OSCTYPT,U]
+	cmpu	#Ground
+	bne	.2S
 
-	ORG	$F34F
-	FDB	$0000    
-	FDB	$1000    
-	FDB	$2000   
-	FDB	$3000  
-	FDB	$4000  
-	FDB	$5000  
-	FDB	$6000  
-	FDB	$7000  
-	FDB	$8000  
-	FDB	$9000  
-	FDB	$A000  
-	FDB	$B000  
-	FDB	$C000  
-	FDB	$D000  
-	FDB	$E000  
-	FDB	$F000  
+.4S	lda	TGMWaDrift,X
+	sta	Graph+GMWaDrift
+	lda	TGMWaAttack,X
+	sta	Graph+GMWaAttack
+	lda	TGMWaMine,X
+	sta	Graph+GMWaMine
+	lda	TGMWaTail,X
+	sta	Graph+GMWaTail
+	lda	TGMWaInt,X
+	sta	Graph+GMWaInt
+	ENDIF	;1		;******* Turned off for now. *************
+	puls	D,X,U							;*
+	SLEEP	LOOP							;*
+	PULLORG	GrafxSAV						;*
+;	ENDIF	;Diagnose	;*****************************************	
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	
+;;; Patch to avoid triggering copyright protection and to skip
+;;; ROM/RAM "Rug" test which has been overwritten by this new code.
+;	ORG	$F063
+;	NOP
+;	NOP
+;	ORG	$F069
+;	NOP
+;	NOP
+;	NOP
+;
+;;; Patch to clear out ROM checksum table (this is probably unnecessary in this mod)
+;
+;	ORG	$F34F
+;	FDB	$0000    
+;	FDB	$1000    
+;	FDB	$2000   
+;	FDB	$3000  
+;	FDB	$4000  
+;	FDB	$5000  
+;	FDB	$6000  
+;	FDB	$7000  
+;	FDB	$8000  
+;	FDB	$9000  
+;	FDB	$A000  
+;	FDB	$B000  
+;	FDB	$C000  
+;	FDB	$D000  
+;	FDB	$E000  
+;	FDB	$F000  

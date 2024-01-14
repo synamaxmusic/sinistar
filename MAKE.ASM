@@ -62,17 +62,12 @@
 ;   The order of the modules is as follows:
 ;   SAM > WITT > FALS > MICA
 ;
-;   If you want to emulate a version of Sinistar with missing modules, you will need to
-;   modify ROM 11 so that the game can boot.  Simply copy the last 16 bytes of ROM 10:
+;   To make an incomplete version of Sinistar playable on MAME, IRQ vectors are
+;   automatically inserted at the very end of ROM 11 so that the emulator can launch
+;   the game.
 ;
-;   E0 00 E0 00 E0 00 E0 00 E0 0B E0 00 E0 00 E0 00
-;
-;   and paste them at ROM 11 address $0FF0.  This will give the correct IRQ vectors to the CPU.
-;   The rest of ROM 11 can be blank, as long as those IRQ vectors are found at the
-;   end of the binary data, then the game will boot.  
-;
-;   Once the incomplete build is loaded into the emulator, you'll need to insert a coin first
-;   then press either the Player 1 or 2 buttons to start.
+;   Once the incomplete build is running in the emulator, you'll need to insert a coin first
+;   then press either the Player 1 or 2 buttons to start playing.
 ;
 ;===============================================================================
 ;  Macro Assembler AS Instructions
@@ -83,12 +78,22 @@
 
 PROMS	EQU	1		;* Define before burning proms
 
-;;  PROMS is on by DEFAULT!  Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes
+;;  PROMS is on by DEFAULT!  
+;;
+;;  Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes
 ;;  white for a frame whenever the game starts up or transitions to a status screen.
 ;;  If PROMS is not defined, then the screen flashing bug returns (to help remind us that we're
 ;;  playing a dev build).
 ;;  It also DISABLES KENCHK so that copyright protection doesn't trigger during debugging!
-;;  Put a semi-colon in front of PROMS if you want to mess around with the code.
+;;
+;;  Note: This doesn't take affect until AOE.ASM is included, so use DisableKenChk
+;;  if magic byte $A1B3 is still showing up as non-zero during attract mode/gameplay.
+
+;DisableKenChk EQU 1
+
+;;  The problem with PROMS is that it is defined in RICHFIXE.ASM, which is referenced
+;;  in AOE.ASM.  If AOE is not included in the build, then KenChk will still trigger.
+;;  Enable this to force the copyright protection to stay off no matter what.
 
 ;NOTEST	EQU	1
 
@@ -153,7 +158,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;MarqueeFix EQU 1
 
 ;;  This restores the awesome original "Marquee" title screen found in the prototype
-;;  AMOA '82 build.  
+;;  AMOA '82 build.  Due to space constraints, this was not included in the final build.
 ;;
 ;;  To get this to work, I had to overwrite the ROM/RAM tests in ROM 11 and then 
 ;;  patched ROM 9 to allow RJ's attract mode routines load the new graphics.
@@ -162,34 +167,38 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  and to prevent the game from trying to load the trashed tests upon hitting the
 ;;  service button.
 ;;  
-;;  Due to space constraints, this was not included in the final build of the game.
-;;  
 
 ;ExtraShipFix EQU 1
 
 ;;  This restores the original "Additional Extra Ship Point Factor" to it's original
 ;;  value of 5,000 (per SAM/DEFAULT.SRC).  This makes it much easier to score extra lives!
-;;  PROMS can be enabled as this fix also automatically adds a Rug test skip and
-;;  zeros out the checksum table to avoid triggering copyright protection.
 ;;
 ;;  You'll need to do a factory reset or clear/delete your NVRAM in order for the
 ;;  new default value to be copied over.
+;;
+;;  Because this is just a one-byte edit, this can be combined with other mods like
+;;  MarqueeFix and/or DifficultyMod.
 
 ;DifficultyMod EQU 1
 
 ;;  This reduces the difficulty of the game by modifying the enemy population values
 ;;  starting at $7ABE.  You can watch my video For more detailed info on how this mod works
 ;;  and why I chose these new values: https://youtu.be/HnfcAudPPS4
+;;
+;;  This mod can be enabled with other mods like MarqueeFix and ExtraShipFix.
 
 ;  <<< EXPERIMENTAL BROKEN DEFINES >>>
 
 ;BargraphEnable EQU 1		;* Define this symbol to include Graphic Diagnostics
 
-;;  This was originally called "DIAGNOSE" but I renamed it to BargraphEnable because
-;;  it better describes what this define does.  Some changes had to be made to get
-;;  the Debug Graphs functional again but the game starts acting weird when this is enabled.
-;;  AOE.ASM must be disabled in order for the game to boot.  Disabling DIAG.ASM is
-;;  a good idea as well.
+;;  This was originally called "DIAGNOSE" but I renamed it to BargraphEnable to better
+;;  describe what this does.  Defining this enables a debug "BARGRAPH" display that 
+;;  shows different parameters such as Play time in Minutes and Seconds, Warrior Aggression,
+;;  Elapsed time since player death, number of enemies, etc.  See RICH.EQU for the list
+;;  of what the different color bars represent.
+;;  
+;;  This only works if DisableKenChk is on and that BOBS, AOE, DIAG, and LAST are not
+;;  built.
 
 ;===============================================================================
 ;
@@ -262,7 +271,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;  DDDD   IIIII  A   A   GGG 	
 ;
 
-	INCLUDE SAM/DIAG.ASM		;;Build the diagnostic ROM first
+	INCLUDE SAM/DIAG.ASM
 	INCLUDE FALS/LAST.ASM		;;Final patches found in Revision 3 rom, can be built without DIAG.ASM
 	
 ;===============================================================================

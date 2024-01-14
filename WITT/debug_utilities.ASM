@@ -4,6 +4,56 @@
 ;;   in this new file to make it easier to enable these debug functions.
 ;;
 ;;===============================================================================
+;;
+;;   Assembling up to Noah's module results in triggering the copyright protection.
+;;   The scanner "fins" and score will be drawn on screen but the game won't start.
+;;   Include this code to make the incomplete game playable.
+;;
+;;   This can also be useful for modding the game since KenChk is made to produce
+;;   unwanted issues when checksums don't match up.
+;;
+;;   It probably goes without saying that you shouldn't include this code if you're
+;;   trying to build the original ROM.
+;;
+;;===============================================================================
+
+	IFDEF	DisableKenChk
+;;	PUSHORG	ROMSAVE
+	PUSHORG	$FFE0
+	VECTOR	POWVECT
+;	SYMVER	KENCHK,KENCHK
+	clr	KENCHK
+	rts
+	VECTOR	IniVect
+	clr	KenChk
+	rts
+;	PULLORG	ROMSAVE
+	PULLORG
+;	SYMVER	ZAPSIN,ZAPSini
+	PUSHORG	ZAPSini		;* In the PowVect routine, ignore the
+	tst	$0		;*   copyright violation test routine.
+	PULLORG
+	
+;	PUSHORG $52D7
+;	fcb	$7F		;Just clear KenChk no matter what.
+;	PULLORG
+	
+	ENDIF
+
+;;===============================================================================
+;;
+;;   If DIAG/T13 are not assembled, then force IRQ vectors so that the game
+;;   can boot in MAME.
+;;
+	
+	IFNDEF	IRQVectors
+	PUSHORG	$FFF0
+	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
+	PULLORG
+	ENDIF
+	
+	
+;;===============================================================================	
 ;*****
 ;*
 ;* WORK UTILITIES
@@ -12,96 +62,105 @@
 	IFDEF	BargraphEnable	;*****************************************
 ;	IFE	VERSION-9						;*
 ;	ENDIF	VERSION							;*
-	INCLUDE "../WITT/RICH.EQU"						;;We need Rich's work EQUs
+;	INCLUDE "../WITT/RICH.EQU"						;;We need Rich's work EQUs
 	
+GrafxSAV SET	$F09F								;;Let's overwrite the ROM/RAM test 
+
+	INCLUDE "../SAM/bargraph.ASM"		;* <<< Bar Graphs >>>	 *    
+
+;	PUSHORG	$F09C
+;	JMP	$49F9
+;	PULLORG
 	
+;	PUSHORG	$F07F								;;Disable Noah's patch in LAST.ASM
+;	NOP
+;	NOP
+;	NOP
+;	PULLORG
 	
-GRAFORG	SET	$F09F								;;Let's overwrite the ROM/RAM test 
+;	PUSHORG	Palette							;*
+;	fcb	@067,@377,@277,@256,@255,@244,@232,@067			;*
+;	fcb	@377,@311,@120,@113,@005,@007,@007,@067			;*
+;	PULLORG                                                         
+;;*									;*
+;	PUSHORG	RAMSAV							;*	;;Fixme was: PUSHORG	RAMSAVE	
+;JUNKTIME	rmb	2						;*
+;	PULLORG	RAMSAV							;*	;;Fixme was: PULLORG	RAMSAVE
+;;*									;*
+;	PUSHORG	GRAFORG     							;;Fixme was: PUSHORG	ROMSAVE  (We're going to overwrite the rug test instead)
+;;	LOCAL								;*
+;	VECTOR	IniVect							;*
+;	clr	JUNKTIME						;*
+;	clr	JUNKTIME+1						;*
+;	New_Sleep	Task64,.JUNK1S					;*	;;Fixme was: New_Sleep	Task64,1$
+;	rts								;*
+;;**									;*
+;;*	Time clock							;*
+;;**									;*
+;.JUNK1S	pshs	D,X,U							;*	;;Fixme was: 1$	pshs	D,X,U
+;	ldd	JUNKTIME						;*
+;	addd	#(1*4)		;* Or (2*4) on the 128 list.		;*
+;	std	JUNKTIME						;*
+;	asla								;*
+;	asla								;*
+;	sta	Graph+GMinutes						;*
+;	stb	Graph+GSeconds						;*
+;	IF	1 = 1	;***************** This is turned off! ***********	;;Fixme was: IFE  1
+;;**									*
+;;*	Monitor Warrior Aggression					*
+;;**									*
+;	lda	WAgg			;* Monitor the high byte of	*
+;	asla				;*   (shifted to scale)		*
+;	sta	Graph+GAggression	;*   the warrior aggression	*
+;;**
+;;*	Monitor Missions
+;;**
+;	ldx	#Temp
+;	clr	TGMWaDrift,X
+;	clr	TGMWaAttack,X
+;	clr	TGMWaMine,X
+;	clr	TGMWaTail,X
+;	clr	TGMWaInt,X
+;
+;	ldu	#Ground
+;	cmpu	KeyClee+2
+;	beq	.4S
+;	ldu	[KeyClee+2]
+;.2S	lda	OSMIS,U
+;	cmpa	#OMWaSav
+;	bge	.3S
+;	asra
+;	ldb	A,X	
+;	addb	#(4*4)								;;Fixme was: addb  #(4.*4.)  (Is decimal really needed here?)
+;	stb	A,X	
+;.3S	ldu	[OSCTYPT,U]
+;	cmpu	#Ground
+;	bne	.2S
+;
+;.4S	lda	TGMWaDrift,X
+;	sta	Graph+GMWaDrift
+;	lda	TGMWaAttack,X
+;	sta	Graph+GMWaAttack
+;	lda	TGMWaMine,X
+;	sta	Graph+GMWaMine
+;	lda	TGMWaTail,X
+;	sta	Graph+GMWaTail
+;	lda	TGMWaInt,X
+;	sta	Graph+GMWaInt
+;	ENDIF	;1		;******* Turned off for now. *************
+;	puls	D,X,U							;*
+;	SLEEP	LOOP							;*
+;	PULLORG GRAFORG								;;Fixme was: PULLORG	ROMSAVE
 
-	INCLUDE "../SAM/bargraph.ASM"		;* <<< Bar Graphs >>>	 *       
-	PUSHORG	Palette							;*
-	fcb	@067,@377,@277,@256,@255,@244,@232,@067			;*
-	fcb	@377,@311,@120,@113,@005,@007,@007,@067			;*
-	PULLORG                                                         
-;*									;*
-	PUSHORG	RAMSAV							;*	;;Fixme was: PUSHORG	RAMSAVE	
-JUNKTIME	rmb	2						;*
-	PULLORG	RAMSAV							;*	;;Fixme was: PULLORG	RAMSAVE
-;*									;*
-	PUSHORG	GRAFORG     							;;Fixme was: PUSHORG	ROMSAVE  (We're going to overwrite the rug test instead)
-;	LOCAL								;*
-	VECTOR	IniVect							;*
-	clr	JUNKTIME						;*
-	clr	JUNKTIME+1						;*
-	New_Sleep	Task64,.JUNK1S					;*	;;Fixme was: New_Sleep	Task64,1$
-	rts								;*
-;**									;*
-;*	Time clock							;*
-;**									;*
-.JUNK1S	pshs	D,X,U							;*	;;Fixme was: 1$	pshs	D,X,U
-	ldd	JUNKTIME						;*
-	addd	#(1*4)		;* Or (2*4) on the 128 list.		;*
-	std	JUNKTIME						;*
-	asla								;*
-	asla								;*
-	sta	Graph+GMinutes						;*
-	stb	Graph+GSeconds						;*
-	IF	1 = 1	;***************** This is turned off! ***********	;;Fixme was: IFE  1
-;**									*
-;*	Monitor Warrior Aggression					*
-;**									*
-	lda	WAgg			;* Monitor the high byte of	*
-	asla				;*   (shifted to scale)		*
-	sta	Graph+GAggression	;*   the warrior aggression	*
-;**
-;*	Monitor Missions
-;**
-	ldx	#Temp
-	clr	TGMWaDrift,X
-	clr	TGMWaAttack,X
-	clr	TGMWaMine,X
-	clr	TGMWaTail,X
-	clr	TGMWaInt,X
-
-	ldu	#Ground
-	cmpu	KeyClee+2
-	beq	.4S
-	ldu	[KeyClee+2]
-.2S	lda	OSMIS,U
-	cmpa	#OMWaSav
-	bge	.3S
-	asra
-	ldb	A,X	
-	addb	#(4*4)								;;Fixme was: addb  #(4.*4.)  (Is decimal really needed here?)
-	stb	A,X	
-.3S	ldu	[OSCTYPT,U]
-	cmpu	#Ground
-	bne	.2S
-
-.4S	lda	TGMWaDrift,X
-	sta	Graph+GMWaDrift
-	lda	TGMWaAttack,X
-	sta	Graph+GMWaAttack
-	lda	TGMWaMine,X
-	sta	Graph+GMWaMine
-	lda	TGMWaTail,X
-	sta	Graph+GMWaTail
-	lda	TGMWaInt,X
-	sta	Graph+GMWaInt
-	ENDIF	;1		;******* Turned off for now. *************
-	puls	D,X,U							;*
-	SLEEP	LOOP							;*
-	PULLORG GRAFORG								;;Fixme was: PULLORG	ROMSAVE
-
-	IFNDEF	ROM
-	PUSHORG	$FFF0								;; Let's restore the IRQ vectors in ROM 11 so that MAME can boot
-	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
-	PULLORG
-	ELSE
-	PUSHORG	$FFF0
-	FDB	PWRUP,PWRUP,PWRUP,PWRUP,IRQ,PWRUP,PWRUP,PWRUP	
-	PULLORG
-	ENDIF
+;	IFNDEF	ROM
+;	PUSHORG	$FFF0								;; Let's restore the IRQ vectors in ROM 11 so that MAME can boot
+;	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
+;	PULLORG
+;	ELSE
+;	PUSHORG	$FFF0
+;	FDB	PWRUP,PWRUP,PWRUP,PWRUP,IRQ,PWRUP,PWRUP,PWRUP	
+;	PULLORG
+;	ENDIF
 				;*
 	ENDIF	;Diagnose	;*****************************************
 	
