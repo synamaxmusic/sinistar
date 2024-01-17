@@ -37,6 +37,10 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 
 {Warning: flashing images below)
 
+* 01/16/2024 - Took the plunge today and got the speech ROMs disassembled.  Managed to get the vast majority of the code figured out!
+  
+* 01/15/2024 - Video Sound ROM 9/10's recreated source code has been rewritten to target Macroassembler {AS} instead of vasm.  This is the first time ever that both sources for the sound rom and the game are included in the same repository!  Rewriting VSNDRM9 for {AS} actually made the sound rom source code more accurate to how it was originally written and instead of having two separate sources like how it was previously done in my old version, we now just have one complete file that builds a perfect copy of the sound rom.  I'm also planning on adding IFDEF instructions so that both sound roms can be built with the correct checksums, which will allow the test button on the sound board to function again!
+
 * 01/12/2024 - 2:23pm, I fixed the last remaining byte in the ROM that was different from the source code.  We can finally produce a bit-perfect copy of the final version of Sinistar!
 
   I added a new file called ```BURN.BAT``` for those who want to quickly generate the ROM files from the ```sinistar.p``` file.  ROM 11 is handled slightly differently from the other ROMs so an additional option for P2BIN has to be given.
