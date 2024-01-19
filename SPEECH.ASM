@@ -6,7 +6,7 @@
 ;	SSSS   IIIII  N   N  IIIII  SSSS     T    A   A  R   R
 ;
 ;   SINISTAR SPEECH ROMs (Recreation started by SynaMax - 01/16/2024)
-;       Originally programmed by JK (John Kotlarik?) - 05/25/1982
+;       Originally programmed by JK (John Kotlarik) - 05/25/1982
 ;
 ;   6800 Assembly code to build all four speech ROMs used in the game.
 ;
@@ -15,8 +15,9 @@
 ;   called, "Continuously variable slope delta modulation" (CVSD)
 ;   to compress audio data.
 ;
-;   It is assumed that John Kotlarik, one of the software engineers
-;   who worked on Joust's Video Sound ROM 4, originally wrote this code.
+;   I spoke with Noah and he confirmed that John Kotlarik, creator of
+;   "Bubbles" and one of the software engineers who worked on Joust's 
+;   Video Sound ROM 4, originally wrote this code.
 ;
 ;------------------------------------------------------------------
 ;
