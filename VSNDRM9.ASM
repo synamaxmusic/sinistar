@@ -25,6 +25,19 @@
 ;
 ;;---------------------------------------------------------------------
 ;
+;   The very first byte of VSNDRM9 is the checksum for the diagnostics,
+;   however the original value $AA is invalid and the test fails.
+;   The same issue applies to VSNDRM10 as well.  A new define has been
+;   added called, "ChecksumFix" to replace the incorrect value with
+;   $24 (VSNDRM9) or $70 (VSNDRM10):
+;
+ChecksumFix EQU	1
+;
+;   Remove the semi-colon in front of "ChecksumFix EQU 1" to make the
+;   diagnostic test work again.
+;
+;;---------------------------------------------------------------------
+;
 ;   To build this code, first download Macroassembler {AS}, then place
 ;   VSNDRM9.ASM in the same directory as ASL and P2BIN. Type in the
 ;   following in a terminal/command line prompt:
@@ -293,7 +306,15 @@ DSFLG   RMB    	1                	;DISTORTION FLAG	;;($14)
 ;* MAIN PROGRAM
 ;*
 	ORG	ROM
+	IFNDEF	ChecksumFix
 	FCB	$AA			;CHECKSUM BYTE
+	ELSE
+	IFDEF	STEREO
+	FCB	$70
+	ELSE
+	FCB	$24
+	ENDIF
+	ENDIF
 ;*	
 ;*
 SETUP	SEI				;SET INTERRUPT MASK
