@@ -1,14 +1,28 @@
 # Sinistar
 A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
 
-Source code rewrite by SynaMax, started November 6th, 2023
+Source code rewrite by SynaMax, started November 6th, 2023; complete ROM set rebuilt for the first time on January 12th, 2024
+
+****
+
+Original game concept by John Newcomer
+
+Artwork by Jack Haeger 
+
+Sound ROM (VSNDRM9) programmed by Mike Metz
+
+Speech routines programmed by John Kotlarik
+
+Special thanks to: Kay Anderson, Harry Cline, Kristina Donofrio, Ken Fedesna, Ken Graham (RIP), Rich Grande, Ken Lantz, Pierre Maloka, Keith McMillen, John Meissen, Tim Murphy, Tom O'Meara, Bill Pfutzenreuter, Rudy Plemich, Dave Rzepka, Marc Stanis, Ed Suchocki, and Stewart West
+
+SynaMax would like to thank: HistoricalSource, braedel, kgalocy, mecha, Daniel Lopez, Tony Temple, AT Gonzalez, Nick Bernhard, Alfred Arnold for creating {AS}, David "Haze" Haywood, "N-F", all my fans and subscribers from my YouTube channel, my Patreon supporters, everyone on KLOV who has shown their appreciation and encouragement; and last but not least, my spouse for their never-ending patience and support during this project.
+
 ****
 
 The original source code for the game can be found at https://github.com/historicalsource/sinistar/
 
-A recreation of the source code for Sinistar's sound roms can be found here: https://github.com/synamaxmusic/Sinistar-Sound-ROM/
+For the first time ever, the source code for the sound and speech ROMs are included with the game code.  The older version of the recreated sound ROM source can be found here: https://github.com/synamaxmusic/Sinistar-Sound-ROM/
 
-Sinistar's speech roms are separate from the sound roms and have not been disassembled yet.
 ****
 
 <!-- vim-markdown-toc GFM -->
@@ -37,6 +51,8 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 
 {Warning: flashing images below)
 
+* 01/21/2024 - Added a mod called ```QuickOperatorEntry``` that allows the user to edit the attract mode operator message much faster than before.  This also affects the speed for inputting high score initials so it's possible that it can be easier to mess up when entering your name/initials. 
+
 * 01/16/2024 - Took the plunge today and got the speech ROMs disassembled.  Managed to get the vast majority of the code figured out!
   
 * 01/15/2024 - Video Sound ROM 9/10's recreated source code has been rewritten to target Macroassembler {AS} instead of vasm.  This is the first time ever that both sources for the sound rom and the game are included in the same repository!  Rewriting VSNDRM9 for {AS} actually made the sound rom source code more accurate to how it was originally written and instead of having two separate sources like how it was previously done in my old version, we now just have one complete file that builds a perfect copy of the sound rom.  I'm also planning on adding IFDEF instructions so that both sound roms can be built with the correct checksums, which will allow the test button on the sound board to function again!
@@ -52,7 +68,9 @@ Sinistar's speech roms are separate from the sound roms and have not been disass
 
 * 01/08/2024 - Noah's module is complete!  Gameplay finally works, but with some caveats: the Sinistar now appears in the sector but with RJ's explosion routine missing, it behaves differently and is ultimately invincible as a result.  If the player hits the Sinistar with enough bombs, the Sinistar will "think" it's dead, however the warp sequence never starts and the Sinistar will stay stunned until the player gets killed by a warrior.  Once the player respawns, the Sinistar (still with one piece remaining) returns to its chasing state. Unless it is hit by another sinibomb again, it can bite the player.
 
-  Also worth pointing out is that the sinibombs fire but they are only visible in the scanner and produce graphical glitches when near the Sinistar (one of Rich's patches is needed to fix these issues).  Currently working on rewriting RJ's module: this includes the attract mode, service menu, high score and status screens, and explosion effects.
+  Also worth pointing out is that the sinibombs fire but they are only visible in the scanner and produce graphical glitches when near the Sinistar ~~(one of Rich's patches is needed to fix these issues)~~ (turns out I had a made a local section of code that was actually preventing the Sinibomb graphics from being drawn; removing the ```SECTION/ENDSECTION``` instructions fixed this issue).
+
+  Currently working on rewriting RJ's module: this includes the attract mode, service menu, high score and status screens, and explosion effects.
 
   ![sinistar_noah_module](https://github.com/synamaxmusic/sinistar/assets/11140222/7a4302db-d0fc-480a-8408-cecb6ca4da69) ![sinistar_noah_module_sinibomb_glitch](https://github.com/synamaxmusic/sinistar/assets/11140222/9b66ca0a-c4b7-42f3-b3fd-917f6b291642)
 
