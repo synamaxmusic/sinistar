@@ -524,3 +524,28 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 ;; Void Zone Warrior Initial Population is unmodified.
 	
 	ENDIF
+	
+	
+	IFDEF	QuickOperatorEntry
+	
+	PUSHORG	$8B0F
+	FCB	MAXBNC	;;MAXBNC = 03 (original value was $0C, then patched in BOBFIXES.ASM to $12)
+	PULLORG
+	
+	ENDIF
+	
+	
+	
+;	IFDEF	QuickBuild	;*************************************************
+;	PUSHORG	ROMSAVE							;*
+;;	LOCAL								;*
+;	VECTOR	IniVect		;****** BUILD THE SINISTAR ******	;*
+;	RADIX	10								;;(decimal value ahead)
+;	lda	#10							;*	;;Fixme was: lda	#20
+;	RADIX	16								;;(back to hex)
+;WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$	
+;	deca								;*
+;	bgt	WITT1S							;*
+;	rts								;*
+;	PULLORG	ROMSAVE							;*
+;	ENDIF	;Witt	;*************************************************

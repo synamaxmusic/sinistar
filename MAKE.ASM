@@ -105,7 +105,8 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  This debug define found in Sam's module allows the player to respawn forever, even
 ;;  if they run out of extra ships.  This only changes two bytes in the code and doesn't
-;;  mess up any symbol addresses.
+;;  mess up any symbol addresses.  This was originally labeled as "DEBUG" but I renamed it
+;;  to differentiate from the next two defines which were also called "DEBUG".
 
 ;InfiniteShips EQU 1
 
@@ -117,7 +118,7 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  This disables player deaths.  Warrior shots don't hurt anymore (yay!), but if
 ;;  the player gets caught by the Sinistar, they'll get soft-locked (boo!).
-;;  This was taken from Rich's module.
+;;  This was taken from Rich's module as well.
 
 ;DisableSinistarCollision EQU	1
 
@@ -131,7 +132,7 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;WittRock EQU	1
 
-;;  This new equate enables a previously-unknown sprite edit of the tiny
+;;  This new define enables a previously-unknown sprite edit of the tiny
 ;;  Planetoid image that was used to denote Rich's developmental build
 ;;  from the final ROM.
 
@@ -186,6 +187,17 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  and why I chose these new values: https://youtu.be/HnfcAudPPS4
 ;;
 ;;  This mod can be enabled with other mods like MarqueeFix and ExtraShipFix.
+
+;QuickOperatorEntry EQU 1
+
+;;  This one-byte mod makes it much quicker to edit the title screen's operator message,
+;;  which can be accessed from the Game Adjustments service menu.  The only caveat is that
+;;  the operator message entry screen and high score entry screen use the same routines, so
+;;  changing the value to make it go faster also affects the input for high score initials.
+;;
+;;  Considering that RJ purposely patched this value to make it slower to edit was probably
+;;  because play-testers were messing up their high score initials with the shorter time.
+;;
 
 ;  <<< EXPERIMENTAL BROKEN DEFINES >>>
 
