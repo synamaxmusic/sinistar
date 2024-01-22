@@ -31,10 +31,12 @@
 ;   added called, "ChecksumFix" to replace the incorrect value with
 ;   $24 (VSNDRM9) or $70 (VSNDRM10):
 ;
-ChecksumFix EQU	1
+;ChecksumFix EQU	1
 ;
 ;   Remove the semi-colon in front of "ChecksumFix EQU 1" to make the
-;   diagnostic test work again.
+;   diagnostic test work again.  Note that this only works on hardware
+;   by pressing the switch on the D8224 sound board.  Changing the
+;   original value will result in an incorrect checksum warning in MAME.
 ;
 ;;---------------------------------------------------------------------
 ;
