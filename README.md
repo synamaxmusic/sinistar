@@ -30,6 +30,9 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 * [Important Milestones](#important-milestones)
 * [Overview](#overview)
 * [Build Instructions](#build-instructions)
+  	* [Game code](#game-code)
+  	* [Sound ROMs](#sound-roms)
+  	* [Speech ROMs](#speech-roms)
 * [About the source code](#about-the-source-code)
 	* [Macros](#macros)
 	* [Working with the BSO Assembler and VAX/VMS](#working-with-the-bso-assembler-and-vaxvms)
@@ -107,6 +110,8 @@ The ```MAKE.ASM``` file in the top directory grabs all the source code files fro
 
 ## Build Instructions
 
+### Game code
+
 This source code was rewritten to target [Macro Assembler {AS}](http://john.ccac.rwth-aachen.de:8000/as/index.html).  
 
 To build Sinistar, place the four folders (```SAM, WITT, FALS, MICA```) and the ```MAKE.ASM``` file into the same directory as ASL and P2BIN.
@@ -116,13 +121,7 @@ Then, open a command prompt and type in:
 ```sh
 asl make.asm -o sinistar.p
 ```
-This will generate a .p file that we can feed into p2bin:
-
-```sh
-p2bin sinistar.p sinistar.bin
-```
-
-Finally, split the .BIN into separate 4KB ROM files and rename those files to match with the MAME ROM set filenames:
+Once the ```sinistar.p``` file is generated, we can use the ```BURN.BAT``` file to create the 11 separate ROM files that make up Sinistar.
 
 Address|ROM #|MAME ROM set Filename
 | --- | --- | --- |
@@ -139,7 +138,7 @@ Address|ROM #|MAME ROM set Filename
 E000-EFFF|ROM 10|sinistar_rom_10-b_16-3004-62.4c
 F000-FFFF|ROM 11|sinistar_rom_11-b_16-3004-63.4a
 
-This is how you would do that in P2BIN:
+If it's not possible to use ```BURN.BAT```, this can be typed into a command prompt instead:
 
 ```sh
 p2bin sinistar.p sinistar_rom_1-b_16-3004-53.1d -r $0000-$0FFF
@@ -154,6 +153,42 @@ p2bin sinistar.p sinistar_rom_9-b_16-3004-61.3a -r $8000-$8FFF
 p2bin sinistar.p sinistar_rom_10-b_16-3004-62.4c -r $E000-$EFFF
 p2bin sinistar.p sinistar_rom_11-b_16-3004-63.4a -r $F000-$FFFF
 ```
+
+### Sound ROMs
+
+Building Video Sound Rom 9 (VSNDRM9) just requires two commands:
+
+```sh
+asl VSNDRM9.ASM -o vsndrm9.p
+```
+Then use P2BIN to generate the binary ROM file:
+
+```sh
+p2bin vsndrm9.p -l 00 vsndrm9.bin
+```
+
+To build the cockpit-exclusive Video Sound Rom 10, simply remove the semi-colon in front of ```STEREO  EQU  1``` in ```VSNDRM9.ASM```, save the file and repeat the build instructions above.
+
+### Speech ROMs
+
+Type this into a command prompt/terminal:
+
+```sh
+asl SPEECH.ASM -o speech.p
+```
+
+Then run ```SPEECH_BURN.BAT``` to generate the four speech ROMs.
+
+If it's not possible to use ```SPEECH_BURN.BAT```, this can be manually typed into a command prompt instead:
+
+```sh
+p2bin speech.p 3004_speech_ic7_r1_16-3004-52.ic7 -r $B000-$BFFF
+p2bin speech.p 3004_speech_ic6_r1_16-3004-51.ic6 -r $C000-$CFFF
+p2bin speech.p 3004_speech_ic5_r1_16-3004-50.ic5 -r $D000-$DFFF
+p2bin speech.p 3004_speech_ic4_r1_16-3004-49.ic4 -l 00 -r $E000-$EFFF
+```
+
+
 
 ## About the source code
 
