@@ -54,7 +54,9 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
-* 01/21/2024 - Added a mod called ```QuickOperatorEntry``` that allows the user to edit the attract mode operator message much faster than before.  This also affects the speed for inputting high score initials so it's possible that it can be easier to mess up when entering your name/initials. 
+* 01/21/2024 - Added a mod called ```QuickOperatorEntry``` that allows the user to edit the attract mode operator message much faster than before.  This also affects the speed for inputting high score initials so it's possible that it can be easier to mess up when entering your name/initials.
+
+* 01/20/2024 - Added a define that fixes the checksum byte found in the very beginning of ```VSNDRM9.ASM```.  The original byte is ```$AA``` but this is incorrect and the diagnostic test fails as a result.  Using ```$24``` for Video Sound ROM 9 or ```$70``` for Video Sound ROM 10 will fix this issue.
 
 * 01/16/2024 - Took the plunge today and got the speech ROMs disassembled.  Managed to get the vast majority of the code figured out!
   
