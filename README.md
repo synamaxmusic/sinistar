@@ -7,12 +7,12 @@ Source code rewrite by SynaMax, started November 6th, 2023; complete ROM set reb
 
 Original game concept by John Newcomer
 
-Artwork by Jack Haeger 
-
+Artwork by Jack Haeger
+  
 Sound ROM (VSNDRM9) programmed by Mike Metz
-
+  
 Speech routines programmed by John Kotlarik
-
+  
 Special thanks to: Kay Anderson, Harry Cline, Kristina Donofrio, Ken Fedesna, Ken Graham (RIP), Rich Grande, Ken Lantz, Pierre Maloka, Keith McMillen, John Meissen, Tim Murphy, Tom O'Meara, Bill Pfutzenreuter, Rudy Plemich, Dave Rzepka, Marc Stanis, Ed Suchocki, and Stewart West
 
 SynaMax would like to thank: HistoricalSource, braedel, kgalocy, mecha, Daniel Lopez, Tony Temple, AT Gonzalez, Nick Bernhard, Alfred Arnold for creating {AS}, David "Haze" Haywood, "N-F", all my fans and subscribers from my YouTube channel, my Patreon supporters, everyone on KLOV who has shown their appreciation and encouragement; and last but not least, my spouse for their never-ending patience and support during this project.
@@ -216,11 +216,11 @@ Like Joust, Sinistar was written on VAX/VMS workstations.  I'm not sure what ass
 
 The BSO assembler also caused a lot of headaches for the dev team; one of the biggest issues was that the asssembler's symbol table size was very small, which made Sinistar's development even more difficult.  To directly quote the developers from the source code's readme file:
 
-```
-	The problem history with managing sources for 4 people while using
-an assembler with a very limited symbol table size is not amusing.  Let it
-suffice that we did what was neccessary at the time.
-```
+
+>	The problem history with managing sources for 4 people while using
+> an assembler with a very limited symbol table size is not amusing.  Let it
+> suffice that we did what was neccessary at the time.
+
 
 As a result, additional precautions had to be made in order for the code to build properly and that all the symbols matched up with everyone else's library.  For example, each of the four main software engineers had to generate their own files that listed every single ```EQU```, ```SET```, and symbol they used in their section of the game.  Due to the limited table size, any symbol in these files that's over 6 characters in length is truncated.
 
