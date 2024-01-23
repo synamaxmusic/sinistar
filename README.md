@@ -1,7 +1,7 @@
 # Sinistar
 A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
 
-Source code rewrite by SynaMax, started November 6th, 2023; complete ROM set rebuilt for the first time on January 12th, 2024
+Source code rewrite by SynaMax, started November 6th, 2023; complete ROM set rebuilt for the first time on January 12th, 2024 (sound and speech code added on the 15th and 16th respectively).
 
 ****
 
@@ -9,7 +9,7 @@ Original game concept by John Newcomer
 
 Artwork by Jack Haeger
   
-Sound ROM (VSNDRM9) programmed by Mike Metz
+Sound ROM (VSNDRM9/VSNDRM10) programmed by Mike Metz
   
 Speech routines programmed by John Kotlarik
   
@@ -87,6 +87,7 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
   ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
 * 11/06/2023 - Rewriting commences.
+* 10/07/2023 - After several days of playtesting and experiments, I completed my Difficult Mod which reduces the enemy populations to make the game easier.
 * May 2023 - Started looking over the original codebase for the first time.
 
 ## Overview
@@ -447,14 +448,20 @@ At first, I tried changing the ```RADIX 16``` at the very beginning of the code 
 
 ## Source code map
 
-```
-(work in progress)
-SAM/MESSAGE.ASM		;(Taken from Joust and modded to work with a veritical monitor.
-			; Font sprites are also located here)
-SAM/MESSEQU.ASM
-../SAM/MESSEQU1.ASM
-../SAM/MESSEQU2.ASM
-../SAM/PHRASE.ASM
+_(Work in progress)_
+
+### MESSAGE
+
+The very first files to be processed through the assembler are routines related to displaying the messages for diagnostic and in-game strings that are displayed on-screen, and is based off of previous code from Joust (but modified to work with vertical monitors).
+
+* [SAM/MESSAGE.ASM](SAM/MESSAGE.ASM)
+* [SAM/MESSEQU.ASM](SAM/MESSEQU.ASM)
+* [SAM/MESSEQU1.ASM](SAM/MESSEQU1.ASM)
+* [SAM/MESSEQU2.ASM](SAM/MESSEQU2.ASM)
+* [SAM/PHRASE.ASM](SAM/PHRASE.ASM)
+
+### EQUATES
+
 SAM/EQUATES.ASM
 ../SAM/START.ASM
 ../SAM/MACROS.ASM
@@ -466,31 +473,39 @@ SAM/EQUATES.ASM
 	../FALS/N1SYM.ASM
 ../WITT/R1.ASM
 	../WITT/SYMSAM.ASM
+
+### IMAGE
+
 SAM/IMAGE.ASM
+
+### Sam's module
+
 SAM/SAMS.ASM
 ../SAM/S2.ASM
-	../SAM/SAMRAM.ASM
-	../SAM/GROUND.ASM
-	../WITT/TEXT.ASM
-	../SAM/PANEL.ASM
-	../SAM/INITALL.ASM
-	../SAM/EXEC.ASM
-	../SAM/EXECJNK.ASM
-	../SAM/TRASCOM.ASM
-	../SAM/NEWTUNE.ASM
-	../SAM/PLSHOOT.ASM
-	../SAM/PIXCHK.ASM
-	../SAM/BOUNCE.ASM
-	../SAM/ADDSCOR.ASM
-	../SAM/ADDPIEC.ASM
-	../SAM/FRAGEXP.ASM
-	../SAM/SCANNER.ASM
-	../SAM/GETOBJ.ASM
-	../SAM/DRAWOBJ.ASM
-	../SAM/SLEEP1.ASM
-	../SAM/FUNCTION.ASM
-	../SAM/TB13.ASM
-	../SAM/SAMTABLE.ASM
-	../SAM/IRQ.ASM
-```
-	
+* [SAM/SAMRAM.ASM](SAM/SAMRAM.ASM)
+* [SAM/GROUND.ASM](SAM/GROUND.ASM)
+* [WITT/TEXT.ASM](WITT/TEXT.ASM)
+* [SAM/PANEL.ASM](SAM/PANEL.ASM)
+* [SAM/INITALL.ASM](SAM/INITALL.ASM)
+* [SAM/EXEC.ASM](SAM/EXEC.ASM)
+* [SAM/EXECJNK.ASM](SAM/EXECJNK.ASM)
+* [SAM/TRASCOM.ASM](SAM/TRASCOM.ASM)
+* [SAM/NEWTUNE.ASM](SAM/NEWTUNE.ASM)
+* [SAM/PLSHOOT.ASM](SAM/PLSHOOT.ASM)
+* [SAM/PIXCHK.ASM](SAM/PIXCHK.ASM)
+* [SAM/BOUNCE.ASM](SAM/BOUNCE.ASM)
+* [SAM/ADDSCOR.ASM](SAM/ADDSCOR.ASM)
+* [SAM/ADDPIEC.ASM](SAM/ADDPIEC.ASM)
+* [SAM/FRAGEXP.ASM](SAM/FRAGEXP.ASM)
+* [SAM/SCANNER.ASM](SAM/SCANNER.ASM)
+* [SAM/GETOBJ.ASM](SAM/GETOBJ.ASM)
+* [SAM/DRAWOBJ.ASM](SAM/DRAWOBJ.ASM)
+* [SAM/SLEEP1.ASM](SAM/SLEEP1.ASM)
+* [SAM/FUNCTION.ASM](SAM/FUNCTION.ASM)
+* [SAM/TB13.ASM](SAM/TB13.ASM)
+
+### Rich's module
+
+### Noah's module
+
+### RJ's module
