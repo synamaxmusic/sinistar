@@ -54,6 +54,8 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
+* 01/23/2024 - We have our first pull request!  Daniel Lopez verified that the game assembles with the unofficial [community-maintained package of Macroassembler {AS}](https://aur.archlinux.org/packages/mas) in Arch Linux; however, some minor changes were required.  All ```!=``` operators were changed to ```<>``` in order for the code to build because the package uses a older verison of {AS}.  The rest of the codebase uses ```<>``` so this actually makes things more consistent.
+
 * 01/21/2024 - Added a mod called ```QuickOperatorEntry``` that allows the user to edit the attract mode operator message much faster than before.  This also affects the speed for inputting high score initials so it's possible that it can be easier to mess up when entering your name/initials.
 
 * 01/20/2024 - Added a define that fixes the checksum byte found in the very beginning of ```VSNDRM9.ASM```.  The original byte is ```$AA``` but this is incorrect and the diagnostic test fails as a result.  Using ```$24``` for Video Sound ROM 9 or ```$70``` for Video Sound ROM 10 will fix this issue.
@@ -450,59 +452,63 @@ At first, I tried changing the ```RADIX 16``` at the very beginning of the code 
 
 _(Work in progress)_
 
+This list shows all the files that are needed to build the game (in sequential order).  A lot of these files are referenced with ```INCLUDE``` instructions inside other files, creating nested references which can make things confusing pretty quickly.  This map aims to make the code easier to navigate.
+
 ### MESSAGE
 
-The very first files to be processed through the assembler are routines related to displaying the messages for diagnostic and in-game strings that are displayed on-screen, and is based off of previous code from Joust (but modified to work with vertical monitors).
+The very first files to be processed through the assembler are routines related to displaying the messages for diagnostic and in-game strings.  It is based off of previous code from Joust (but modified to work with vertical monitors).  Jack Haeger's pixel fonts also live here and are compressed with macros when assembled.  A routine decompresses these fonts and stores them in static RAM ($D000).
 
-* [SAM/MESSAGE.ASM](SAM/MESSAGE.ASM)
-* [SAM/MESSEQU.ASM](SAM/MESSEQU.ASM)
-* [SAM/MESSEQU1.ASM](SAM/MESSEQU1.ASM)
-* [SAM/MESSEQU2.ASM](SAM/MESSEQU2.ASM)
-* [SAM/PHRASE.ASM](SAM/PHRASE.ASM)
+* [SAM/MESSAGE.ASM](SAM/MESSAGE.ASM) (Routines for text output and for compressing/decompressing the 5x7 and 3x5 pixel font tables)
+  * [SAM/MESSEQU1.ASM](SAM/MESSEQU1.ASM) (Equates for allocating system-critical stuff like RAM, CMOS settings, watchdog, vectors, etc.)
+    * [SAM/MESSEQU.ASM](SAM/MESSEQU.ASM) (Message equates for various system/diagnostic strings)
+  * [SAM/MESSEQU2.ASM](SAM/MESSEQU2.ASM) (Williams Electronics codepage equates)
+  * [SAM/PHRASE.ASM](SAM/PHRASE.ASM) (Strings and vectors for various messages like "INITIAL TESTS INDICATE", "BOOKKEEPING TOTALS", etc.)
 
 ### EQUATES
 
-SAM/EQUATES.ASM
-../SAM/START.ASM
-../SAM/MACROS.ASM
-	../WITT/DISPLAY.ASM
-../SAM/S1.ASM
-	../SAM/SAMEQUAT.ASM
-	../SAM/SAMOFFSE.ASM
-../FALS/N1.ASM
-	../FALS/N1SYM.ASM
-../WITT/R1.ASM
-	../WITT/SYMSAM.ASM
+* [SAM/EQUATES.ASM](SAM/EQUATES.ASM)
+  * [SAM/START.ASM](SAM/START.ASM) (Sets up 6809 direct page register and sets ```RADIX``` to 16) 
+    * [SAM/MACROS.ASM](SAM/MACROS.ASM) (Very important macros)
+      * [WITT/DISPLAY.ASM](WITT/DISPLAY.ASM) (Display macro)
+  * [SAM/S1.ASM](SAM/S1.ASM)
+    * [SAM/SAMEQUAT.ASM](SAM/SAMEQUAT.ASM) (Assembly counters, hardware constants, game constants)
+    * [SAM/SAMOFFSE.ASM](SAM/SAMOFFSE.ASM) (Offsets for object/task workspaces, "characteristics descriptors", etc.)
+  * [FALS/N1.ASM](FALS/N1.ASM)
+    * [FALS/N1SYM.ASM](FALS/N1SYM.ASM) (Noah's equates and offsets needed for Sam's module)
+  * [WITT/R1.ASM](WITT/R1.ASM)
+    * [WITT/SYMSAM.ASM](WITT/SYMSAM.ASM) (Rich's equates needed for Sam's module)
 
 ### IMAGE
 
-SAM/IMAGE.ASM
+* [SAM/IMAGE.ASM](SAM/IMAGE.ASM) (Nearly all of the sprites are found here; ```ROMSAVE``` starts after image data)
 
 ### Sam's module
 
-SAM/SAMS.ASM
-../SAM/S2.ASM
-* [SAM/SAMRAM.ASM](SAM/SAMRAM.ASM)
-* [SAM/GROUND.ASM](SAM/GROUND.ASM)
-* [WITT/TEXT.ASM](WITT/TEXT.ASM)
-* [SAM/PANEL.ASM](SAM/PANEL.ASM)
-* [SAM/INITALL.ASM](SAM/INITALL.ASM)
-* [SAM/EXEC.ASM](SAM/EXEC.ASM)
-* [SAM/EXECJNK.ASM](SAM/EXECJNK.ASM)
-* [SAM/TRASCOM.ASM](SAM/TRASCOM.ASM)
-* [SAM/NEWTUNE.ASM](SAM/NEWTUNE.ASM)
-* [SAM/PLSHOOT.ASM](SAM/PLSHOOT.ASM)
-* [SAM/PIXCHK.ASM](SAM/PIXCHK.ASM)
-* [SAM/BOUNCE.ASM](SAM/BOUNCE.ASM)
-* [SAM/ADDSCOR.ASM](SAM/ADDSCOR.ASM)
-* [SAM/ADDPIEC.ASM](SAM/ADDPIEC.ASM)
-* [SAM/FRAGEXP.ASM](SAM/FRAGEXP.ASM)
-* [SAM/SCANNER.ASM](SAM/SCANNER.ASM)
-* [SAM/GETOBJ.ASM](SAM/GETOBJ.ASM)
-* [SAM/DRAWOBJ.ASM](SAM/DRAWOBJ.ASM)
-* [SAM/SLEEP1.ASM](SAM/SLEEP1.ASM)
-* [SAM/FUNCTION.ASM](SAM/FUNCTION.ASM)
-* [SAM/TB13.ASM](SAM/TB13.ASM)
+* [SAM/SAMS.ASM](SAM/SAMS.ASM)
+  * [SAM/S2.ASM](SAM/S2.ASM)
+    * [SAM/SAMRAM.ASM](SAM/SAMRAM.ASM)
+    * [SAM/GROUND.ASM](SAM/GROUND.ASM)
+    * [WITT/TEXT.ASM](WITT/TEXT.ASM)
+    * [SAM/PANEL.ASM](SAM/PANEL.ASM)
+    * [SAM/INITALL.ASM](SAM/INITALL.ASM)
+    * [SAM/EXEC.ASM](SAM/EXEC.ASM)
+    * [SAM/EXECJNK.ASM](SAM/EXECJNK.ASM)
+    * [SAM/TRASCOM.ASM](SAM/TRASCOM.ASM)
+    * [SAM/NEWTUNE.ASM](SAM/NEWTUNE.ASM)
+    * [SAM/PLSHOOT.ASM](SAM/PLSHOOT.ASM)
+    * [SAM/PIXCHK.ASM](SAM/PIXCHK.ASM)
+    * [SAM/BOUNCE.ASM](SAM/BOUNCE.ASM)
+    * [SAM/ADDSCOR.ASM](SAM/ADDSCOR.ASM)
+    * [SAM/ADDPIEC.ASM](SAM/ADDPIEC.ASM)
+    * [SAM/FRAGEXP.ASM](SAM/FRAGEXP.ASM)
+    * [SAM/SCANNER.ASM](SAM/SCANNER.ASM)
+    * [SAM/GETOBJ.ASM](SAM/GETOBJ.ASM)
+    * [SAM/DRAWOBJ.ASM](SAM/DRAWOBJ.ASM)
+    * [SAM/SLEEP1.ASM](SAM/SLEEP1.ASM)
+    * [SAM/FUNCTION.ASM](SAM/FUNCTION.ASM)
+    * [SAM/TB13.ASM](SAM/TB13.ASM)
+    * [SAM/SAMTABLE.ASM](SAM/SAMTABLE.ASM)
+    * [SAM/IRQ.ASM](SAM/IRQ.ASM)
 
 ### Rich's module
 
