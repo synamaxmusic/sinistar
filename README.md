@@ -523,6 +523,8 @@ The very first files to be processed through the assembler are routines related 
        * [WITT/SPEAK.ASM](WITT/SPEAK.ASM) (Speak macro)
        * [FALS/SC1.ASM](FALS/SC1.ASM) (Speech Tunes)
     * [WITT/DISP.ASM](WITT/DISP.ASM)
+      * [WITT/DISPE.ASM](WITT/DISPE.ASM)
+        * [WITT/ERASE.ASM](WITT/ERASE.ASM)
     * [WITT/COLLISIO.ASM](WITT/COLLISIO.ASM) (Collision effects)
       * [SAM/COLLIDE.ASM](SAM/COLLIDE.ASM) (Collision macros)
     * [WITT/COPYRIGH.ASM](WITT/COPYRIGH.ASM) (EBCDIC copyright)
@@ -530,6 +532,9 @@ The very first files to be processed through the assembler are routines related 
     * [WITT/KRSINI.ASM](WITT/KRSINI.ASM) (Sinistar Killing routine)
       * [WITT/STBLIMP.ASM](WITT/STBLIMP.ASM) (Speed table for Warrior guarding in orbit) [Gets patched over by ZSTBLIMP]
     * [WITT/LEAVESEC.ASM](WITT/LEAVESEC.ASM) (Leaving sector vectors)
+      * [WITT/LSSBOMB.ASM](WITT/LSSBOMB.ASM)
+      * [WITT/LSWOCR.ASM](WITT/LSWOCR.ASM)
+      * [WITT/LSSINI.ASM](WITT/LSSINI.ASM)
     * [WITT/TABLES.ASM](WITT/TABLES.ASM)
     * [WITT/WORKER.ASM](WITT/WORKER.ASM)
     * [WITT/WARRIOR.ASM](WITT/WARRIOR.ASM)
