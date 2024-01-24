@@ -452,7 +452,7 @@ At first, I tried changing the ```RADIX 16``` at the very beginning of the code 
 
 _(Work in progress)_
 
-This list shows all the files that are needed to build the game (in sequential order).  A lot of these files are referenced with ```INCLUDE``` instructions inside other files, creating nested references which can make things confusing pretty quickly.  This map aims to make the code easier to navigate.
+This list shows all the files that are needed to build the game (in the order they are first loaded into the assembler, as opposed to {AS} displaying when files are first processed).  A lot of these files are referenced with ```INCLUDE``` instructions inside other files, creating nested references which can make things confusing pretty quickly.  This map aims to make the code a little bit easier to navigate.
 
 ### MESSAGE
 
@@ -511,6 +511,30 @@ The very first files to be processed through the assembler are routines related 
     * [SAM/IRQ.ASM](SAM/IRQ.ASM)
 
 ### Rich's module
+
+* [WITT/RICHS.ASM](WITT/RICHS.ASM)
+  * [WITT/R2.ASM](WITT/R2.ASM)
+    * [WITT/SYMRICH.ASM](WITT/SYMRICH.ASM) (Rich's symbols)
+    * [WITT/RAMRICH.ASM](WITT/RAMRICH.ASM) (Ram variables)
+    * [WITT/INIRICH.ASM](WITT/INIRICH.ASM) (Initialization routines for RICH)
+      * [WITT/EMPTY.ASM](WITT/EMPTY.ASM) ("EMPTY" or bombs display)
+        * [WITT/ZAPRTS.ASM](WITT/ZAPRTS.ASM) (Copyright checking RTS macro)
+      * [WITT/ANISINI.ASM](WITT/ANISINI.ASM) (Animate Sinistar)
+       * [WITT/SPEAK.ASM](WITT/SPEAK.ASM) (Speak macro)
+       * [FALS/SC1.ASM](FALS/SC1.ASM) (Speech Tunes)
+    * [WITT/DISP.ASM](WITT/DISP.ASM)
+    * [WITT/COLLISIO.ASM](WITT/COLLISIO.ASM) (Collision effects)
+      * [SAM/COLLIDE.ASM](SAM/COLLIDE.ASM) (Collision macros)
+    * [WITT/COPYRIGH.ASM](WITT/COPYRIGH.ASM) (EBCDIC copyright)
+    * [WITT/DIFFICUL.ASM](WITT/DIFFICUL.ASM) (Difficulty factor tables)
+    * [WITT/KRSINI.ASM](WITT/KRSINI.ASM) (Sinistar Killing routine)
+      * [WITT/STBLIMP.ASM](WITT/STBLIMP.ASM) (Speed table for Warrior guarding in orbit) [Gets patched over by ZSTBLIMP]
+    * [WITT/LEAVESEC.ASM](WITT/LEAVESEC.ASM) (Leaving sector vectors)
+    * [WITT/TABLES.ASM](WITT/TABLES.ASM)
+    * [WITT/WORKER.ASM](WITT/WORKER.ASM)
+    * [WITT/WARRIOR.ASM](WITT/WARRIOR.ASM)
+    * [WITT/SINIBOMB.ASM](WITT/SINIBOMB.ASM)
+    * [WITT/SINI.ASM](WITT/SINI.ASM)
 
 ### Noah's module
 
