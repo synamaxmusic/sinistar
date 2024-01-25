@@ -450,9 +450,7 @@ At first, I tried changing the ```RADIX 16``` at the very beginning of the code 
 
 ## Source code map
 
-_(Work in progress)_
-
-This list shows all the files that are needed to build the game (in the order they are first loaded into the assembler, as opposed to {AS} displaying when files are first processed).  A lot of these files are referenced with ```INCLUDE``` instructions inside other files, creating nested references which can make things confusing pretty quickly.  This map aims to make the code a little bit easier to navigate.
+This list shows all the files that are needed to build the game (in the order they are first loaded into the assembler, as opposed to {AS} displaying when files are finished processing).  A lot of these files have ```INCLUDE``` instructions inside other files, creating nested references which can make things confusing pretty quickly.  This map aims to make the code a little bit easier to navigate.
 
 ### MESSAGE
 
@@ -468,8 +466,8 @@ The very first files to be processed through the assembler are routines related 
 
 * [SAM/EQUATES.ASM](SAM/EQUATES.ASM)
   * [SAM/START.ASM](SAM/START.ASM) (Sets up 6809 direct page register and sets ```RADIX``` to 16) 
-    * [SAM/MACROS.ASM](SAM/MACROS.ASM) (Very important macros)
-      * [WITT/DISPLAY.ASM](WITT/DISPLAY.ASM) (Display macro)
+    * [SAM/MACROS.ASM](SAM/MACROS.ASM) (Macros for assembly counters, pseudo opcodes, RNGs, multitasking, sound calls, and copyright strings)
+      * [WITT/DISPLAY.ASM](WITT/DISPLAY.ASM) (Message display macros)
   * [SAM/S1.ASM](SAM/S1.ASM)
     * [SAM/SAMEQUAT.ASM](SAM/SAMEQUAT.ASM) (Assembly counters, hardware constants, game constants)
     * [SAM/SAMOFFSE.ASM](SAM/SAMOFFSE.ASM) (Offsets for object/task workspaces, "characteristics descriptors", etc.)
@@ -486,29 +484,29 @@ The very first files to be processed through the assembler are routines related 
 
 * [SAM/SAMS.ASM](SAM/SAMS.ASM)
   * [SAM/S2.ASM](SAM/S2.ASM)
-    * [SAM/SAMRAM.ASM](SAM/SAMRAM.ASM)
-    * [SAM/GROUND.ASM](SAM/GROUND.ASM)
-    * [WITT/TEXT.ASM](WITT/TEXT.ASM)
-    * [SAM/PANEL.ASM](SAM/PANEL.ASM)
-    * [SAM/INITALL.ASM](SAM/INITALL.ASM)
-    * [SAM/EXEC.ASM](SAM/EXEC.ASM)
-    * [SAM/EXECJNK.ASM](SAM/EXECJNK.ASM)
-    * [SAM/TRASCOM.ASM](SAM/TRASCOM.ASM)
-    * [SAM/NEWTUNE.ASM](SAM/NEWTUNE.ASM)
-    * [SAM/PLSHOOT.ASM](SAM/PLSHOOT.ASM)
-    * [SAM/PIXCHK.ASM](SAM/PIXCHK.ASM)
-    * [SAM/BOUNCE.ASM](SAM/BOUNCE.ASM)
-    * [SAM/ADDSCOR.ASM](SAM/ADDSCOR.ASM)
-    * [SAM/ADDPIEC.ASM](SAM/ADDPIEC.ASM)
-    * [SAM/FRAGEXP.ASM](SAM/FRAGEXP.ASM)
-    * [SAM/SCANNER.ASM](SAM/SCANNER.ASM)
-    * [SAM/GETOBJ.ASM](SAM/GETOBJ.ASM)
-    * [SAM/DRAWOBJ.ASM](SAM/DRAWOBJ.ASM)
-    * [SAM/SLEEP1.ASM](SAM/SLEEP1.ASM)
-    * [SAM/FUNCTION.ASM](SAM/FUNCTION.ASM)
-    * [SAM/TB13.ASM](SAM/TB13.ASM)
-    * [SAM/SAMTABLE.ASM](SAM/SAMTABLE.ASM)
-    * [SAM/IRQ.ASM](SAM/IRQ.ASM)
+    * [SAM/SAMRAM.ASM](SAM/SAMRAM.ASM) (Ram allocation)
+    * [SAM/GROUND.ASM](SAM/GROUND.ASM) (end of grounded intelligence lists)
+    * [WITT/TEXT.ASM](WITT/TEXT.ASM) (Text macro converts strings to Williams codepage and positions on screen)
+    * [SAM/PANEL.ASM](SAM/PANEL.ASM) (control panel switch vector table)
+    * [SAM/INITALL.ASM](SAM/INITALL.ASM) (Initialization routines)
+    * [SAM/EXEC.ASM](SAM/EXEC.ASM) (Executive loop)
+    * [SAM/EXECJNK.ASM](SAM/EXECJNK.ASM) (miscellaneous exec stuff)
+    * [SAM/TRASCOM.ASM](SAM/TRASCOM.ASM) (dynamic storage 'trash compacting' routines)
+    * [SAM/NEWTUNE.ASM](SAM/NEWTUNE.ASM) (Sound call routine)
+    * [SAM/PLSHOOT.ASM](SAM/PLSHOOT.ASM) (player shooting)
+    * [SAM/PIXCHK.ASM](SAM/PIXCHK.ASM) (pixel collision check routine)
+    * [SAM/BOUNCE.ASM](SAM/BOUNCE.ASM) (bounce routine)
+    * [SAM/ADDSCOR.ASM](SAM/ADDSCOR.ASM) (player score and sinibomb status display and change)
+    * [SAM/ADDPIEC.ASM](SAM/ADDPIEC.ASM) (add and subtract sinistar pieces)
+    * [SAM/FRAGEXP.ASM](SAM/FRAGEXP.ASM) (fragment explosion)
+    * [SAM/SCANNER.ASM](SAM/SCANNER.ASM) (scanner routines)
+    * [SAM/GETOBJ.ASM](SAM/GETOBJ.ASM) (screen list routines)
+    * [SAM/DRAWOBJ.ASM](SAM/DRAWOBJ.ASM) (display routines)
+    * [SAM/SLEEP1.ASM](SAM/SLEEP1.ASM) (multitasking routines)
+    * [SAM/FUNCTION.ASM](SAM/FUNCTION.ASM) (Math functions)
+    * [SAM/TB13.ASM](SAM/TB13.ASM) (Utility routines)
+    * [SAM/SAMTABLE.ASM](SAM/SAMTABLE.ASM) (tables for characteristics descriptors, sound effects, math functions, color palette, etc.)
+    * [SAM/IRQ.ASM](SAM/IRQ.ASM) (Interrupt routines)
 
 ### Rich's module
 
@@ -522,9 +520,9 @@ The very first files to be processed through the assembler are routines related 
       * [WITT/ANISINI.ASM](WITT/ANISINI.ASM) (Animate Sinistar)
         * [WITT/SPEAK.ASM](WITT/SPEAK.ASM) (Speak macro)
         * [FALS/SC1.ASM](FALS/SC1.ASM) (Speech Tunes)
-    * [WITT/DISP.ASM](WITT/DISP.ASM)
-      * [WITT/DISPE.ASM](WITT/DISPE.ASM)
-        * [WITT/ERASE.ASM](WITT/ERASE.ASM)
+    * [WITT/DISP.ASM](WITT/DISP.ASM) (Message display routines)
+      * [WITT/DISPE.ASM](WITT/DISPE.ASM) (Message to player erasing)
+        * [WITT/ERASE.ASM](WITT/ERASE.ASM) (Message erasing intelligence)
     * [WITT/COLLISIO.ASM](WITT/COLLISIO.ASM) (Collision effects)
       * [SAM/COLLIDE.ASM](SAM/COLLIDE.ASM) (Collision macros)
       * [WITT/DEATH.ASM](WITT/DEATH.ASM) (Player death routine)
@@ -541,7 +539,7 @@ The very first files to be processed through the assembler are routines related 
     * [WITT/TABLES.ASM](WITT/TABLES.ASM) (Distance/Velocity tables)
       * [WITT/STBLSBOM.ASM](WITT/STBLSBOM.ASM) (Sinibombs)
       * [WITT/STBLSINI.ASM](WITT/STBLSINI.ASM) (Sinistar)
-      * [WITT/STBLOSIN.ASM](WITT/STBLOSIN.ASM) (Sinistar  <<< Added by Noah >>>)
+      * [WITT/STBLOSIN.ASM](WITT/STBLOSIN.ASM) (New Sinistar orbital approach  <<< Added by Noah >>>)
       * [WITT/STBLMINE.ASM](WITT/STBLMINE.ASM) (Warriors mining)
       * [WITT/STBLL0.ASM](WITT/STBLL0.ASM) (Warriors leading)
       * [WITT/STBLW0.ASM](WITT/STBLW0.ASM) (Warriors following)
@@ -561,9 +559,82 @@ The very first files to be processed through the assembler are routines related 
         * [WITT/CHASE.ASM](WITT/CHASE.ASM) (Adjust a desired speed closer to the velocity of a moving target)
         * [WITT/LDYWCR.ASM](WITT/LDYWCR.ASM) (provides the object's caller's scanner workspace address)
     * [WITT/WARRIOR.ASM](WITT/WARRIOR.ASM)
+      * [WITT/AIMWARR.ASM](WITT/AIMWARR.ASM) (Aiming to track moving target)
+      * [WITT/ANIWARR.ASM](WITT/ANIWARR.ASM) (Animation)
+      * [WITT/FOLLOW.ASM](WITT/FOLLOW.ASM) (Squadron leader targeting)
+      * [WITT/SCREENCH.ASM](WITT/SCREENCH.ASM) (On/Off screen check)
+      * [WITT/SHOOT.ASM](WITT/SHOOT.ASM) (Warrior shooting routine)
+      * [WITT/THINK.ASM](WITT/THINK.ASM) (Animate/Intelligence check)
+      * [WITT/WARRON.ASM](WITT/WARRON.ASM) (On Screen routine)
+      * [WITT/WARROFF.ASM](WITT/WARROFF.ASM) (Warrior off screen routine)
+      * [WITT/WASHODDS.ASM](WITT/WASHODDS.ASM) (Shooting odds computations)
+      * [WITT/ZWASHODD.ASM](WITT/ZWASHODD.ASM)
     * [WITT/SINIBOMB.ASM](WITT/SINIBOMB.ASM)
     * [WITT/SINI.ASM](WITT/SINI.ASM)
+    * [WITT/STUBS.ASM](WITT/STUBS.ASM) (To fake Noah's stuff)
+* [WITT/RICHS2.ASM](WITT/RICHS2.ASM)
+  * [WITT/BUTTON.ASM](WITT/BUTTON.ASM) (Button handling with Easter Egg routine)
 
 ### Noah's module
 
+* [FALS/NOAHS.ASM](FALS/NOAHS.ASM)
+  * [FALS/N2.ASM](FALS/N2.ASM) (Noah's current version release of rmb and src)
+    * [FALS/N1RAM.ASM](FALS/N1RAM.ASM)
+    * [FALS/N1ALL.ASM](FALS/N1ALL.ASM) (Vibration routines, Planetoid/Crystal logic, Calling Intelligence, Killing/Explosion subroutines, Difficulty adjustment code, Population tables)
+  * [FALS/N3.ASM](FALS/N3.ASM) (Final "characteristics descriptors" for all game objects)
+
 ### RJ's module
+
+* [MICA/BOBS.ASM](MICA/BOBS.ASM)
+  * [MICA/B1.ASM](MICA/B1.ASM)
+    * [MICA/BOBEQUAT.ASM](MICA/BOBEQUAT.ASM) (Warrior/Player Explosion and High Score/Operator Message entry equates)
+    * [MICA/BOBOFFSE.ASM](MICA/BOBOFFSE.ASM)
+  * [MICA/B2.ASM](MICA/B2.ASM)
+    * [MICA/BOBRAM.ASM](MICA/BOBRAM.ASM)
+    * [MICA/ZPLXQUE.ASM](MICA/ZPLXQUE.ASM) (Player Explosion Task Queuer)
+    * [MICA/PLXTSK.ASM](MICA/PLXTSK.ASM) (Player Explosion Task)
+    * [MICA/ZWRXQUE.ASM](MICA/ZWRXQUE.ASM) (Warrior Exploding-Fragments Task Queuer)
+    * [MICA/WRXTSK.ASM](MICA/WRXTSK.ASM) (Warrior Explosion Task)
+    * [MICA/ZSNXQUE.ASM](MICA/ZSNXQUE.ASM) (Sinistar Explosion Task Queuer)
+    * [MICA/SNXTSK.ASM](MICA/SNXTSK.ASM) (Sinistar Explosion Task)
+    * [MICA/ZZATTRAC.ASM](MICA/ZZATTRAC.ASM) (High Score To Date/Marquee Pages Task)
+    * [MICA/MARQUEE.ASM](MICA/MARQUEE.ASM) (Marquee Page By Ken Lantz and Mike Metz) [Not included unless MarqueeFix is defined]
+    * [MICA/ATTMSGS.ASM](MICA/ATTMSGS.ASM) (Attract Mode messages)
+    * [MICA/STATUS.ASM](MICA/STATUS.ASM) (Status Page - Displayed at start of player turn)
+    * [MICA/HSTDTE.ASM](MICA/HSTDTE.ASM) (High Score To Date Entry routine)
+    * [MICA/HSTDIM.ASM](MICA/HSTDIM.ASM) (High Score Table of initials)
+    * [MICA/ZGAMOVER.ASM](MICA/ZGAMOVER.ASM) (display game over in player window)
+    * [MICA/ZZAMSINI.ASM](MICA/ZZAMSINI.ASM) (Attract Mode Demo)
+    * [MICA/ZPNTSCRN.ASM](MICA/ZPNTSCRN.ASM) (clears out the system, sets up the information tasks, restarts the system)
+
+### Fixes
+
+* [WITT/AOE.ASM](WITT/AOE.ASM) (Final patches for AOE '83 show)
+  * [SAM/SAMFIXES.ASM](SAM/SAMFIXES.ASM)
+    * [SAM/FIXLSSIN.ASM](SAM/FIXLSSIN.ASM) (fixes live sinistar leaving sector)
+    * [SAM/FIXDAMPD.ASM](SAM/FIXDAMPD.ASM) (fixes player bounce damping during the attract mode demo)
+    * [SAM/FIXSMASH.ASM](SAM/FIXSMASH.ASM) (fixes player getting smashed off the screen) [not used; replaced by FALS/LAST.ASM]
+    * [SAM/FIXOPENT.ASM](SAM/FIXOPENT.ASM) (fixes operator entry system initialization)
+    * [SAM/FIXPLUNI.ASM](SAM/FIXPLUNI.ASM) (fixes player starting position)
+  * [WITT/RICHFIXE.ASM](WITT/RICHFIXE.ASM)
+    * [WITT/FIXBUTTO.ASM](WITT/FIXBUTTO.ASM) (FIREB version editing correction)
+    * [WITT/FIXINIRI.ASM](WITT/FIXINIRI.ASM) (SINIB demo error and timing correction)
+    * [WITT/FIXKRSIN.ASM](WITT/FIXKRSIN.ASM) (Dead man's warp correction)
+    * [WITT/FIXRISBO.ASM](WITT/FIXRISBO.ASM) (Value error correction) [for Sinibomb sprite]
+    * [WITT/ZSTBLIMP.ASM](WITT/ZSTBLIMP.ASM) (Impulse engine speed table tuned)
+    * [WITT/ZSTBLBOM.ASM](WITT/ZSTBLBOM.ASM) (Demo bombing run speed table tuned)
+  * [MICA/BOBFIXES.ASM](MICA/BOBFIXES.ASM)
+  * [WITT/FIXSINI.ASM](WITT/FIXSINI.ASM)
+
+### Diagnostic Test ROM ($F000)
+
+* [SAM/DIAG.ASM](SAM/DIAG.ASM)
+  * [SAM/T13.ASM](SAM/T13.ASM) (F000 test rom for 'sinistar' with auditing and adjustments)
+* [FALS/LAST.ASM](FALS/LAST.ASM) (Final patches for "revision 3" rom set)
+
+### Extras
+
+* [WITT/debug_utilities.ASM](WITT/debug_utilities.ASM) (Old and new debug routines and cheats, as well as new mods to reduce difficulty)
+  * [SAM/BARGRAPH.ASM](SAM/BARGRAPH.ASM) (Slightly odified version of Debug Bar Graphs)
+    * [WITT/RICH.EQU](WITT/RICH.EQU) (Work file from Rich that has equates for Bar Graphs)
+* [MICA/marquee_fix.ASM](MICA/marquee_fix.ASM) (This is a hack that restores the original MARQUEE title screen)
