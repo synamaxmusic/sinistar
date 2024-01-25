@@ -86,10 +86,21 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 * 01/03/2024 - I cleaned up some of my older comments and replaced my old ```PUSH/PULLORG``` hacks with the actual macros.  The same goes for the ```ROUTINE``` macro; it's actually pretty useful as it shows messages in the listing output and makes it easier to understand.  ```PAD``` doesn't work exactly the same with the new assembler so it's only used sparringly in this rewrite when there are no macro arguments; any ```PAD``` macros that need to generate new lable names have been replaced with three lines of code that reproduces exactly what we need (see [PAD](#pad) for more info).
 * 12/30/2023 - I got [several important and heavily-used macros](https://github.com/synamaxmusic/sinistar/commit/f8ace13ec0a8a5db5baac7f346cc17ed26605bbd) to work properly after several tests.  These macros include ```PUSHORG```,```PULLORG```,```ROUTINE```,```PAD```, and the Copyright string macro.  Implementing these will require more work as I would have to undo edits, but this will make the assembly process more accurate to how the game was originally built. 
 * 11/14/2023 - Sam Dicker's section of code is buildable and will produce a playable ROM that only has the player ship, joystick controls and background starfield scrolling.  The scanner's "fin" graphics are drawn but the scanner logic itself does not work (because there are no enemies nearby).
-
+ 
   ![0023](https://github.com/synamaxmusic/sinistar/assets/11140222/da73cf47-451c-4fc3-a624-98b837eaba6c)
-* 11/06/2023 - Rewriting commences.
-* 10/07/2023 - After several days of playtesting and experiments, I completed my Difficult Mod which reduces the enemy populations to make the game easier.
+* 11/06/2023 - Source code rewrite commences.
+* 10/14/2023 - Got previously undocumented player ship "tail" jet exhaust graphics from Sam's module working.  Hoping to get this working in the rewrite eventually.
+  
+  ![sinistar_tail_v2](https://github.com/synamaxmusic/sinistar/assets/11140222/ed8bda23-ff57-4d6e-b40e-af62edf34e97)
+* 10/07/2023 - After several days of playtesting and experiments, I completed my Difficulty Mod which reduces the enemy populations to make the game easier.
+* 10/05/2023 - Managed to get the original AMOA "Marquee" title screen graphic working in the final version of the game.  Turns out the source code is slightly different from the AMOA build and has the position of the graphics and copyright text slightly higher than before.
+  
+  ![0078](https://github.com/synamaxmusic/sinistar/assets/11140222/28dde0fb-d673-49e3-8795-61ab498bf300) ![0093](https://github.com/synamaxmusic/sinistar/assets/11140222/9dbdb5ff-5c8b-4683-94e5-0a622502e5cc)
+![0091](https://github.com/synamaxmusic/sinistar/assets/11140222/32e793a2-b724-4aed-bca3-71a5bac5e8ec)
+
+
+* 09/30/2023 - Not code-related but discovered that the Sinistar roar sound effect is actually [a recording of a gorilla entitled, "Gorilla Heavy Panting And Two Roars"](https://www.dewolfemusic.com/search.php?id=26618491&code=pTOgaZ) from a De Wolfe Sound Effects library originally released in 1975 (DW/FX LP No. 16 "Zoo Animals - Wildlife", track 12 on side A).
+* 09/05/2023 - Started reverse-engineering the population tables for enemies and created [a repository for all my RE notes](https://github.com/synamaxmusic/sinistar-notes).
 * May 2023 - Started looking over the original codebase for the first time.
 
 ## Overview
