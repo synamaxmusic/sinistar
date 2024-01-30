@@ -22,6 +22,7 @@
 ;STEREO	EQU	1
 ;
 ;   Remove the semi-colon in front of "STEREO EQU 1" to build VSNDRM10.
+;   Can be combined with "ChecksumFix"
 ;
 ;;---------------------------------------------------------------------
 ;
@@ -38,6 +39,27 @@
 ;   by pressing the switch on the D8224 sound board.  Changing the
 ;   original value will result in an incorrect checksum warning in MAME.
 ;
+;   If you want to hear this sound in MAME, hex edit the last two bytes
+;   of the assembled sound rom to the address for NMI (usually $F1B6),
+;   then run MAME in debug mode.
+;
+;   Upon running MAME, the debugger should pause before launching 
+;   the game.  Before hitting F5, type in: soundcpu.rw@fffe = f001
+;   This will change the NMI vector back to the normal SETUP vector.
+;   Hit F5 and the sound cpu should start at $F1B6 and proceed to play
+;   the diagnostic sound forever.
+;
+;;---------------------------------------------------------------------
+;
+;SpeechTest EQU	1
+;
+;   The diagnostic test is also missing the ability to play through
+;   all the speech audio, even though there is a valid diagnostic routine
+;   in the speech processing program.  Does not work with "STEREO" because
+;   the speech board is not connected to Video Sound Rom 10.
+;
+;   This overrides "ChecksumFix" as it replaces the first byte with $E4.
+;
 ;;---------------------------------------------------------------------
 ;
 ;   To build this code, first download Macroassembler {AS}, then place
@@ -48,7 +70,13 @@
 ;
 ;   Then use P2BIN to generate the binary ROM file:
 ;
-;   p2bin vsndrm9.p -l 00 vsndrm9.bin
+;   p2bin vsndrm9.p -l 00 video_sound_rom_9_std.808.ic12
+;
+;   To build the cockpit-exclusive Video Sound Rom 10, simply remove
+;   the semi-colon in front of "STEREO  EQU  1", save the file and 
+;   type in:
+
+;   p2bin vsndrm9.p -l 00 video_sound_rom_10_std.ic12
 ;
 ;;---------------------------------------------------------------------
 ;
@@ -308,6 +336,10 @@ DSFLG   RMB    	1                	;DISTORTION FLAG	;;($14)
 ;* MAIN PROGRAM
 ;*
 	ORG	ROM
+	
+	IFDEF SpeechTest
+	FCB	$E4
+	ELSE
 	IFNDEF	ChecksumFix
 	FCB	$AA			;CHECKSUM BYTE
 	ELSE
@@ -315,6 +347,7 @@ DSFLG   RMB    	1                	;DISTORTION FLAG	;;($14)
 	FCB	$70
 	ELSE
 	FCB	$24
+	ENDIF
 	ENDIF
 	ENDIF
 ;*	
@@ -799,12 +832,19 @@ NMI1	ADCB	0,X
 	DEX
 	CPX	#$F000	
 	BNE	NMI1
-	CMPB	0,X			;;(The checksum should be $AD, but
-					;;because it's defined as $AA, the
-					;;the checksum fails.)
+	CMPB	0,X
 	BEQ	NMI2
 	WAI				;;(test failed, wait forever)
 NMI2	JSR	DIAGNOI			;;(play unused Diagnoistic Synth Noise)
+
+	IFDEF	SpeechTest		;;Added new SpeechTest define for diagnostics
+	JSR	DIAGNOI			;;play test noise two more times
+	JSR	DIAGNOI
+	LDAB	TALKD			;;load TALKD address into B
+	CMPB    #$7E			;;check if JMP opcode exists
+	BNE	NMI			;; NO opcode!  Go back to NMI
+	JSR	TALKD			;; If opcode exists, then start talkin'
+	ENDIF
 	BRA 	NMI			;;(loop forever)
 ;;---------------------------------------------------------------------
 ;*
@@ -1810,53 +1850,53 @@ FIN 	MACRO
 	ENDM
 
 
-;ADH MACRO "H,"N
-; IFE "H
+ADH 	MACRO  H,N						;;Fixme was: ADH MACRO "H,"N
+	IF H = 0						;;Fixme was: IFE "H	
 ; LIST
-; FCB	81,"N		ADH	0,"N
+	FCB	81,N		;ADH	0,"N			;;Fixme was: FCB  81,"N
 ; NLIST
-; ELSE
+	ELSE
 ; LIST
-; FCB 8-"H,"N		ADH	"H,"N
+	FCB 8-H,N		;ADH	"H,"N			;;Fixme was: FCB 8-"H,"N
 ; NLIST
-; ENDIF
-; ENDM
+	ENDIF
+	ENDM
 ;
-;LDH MACRO "H,"N
-; IFE "H
+LDH 	MACRO  H, N						;;Fixme was: LDH MACRO "H,"N
+	IF H = 0						;;Fixme was: IFE "H
 ; LIST
-; FCB	83,"N		LDH	0,"N
+	FCB	83,N		;LDH	0,"N			;;Fixme was: FCB  83,"N
 ; NLIST
-; ELSE
+	ELSE
 ; LIST
-; FCB 16-"H,"N		LDH	"H,"N
+	FCB 	16-H,N		;LDH	"H,"N			;;Fixme was: FCB 16-"H,"N
 ; NLIST
-; ENDIF
-; ENDM
+	ENDIF
+	ENDM
 ;
-;DT MACRO "R
-; IFB <"R>
+DT	MACRO  R						;;Fixme was: DT MACRO "R
+	IFB R							;;Fixme was: IFB <"R>
 ; LIST
-; FCB 32			DT
+	FCB 	32			;DT
 ; NLIST
-; ELSE
+	ELSE
 ; LIST
-; FCB 31+"R		DT	"R
+	FCB 	31+R		;DT	"R			;;Fixme was: FCB 31+"R
 ; NLIST
-; ENDIF
-; ENDM
+	ENDIF
+	ENDM
 ;
-;IH MACRO "H
+IH	MACRO  H						;;Fixme was: IH MACRO "H
 ; LIST
-; FCB 65-"H-"H		IH	"H
+	FCB 	65-H-H		;IH	"H			;;Fixme was: FCB 65-"H-"H
 ; NLIST
-; ENDM
+	ENDM
 ;
-;DH MACRO "H
+DH	MACRO  H						;;Fixme was: DH MACRO "H
 ; LIST
-; FCB 64-"H-"H		DH	"H
+	FCB	64-H-H		;DH	"H			;;Fixme was: FCB 64-"H-"H
 ; NLIST
-; ENDM
+	ENDM
 ;
 ZT	MACRO
 ; LIST
@@ -2133,10 +2173,10 @@ EROARW	FDB	$5380		;;LDH	0,128
 	FDB	$0C05		;;LDH 	4,5
 ERLP	FDB	$1080 		;;LT 	0,<8,-15> (3-byte opcode)
 	FCB	$F0		;; 	||
-	FCB	$23		;;DT 	4
+	DT 4			;;FCB	$23		;;DT 	4
 	FDB	$1080		;;LT 	0,<8,10>?
 	FCB	$10		;;	||
-	FCB	$23		;;DT 	4
+	DT 4			;;FCB	$23		;;DT 	4
 	FDB	$70F6		;;TO	ERLP$
 ;;
 ;;	(Sinistar Error Roar Pitch Commands)
@@ -2144,40 +2184,40 @@ ERLP	FDB	$1080 		;;LT 	0,<8,-15> (3-byte opcode)
 EROARP	FDB	$962E,$00EC
 	FDB	$2200,$EC80 
 	FDB	$20F6
-	FCB	$80		;;STOP
+	STOP			;;FCB	$80		;;STOP
 ;;
 ;;	(Extra Ship Wave Commands)
 ;;
 EXTRAW	FDB	$5300		;;LDH	0,0
 	FDB	$0A05		;;LDH 	6,5
-	FCB	$FB		;;WAIT	5
+	WAIT 5			;;FCB	$FB		;;WAIT	5
 	FDB	$5380		;;LDH	0,128
 	FDB	$0A1F		;;LDH 	6,31
 	FDB	$6F03		;;DO 	16,EXSWLP$
 	FDB	$6E01		;;DO 	15,EXSWLP$
-	FCB	$40		;;FIN
+	FIN			;;FCB	$40		;;FIN
 EXSWLP	FDB	$1060		;;LT ?	
 	FDB	$0002		;;	||
-	FCB	$23		;;DT 	4
+	DT 4			;;FCB	$23		;;DT 	4
 	FDB	$1040 		;;LT 	0,<7,-1>
 	FCB	$FE		;;	($1040FE is actually used in Joust)
-	FCB	$22		;;DT 	3
+	DT 3			;;FCB	$22		;;DT 	3
 	FDB	$1020 		;;LT ?
 	FCB	$FE		;;	||
 	FCB	$20		;;DT 	1
-	FCB	$40		;;FIN
+	FIN			;;FCB	$40		;;FIN
 ;;
 ;;	(Extra Ship Pitch Commands)
 ;;
 EXTRAP	FCB	$64		;;(loads into SMPPER, inital pitch)
 	FDB	$6F03		;;DO 	16,EXSPLP$
 	FDB	$6F01		;;DO 	16,EXSPLP$
-	FCB	$80		;;STOP
+	STOP			;;FCB	$80		;;STOP
 EXSPLP	FDB	$2100		;;LDV 	256
-	FCB	$FC		;;WAIT 	4
+	WAIT 4			;;FCB	$FC		;;WAIT 	4
 	FDB	$2F00		;;LDV 	-256
-	FCB	$FC		;;WAIT 	4
-	FCB	$80 		;;STOP
+	WAIT 4			;;FCB	$FC		;;WAIT 	4
+	STOP			;;FCB	$80 		;;STOP
 ;;
 ;;	(Unused Wave Commands)
 ;;
@@ -2187,7 +2227,7 @@ UNUSEDW	FDB	$5300,$09FF
 	FDB	$FC20,$1041
 	FDB	$0002,$2310
 	FDB	$01FE,$2350
-	FCB	$40
+	FIN			;;FCB	$40
 ;;
 ;;	(Unused Pitch Commands)
 ;;
@@ -2204,8 +2244,7 @@ WALSH	CLRB
 	ASLA
 	ASLA
 	ADDA	#WALSHT&255		;;(originally #WALSHT!.255)
-;;	ADCB	#WALSHT/256
-	ADCB	#$F6			;;(#WALSHT/256 was showing up as $F7)
+	ADCB	#WALSHT/256
 	STAB	PCMDPT
 	STAA	PCMDPT+1
 	LDX	PCMDPT
@@ -2222,8 +2261,8 @@ WALSH	CLRB
 	JMP	WSM		
 ;;
 ;;	(Unused Glitchy Noise Loader)
-NOISELD	TAB				;;(we now return to our regularly 
-					;;scheduled program...)
+;;
+NOISELD	TAB				
 	BGT	NOISEB
 	ASLB
 	ASLB 
