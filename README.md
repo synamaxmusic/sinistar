@@ -1,4 +1,5 @@
-# Sinistar
+<h1 align="center">Sinistar</h1>
+
 A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
 
 Source code rewrite by SynaMax, started November 6th, 2023; complete ROM set rebuilt for the first time on January 12th, 2024 (sound and speech code added on the 15th and 16th respectively).
@@ -54,6 +55,8 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 ## Important Milestones
 
 {Warning: flashing images below)
+
+* 01/29/2024 - The [source code for Joust](https://github.com/synamaxmusic/joust) has been completely rewritten and I have decided to add a new source file from that repository over here as well.  In order for Sinistar to launch in MAME, two decoder ROMs are needed.  Use [decoder_roms.asm](decoder_roms.asm) to build these two required files.
 
 * 01/23/2024 - We have our first pull request!  Daniel Lopez verified that the game assembles with the unofficial [community-maintained package of Macroassembler {AS}](https://aur.archlinux.org/packages/mas) in Arch Linux; however, some minor changes were required.  All ```!=``` operators were changed to ```<>``` in order for the code to build because the package uses a older verison of {AS}.  The rest of the codebase uses ```<>``` so this actually makes things more consistent.
 
@@ -450,13 +453,13 @@ Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/c
 ```
 These conditional pseudo-ops get used a lot so having this guide was extremely important for getting macros to work with Macroassembler {AS}; I'm really lucky to have stumbled across it.
 
-Interestingly, there are a couple of new expressions that don't appear here that do show up in the codebase:
+Interestingly, there are a couple of expressions that don't appear here that do show up in the Sinistar and Joust codebases.  Here's a snippet of code from Joust as an example:
 
 ```
 FCB  WAIT,!HCALL,!WCALL,MINUS-*,ZERO-*,PLUS-*,FLYVEL
 ```
 
-```!H``` was used for separating the high byte of a word, while ```!W``` is used for the lower byte of a word.  The first one does show up occasionally in Sinistar's codebase but ```!W``` is a new one that I haven't encountered before.
+```!H``` was used for separating the high byte of a word, while ```!W``` is used for the lower byte of a word.  The first one makes an appearance in Sinistar's codebase but ```!W``` is a new one that I haven't encountered before.
 
 ### Decimal numbers
 
