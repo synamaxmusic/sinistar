@@ -33,6 +33,7 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
   	* [Game code](#game-code)
   	* [Sound ROMs](#sound-roms)
   	* [Speech ROMs](#speech-roms)
+	* [Decoder ROMs 4 & 6](#decoder-roms-4--6)
 * [About the source code](#about-the-source-code)
 	* [Macros](#macros)
 	* [Working with the BSO Assembler and VAX/VMS](#working-with-the-bso-assembler-and-vaxvms)
@@ -180,10 +181,10 @@ asl VSNDRM9.ASM -o vsndrm9.p
 Then use P2BIN to generate the binary ROM file:
 
 ```sh
-p2bin vsndrm9.p -l 00 vsndrm9.bin
+p2bin vsndrm9.p -l 00 video_sound_rom_9_std.808.ic12
 ```
 
-To build the cockpit-exclusive Video Sound Rom 10, simply remove the semi-colon in front of ```STEREO  EQU  1``` in ```VSNDRM9.ASM```, save the file and repeat the build instructions above.
+To build the cockpit-exclusive Video Sound Rom 10, simply remove the semi-colon in front of ```STEREO  EQU  1``` in ```VSNDRM9.ASM```, save the file and repeat the build instructions above (use ```video_sound_rom_10_std.ic12``` for the filename instead).
 
 ### Speech ROMs
 
@@ -204,7 +205,9 @@ p2bin speech.p 3004_speech_ic5_r1_16-3004-50.ic5 -r $D000-$DFFF
 p2bin speech.p 3004_speech_ic4_r1_16-3004-49.ic4 -l 00 -r $E000-$EFFF
 ```
 
+### Decoder ROMs 4 & 6
 
+This is probably a little bit overkill but I also included code that builds the required decoder ROMs needed for the game to run.  MAME will refuse to launch the game if these files are not included so I added a [new source file](decoder_roms.asm), even though it's fairly easy to find these files online.  Regardless, I added them for completeness sake.
 
 ## About the source code
 
@@ -250,7 +253,13 @@ Admittedly, working with Macro Assembler {AS} has been a bit of a challenge as i
 
 ## Rewriting the source code
 
-I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  Any new comments by me will use two semi-colons (```;;```), while original comments will only use one (```;```).
+I soon realized that because of the new syntax, I would have to rewrite more code than I initially intended.  I tried my best to show all the changes to the code that I did with comments but I may have missed some minor edits here or there.  My intention has always been to leave as much original code in as possible and change only what is necessary.  Any major drastic changes will be pointed out in the comments.  New comments by me will use two semi-colons (```;;```), while original comments will only use one (```;```).
+
+Whenever possible, any changes to the code are marked by comments to the right that say ```;;Fixme was:``` followed by the original instructions.
+
+```
+    IF $4000>>L_N2&M_N1 <> 0		;;Fixme was: IFN 4000!>LN2!.MN1
+```
 
 Because we're not using VMS to build this, I made a new file called ```MAKE.ASM```, based off the original ```MAKE.COM``` batch file.  This file loads in all the required source files for {AS} to process and also has defines for enabling debug features.
 
@@ -386,6 +395,8 @@ Sometimes, ```SECTION/ENDSECTION``` are used to make local sections of code, esp
 
 Every once in a while I have to change local labels into global ones in order for the code to build at all, but I try to avoid this as much as possible.
 
+Note that not all local label changes have been marked with ```;;Fixme was:``` comments as it would be too many to add and can clutter up the code.
+
 ### BSO Syntax
 
 Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/cy6502.txt) for another [missing BSO assembler](https://www.pagetable.com/?p=1538#fn:1) that explains some of the syntax and expressions used in the original Sinistar source code.  Here are some important ones to point out:
@@ -439,6 +450,14 @@ Thankfully, I found some [documentation](https://www.pagetable.com/docs/cbmasm/c
 ```
 These conditional pseudo-ops get used a lot so having this guide was extremely important for getting macros to work with Macroassembler {AS}; I'm really lucky to have stumbled across it.
 
+Interestingly, there are a couple of new expressions that don't appear here that do show up in the codebase:
+
+```
+FCB  WAIT,!HCALL,!WCALL,MINUS-*,ZERO-*,PLUS-*,FLYVEL
+```
+
+```!H``` was used for separating the high byte of a word, while ```!W``` is used for the lower byte of a word.  The first one does show up occasionally in Sinistar's codebase but ```!W``` is a new one that I haven't encountered before.
+
 ### Decimal numbers
 
 * ```RADIX 16``` is declared very early on and decimal numbers are defined by using ```.``` after the integer.
@@ -458,6 +477,9 @@ At first, I tried changing the ```RADIX 16``` at the very beginning of the code 
 * Exclusive OR ```!X``` are now just ```!```.
 * Bit shift operators ```!<``` and ```!>``` are now ```<<``` and ```>>```.
 * ```#!N4``` is a value used a lot for fixing a DMA bug for the blitter graphic chip.  This value has been replaced with ```#~$4```.
+* Binary AND ```!.``` are now just ```&```
+* Binary OR ```!+``` are now ```|```
+* ```*``` asterisks were used to denote comments at the start of a new line.  These have now have semi-colons in front of them (```;*``` ) to tell the assembler this is a comment.  ```*``` is now exclusively used as the current value of the program counter.
 
 ## Source code map
 
