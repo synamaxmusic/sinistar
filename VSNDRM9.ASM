@@ -1801,14 +1801,14 @@ ADP 	MACRO 	N						;;Fixme was: ADP MACRO "N
 
 
 LDV 	MACRO 	N						;;Fixme was: LDV MACRO "N
-ZQ0 	SET 	$2000+(N&$FFF)					;;Fixme was: ZQ0 SET $2000+("N!.$FFF)
+ZQ0 	SET 	$2000+((N)&$FFF)				;;Fixme was: ZQ0 SET $2000+("N!.$FFF) (parentheses allow negative values!)
 ; LIST
 	FDB 	ZQ0		;LDV	"N
 ; NLIST
 	ENDM
 ;
 ADV	MACRO	N						;;Fixme was: ADV MACRO "N
-ZQ0 	SET 	$3000+(N&$FFF)					;;Fixme was: ZQ0 SET $3000+("N!.$FFF)
+ZQ0 	SET 	$3000+((N)&$FFF)				;;Fixme was: ZQ0 SET $3000+("N!.$FFF) (parentheses allow negative values!)
 ; LIST
 	FDB 	ZQ0		;ADV	"N
 ; NLIST
@@ -1905,22 +1905,21 @@ ZT	MACRO
 	ENDM
 
 
-;; LT macro doesn't work yet
-LT MACRO C,q0,q1,q2,q3,q4,q5,q6,q7,q8				;;Fixme was: LT MACRO "C,"0,"1,"2,"3,"4,"5,"6,"7,"8
+LT MACRO C,q0,q00,q1,q11,q2,q22,q3,q33,q4,q44,q5,q55,q6,q66,q7,q77,q8,q88	;;Fixme was: LT MACRO "C,"0,"1,"2,"3,"4,"5,"6,"7,"8 (separating all values was the answer!!)
 ZQ1	SET	16
 ZQ2	SET	0
 	IRP I,0,1,2,3,4,5,6,7,8					;;Fixme was: IRPC %I,012345678
 ZB_I	SET	0						;;Fixme was: ZB%I SET 0
 	ENDM							;;Fixme was: ENDR
-	LTA 0,q0						;;Fixme was: LTA 0,"0
-	LTA 1,q1                                                ;;Fixme was: LTA 1,"1
-	LTA 2,q2                                                ;;Fixme was: LTA 2,"2
-	LTA 3,q3                                                ;;Fixme was: LTA 3,"3
-	LTA 4,q4                                                ;;Fixme was: LTA 4,"4
-	LTA 5,q5                                                ;;Fixme was: LTA 5,"5
-	LTA 6,q6                                                ;;Fixme was: LTA 6,"6
-	LTA 7,q7                                                ;;Fixme was: LTA 7,"7
-	LTA 8,q8                                                ;;Fixme was: LTA 8,"8
+	LTA 0,q0,q00						;;Fixme was: LTA 0,"0
+	LTA 1,q1,q11                                            ;;Fixme was: LTA 1,"1
+	LTA 2,q2,q22                                            ;;Fixme was: LTA 2,"2
+	LTA 3,q3,q33                                            ;;Fixme was: LTA 3,"3
+	LTA 4,q4,q44                                            ;;Fixme was: LTA 4,"4
+	LTA 5,q5,q55                                            ;;Fixme was: LTA 5,"5
+	LTA 6,q6,q66                                            ;;Fixme was: LTA 6,"6
+	LTA 7,q7,q77                                            ;;Fixme was: LTA 7,"7
+	LTA 8,q8,q88                                            ;;Fixme was: LTA 8,"8
 ; LIST                                                          
 	FCB	ZQ1,ZQ2		;LT <"0>,<"1>,<"2>,<"3>,<"4>,<"5>,<"6>,<"7>,<"8>
 ; NLIST
@@ -1940,33 +1939,33 @@ ZQ1	SET	17
 	ELSE
 ZQ2 	SET 	ZQ2|(2^(H-1))					;;Fixme was: ZQ2 SET ZQ2!+(2!^("H-1))
 	ENDIF
-ZB_II 	SET 	A+A+ZQ3						;;Fixme was: ZB"I SET "A+"A+ZQ3
+ZB_II 	SET 	(A)+(A)+ZQ3					;;Fixme was: ZB"I SET "A+"A+ZQ3 (parentheses allow negative values!)
 	ENDIF
 	ENDM
 
 
-LT0	MACRO
+LT_0	MACRO							;;Fixme was: LT_0
 ; LIST
 	FCB	ZB_0						;;Fixme was: FCB ZB0
 ; NLIST
 	ENDM
 
 
-LT1	MACRO
+LT_1	MACRO							;;Fixme was: LT_1
 ; LIST
 	FCB	ZB_0,ZB_1					;;Fixme was: FCB ZB0,ZB1
 ; NLIST
 	ENDM
 
 
-LT2	MACRO
+LT_2	MACRO							;;Fixme was: LT_2
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 ; NLIST
 	ENDM
 
 
-LT3	MACRO
+LT_3	MACRO							;;Fixme was: LT_3
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 	FCB	ZB_3						;;Fixme was: FCB ZB3
@@ -1975,7 +1974,7 @@ LT3	MACRO
 	ENDM
 
 
-LT4	MACRO
+LT_4	MACRO							;;Fixme was: LT_4
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 	FCB	ZB_3,ZB_4					;;Fixme was: FCB ZB3,ZB4
@@ -1983,7 +1982,7 @@ LT4	MACRO
 	ENDM
 
 
-LT5	MACRO
+LT_5	MACRO							;;Fixme was: LT_5
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 	FCB	ZB_3,ZB_4,ZB_5					;;Fixme was: FCB ZB3,ZB4,ZB5
@@ -1991,7 +1990,7 @@ LT5	MACRO
 	ENDM
 
 
-LT6	MACRO
+LT_6	MACRO							;;Fixme was: LT_6
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 	FCB	ZB_3,ZB_4,ZB_5					;;Fixme was: FCB ZB3,ZB4,ZB5
@@ -2000,7 +1999,7 @@ LT6	MACRO
 	ENDM
 
 
-LT7	MACRO
+LT_7	MACRO							;;Fixme was: LT_7
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 	FCB	ZB_3,ZB_4,ZB_5					;;Fixme was: FCB ZB3,ZB4,ZB5
@@ -2009,7 +2008,7 @@ LT7	MACRO
 	ENDM
 
 
-LT8	MACRO
+LT_8	MACRO							;;Fixme was: LT_8
 ; LIST
 	FCB	ZB_0,ZB_1,ZB_2					;;Fixme was: FCB ZB0,ZB1,ZB2
 	FCB	ZB_3,ZB_4,ZB_5					;;Fixme was: FCB ZB3,ZB4,ZB5
@@ -2164,74 +2163,94 @@ ODDTBL
 ;;
 ;;	(Sinistar Error Roar Wave Commands)
 ;;
-EROARW	FDB	$5380		;;LDH	0,128
-	FDB	$0888		;;LDH 	8,136
-	FDB	$0A10		;;LDH 	6,16
-	FDB	$0908		;;LDH 	7,8
-	FDB	$0B10		;;LDH 	5,16
-	FDB	$0C20 		;;LDH 	4,32
-	FDB	$0C05		;;LDH 	4,5
-ERLP	FDB	$1080 		;;LT 	0,<8,-15> (3-byte opcode)
-	FCB	$F0		;; 	||
-	DT 4			;;FCB	$23		;;DT 	4
-	FDB	$1080		;;LT 	0,<8,10>?
-	FCB	$10		;;	||
-	DT 4			;;FCB	$23		;;DT 	4
-	FDB	$70F6		;;TO	ERLP$
+	LBL EROARW
+	LDH 0,128		;;FDB	$5380
+	LDH 8,136		;;FDB	$0888
+	LDH 6,16		;;FDB	$0A10
+	LDH 7,8			;;FDB	$0908
+	LDH 5,16		;;FDB	$0B10
+	LDH 4,32		;;FDB	$0C20
+	LDH 4,5			;;FDB	$0C05
+	
+	LBL ERLP
+	LT 0,8,-8		;;FCB	$10,$80,$F0
+	DT 4			;;FCB	$23
+	LT 0,8,8		;;FCB	$10,$80,$10
+	DT 4			;;FCB	$23
+	TO ERLP			;;FDB	$70F6
 ;;
 ;;	(Sinistar Error Roar Pitch Commands)
 ;;
-EROARP	FDB	$962E,$00EC
-	FDB	$2200,$EC80 
-	FDB	$20F6
-	STOP			;;FCB	$80		;;STOP
+	LBL EROARP	
+	NOT 150			;;FCB	$96
+	LDV -512 		;;FCB	$2E,$00
+	WAIT 20			;;FCB	$EC
+	LDV 512			;;FDB	$2200
+	FDB 	$EC80 
+	FCB	$20
+	WAIT 10			;;FCB	$F6
+	STOP			;;FCB	$80
 ;;
 ;;	(Extra Ship Wave Commands)
 ;;
-EXTRAW	FDB	$5300		;;LDH	0,0
-	FDB	$0A05		;;LDH 	6,5
-	WAIT 5			;;FCB	$FB		;;WAIT	5
-	FDB	$5380		;;LDH	0,128
-	FDB	$0A1F		;;LDH 	6,31
-	FDB	$6F03		;;DO 	16,EXSWLP$
-	FDB	$6E01		;;DO 	15,EXSWLP$
-	FIN			;;FCB	$40		;;FIN
-EXSWLP	FDB	$1060		;;LT ?	
-	FDB	$0002		;;	||
-	DT 4			;;FCB	$23		;;DT 	4
-	FDB	$1040 		;;LT 	0,<7,-1>
-	FCB	$FE		;;	($1040FE is actually used in Joust)
-	DT 3			;;FCB	$22		;;DT 	3
-	FDB	$1020 		;;LT ?
-	FCB	$FE		;;	||
-	FCB	$20		;;DT 	1
-	FIN			;;FCB	$40		;;FIN
+	LBL EXTRAW	
+	LDH 0,0			;;FDB	$5300
+	LDH 6,5			;;FDB	$0A05
+	WAIT 5			;;FCB	$FB
+	LDH 0,128		;;FDB	$5380
+	LDH 6,31		;;FDB	$0A1F
+	DO 16,EXSWLP		;;FDB	$6F03
+	DO 15,EXSWLP		;;FDB	$6E01
+	FIN			;;FCB	$40
+	
+	LBL EXSWLP
+	LT 1,7,0,6,1 		;;FCB	$10,$60,$00,$02
+	DT 4			;;FCB	$23
+	LT 0,7,-1		;;FCB	$10,$40,$FE
+	DT 3			;;FCB	$22
+	LT 0,6,-1		;;FCB	$10,$20,$FE
+	DT 1 			;;FCB	$20
+	FIN			;;FCB	$40
 ;;
 ;;	(Extra Ship Pitch Commands)
 ;;
-EXTRAP	FCB	$64		;;(loads into SMPPER, inital pitch)
-	FDB	$6F03		;;DO 	16,EXSPLP$
-	FDB	$6F01		;;DO 	16,EXSPLP$
-	STOP			;;FCB	$80		;;STOP
-EXSPLP	FDB	$2100		;;LDV 	256
-	WAIT 4			;;FCB	$FC		;;WAIT 	4
-	FDB	$2F00		;;LDV 	-256
-	WAIT 4			;;FCB	$FC		;;WAIT 	4
-	STOP			;;FCB	$80 		;;STOP
+	LBL EXTRAP	
+	NOT 100			;;FCB	$64		;;(loads into SMPPER, inital pitch)
+	DO 16,EXSPLP		;;FDB	$6F03
+	DO 16,EXSPLP		;;FDB	$6F01
+	STOP			;;FCB	$80
+	LBL EXSPLP
+	LDV 256			;;FDB	$2100
+	WAIT 4			;;FCB	$FC
+	LDV -256		;;FDB	$2F00
+	WAIT 4			;;FCB	$FC
+	STOP			;;FCB	$80
 ;;
 ;;	(Unused Wave Commands)
 ;;
-UNUSEDW	FDB	$5300,$09FF 
-	FDB	$FB6F,$036E 
-	FDB	$0140,$1040
-	FDB	$FC20,$1041
-	FDB	$0002,$2310
-	FDB	$01FE,$2350
+	LBL UNUSEDW	
+	LDH 0,0			;;FDB	$5300
+	LDH 7,255		;;FDB	$09FF 
+	WAIT 5			;;FCB	$FB
+	DO 16,UNUSEDWLP		;;FDB	$6F03
+	DO 15,UNUSEDWLP		;;FDB	$6E01
+	FIN			;;FCB	$40
+	
+	LBL UNUSEDWLP					;;(yes, this long symbol name probably wouldn't have worked back in '82, but oh well...)	
+	LT 0,7,-2 		;;FCB	$10,$40,$FC
+	DT 1 			;;FCB	$20
+	LT 1,1,0,7,1		;;FCB	$10,$41,$00,$02
+	DT 4			;;FCB	$23
+	LT 0,1,-1		;;FCB	$10,$01,$FE
+	DT 4			;;FCB	$23
+	ZT			;;FCB	$50
 	FIN			;;FCB	$40
 ;;
 ;;	(Unused Pitch Commands)
 ;;
-UNUSEDP	FDB	$7DCE,$CE80
+	LBL UNUSEDP	
+	FDB	$7DCE		;;DO 30, go back 50(-$32)??
+	FDB	$CE80	
 
 WALSHT	FDB	EROARW,EROARP		;;(Sinistar Error Roar - plays only when speech board is disconnected)
 	FDB	EXTRAW,EXTRAP	 	;;(Extra Ship Sound Effect)
@@ -2248,11 +2267,11 @@ WALSH	CLRB
 	STAB	PCMDPT
 	STAA	PCMDPT+1
 	LDX	PCMDPT
-	LDX	0,X			;;(orignally just LDX	X)
+	LDX	,X			;;(orignally just LDX	X)
 	STX	FCMDPT
 	LDX	PCMDPT
 	LDX	2,X
-	LDAB	0,X			;;(orignally just LDAB	X)
+	LDAB	,X			;;(orignally just LDAB	X)
 	STAB	SMPPER
 	INX
 	STX	PCMDPT
