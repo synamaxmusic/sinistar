@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://github.com/synamaxmusic/sinistar/assets/11140222/c6747150-ce04-4901-b479-bb44202e4407" alt="Sinistar gameplay with the player ship evading a giant skull-planet">
+</p>
+
 <h1 align="center">Sinistar</h1>
 
 A game by Sam Dicker, Noah Falstein, R.J. Mical and Richard Witt
