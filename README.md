@@ -56,6 +56,8 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
+* 01/30/2024 - As mentioned in the readme for my [Joust source code rewrite](https://github.com/synamaxmusic/joust), I have finally figured out how to get Tim Murphy's Walsh Function Sound Machine macros to work.  This means that we can reproduce the "Extra Ship" and "ERROAR" sound effects accurately by using these macros instead of just copying the bytes over from the sound ROM.  We are still missing a couple of macro instructions related to the pitch commands for "ERROAR" and one of the unused sounds,  as I'm still not sure how to recreate them with macros yet; however, all the data for the "Extra Ship" effect is now generated via these macros, exactly how it was done in 1982! 
+
 * 01/29/2024 - The [source code for Joust](https://github.com/synamaxmusic/joust) has been completely rewritten and I have decided to add a new source file from that repository over here as well.  In order for Sinistar to launch in MAME, two decoder ROMs are needed.  Use [decoder_roms.asm](decoder_roms.asm) to build these two required files.
 
 * 01/23/2024 - We have our first pull request!  Daniel Lopez verified that the game assembles with the unofficial [community-maintained package of Macroassembler {AS}](https://aur.archlinux.org/packages/mas) in Arch Linux; however, some minor changes were required.  All ```!=``` operators were changed to ```<>``` in order for the code to build because the package uses a older verison of {AS}.  The rest of the codebase uses ```<>``` so this actually makes things more consistent.
