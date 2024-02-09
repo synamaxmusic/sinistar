@@ -53,12 +53,22 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
  	* [BSO Syntax](#bso-syntax)
   	* [Decimal numbers](#decimal-numbers)
   	* [Common fixes](#common-fixes)
-  * [Source code map](#source-code-map)
+* [Source code map](#source-code-map)
+* [Mods](#mods)
+  	* [EnableMods](#enablemods)
+	* [DiagnosticTestFix](#diagnostictestfix)
+  	* [MarqueeFix](#marqueefix)
+   	* [ExtraShipFix](#extrashipfix)
+	* [DifficultyMod](#difficultymod)
+	* [QuickOperatorEntry](#quickoperatorentry)
+	* [PauseMod](#pausemod)
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
 
 {Warning: flashing images below)
+
+* 02/09/2024 - I have added a new mod that allows the player to pause the game!  Simply press the player 1 button during gameplay to pause; pressing it again resumes the action.  Huge thanks to braedel and Chris Brooks over at Coinoplove.com for inspiring me to implement this new feature.
 
 * 01/30/2024 - As mentioned in the readme for my [Joust source code rewrite](https://github.com/synamaxmusic/joust), I have finally figured out how to get Tim Murphy's Walsh Function Sound Machine macros to work.  This means that we can reproduce the "Extra Ship" and "ERROAR" sound effects accurately by using these macros instead of just copying the bytes over from the sound ROM.  We are still missing a couple of macro instructions related to the pitch commands for "ERROAR" and one of the unused sounds,  as I'm still not sure how to recreate them with macros yet; however, all the data for the "Extra Ship" effect is now generated via these macros, exactly how it was done in 1982! 
 
@@ -677,6 +687,50 @@ The very first files to be processed through the assembler are routines related 
 ### Extras
 
 * [WITT/debug_utilities.ASM](WITT/debug_utilities.ASM) (Old and new debug routines and cheats, as well as new mods to reduce difficulty)
-  * [SAM/BARGRAPH.ASM](SAM/BARGRAPH.ASM) (Slightly odified version of Debug Bar Graphs)
+  * [SAM/BARGRAPH.ASM](SAM/BARGRAPH.ASM) (Slightly modified version of Debug Bar Graphs)
     * [WITT/RICH.EQU](WITT/RICH.EQU) (Work file from Rich that has equates for Bar Graphs)
 * [MICA/marquee_fix.ASM](MICA/marquee_fix.ASM) (This is a hack that restores the original MARQUEE title screen)
+
+## Mods
+
+Several new mods have been added for Sinistar!  To enable a mod, open up ```MAKE.ASM``` and simply remove the semi-colon in front of the define for that mod.  Then, save the file and build the game per the [build instructions](#build-instructions).  Be sure to read the instructions next to the defines for further information.
+
+### EnableMods
+
+Turn this on if you want to enable mods like the Marquee Fix or Difficulty Mod.  This disables the Rug test, just like NOTEST, but this also zeros out the ROMTBL checksum table, so that we don't trigger the copyright protection.
+
+### DiagnosticTestFix
+
+Only works if EnableMods is defined.  Restores access to diagnostic tests for CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is automatically enabled for MarqueeFix.  This is needed for any mods that overwrite the RAM/ROM rug test area ($F09F-$F370) and/or before the CMOS test screen at $F404.
+ 
+When this is enabled, the game will wipe away the screen and wait forever until the "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance button to go through the remaining diagnostic screens.
+
+### MarqueeFix
+
+This restores the awesome original "Marquee" title screen found in the prototype AMOA '82 build.  Due to space constraints, this was not included in the final version of the game.
+
+### ExtraShipFix
+
+This restores the original "Additional Extra Ship Point Factor" to it's original value of 5,000 (per SAM/DEFAULT.SRC).  This makes it much easier to score extra lives!
+
+You'll need to do a factory reset or clear/delete your NVRAM in order for the new default value to be copied over.
+
+Because this is just a one-byte edit, this can be combined with other mods like MarqueeFix and/or DifficultyMod.
+
+### DifficultyMod
+
+This reduces the difficulty of the game by modifying the enemy population values starting at $7ABE.  You can watch my video for more detailed info on how this mod works and why I chose these new values: https://youtu.be/HnfcAudPPS4
+
+This mod can be enabled with other mods like MarqueeFix and ExtraShipFix.
+
+### QuickOperatorEntry
+
+This one-byte mod makes it much quicker to edit the title screen's operator message, which can be accessed from the Game Adjustments service menu.  The only caveat is that the operator message entry screen and high score entry screen use the same routines, so changing the value to make it go faster also affects the input for high score initials.
+
+I'm assuming that RJ purposely patched this value to make editing slower because play-testers were messing up their high score initials with the shorter time.
+
+### PauseMod
+
+Press the Player 1 button during gameplay to pause!  Pressing it again resumes the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses very similar code to achieve the same effect.  The "PAUSED" text displayed on screen uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at the start of the game.
+
+This mod can be enabled with MarqueeFix!  However, if MarqueeFix is not defined then you'll need to enable DiagnosticTestFix to get the diagnostics working again.
