@@ -99,7 +99,7 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  Uncommenting this EQU can be useful for debugging and greatly decreases wait times
 ;;  by skipping the power up ROM/RAM Rug Test.  It does not disable the ROM/RAM "Rug" test
-;;  itself, as it is still accessible by pressing the service button.
+;;  itself, as it is still accessible by pressing the service (aka "advance") button.
 
 ;SAMDEBUG EQU	1
 
@@ -145,16 +145,21 @@ PROMS	EQU	1		;* Define before burning proms
 ;;
 ;;  This disables the Rug test, just like NOTEST, but this also zeros out the
 ;;  ROMTBL checksum table, so that we don't trigger the copyright protection.
-;;  If the ROM/RAM tests have been untouched, hitting the service button should
-;;  still work.  With the advance switch enabled, pressing the button will
-;;  take you directly to the Bookkeeping and Game Adjustment screens.
+;;  If the ROM/RAM tests have been untouched, hitting the service (aka "advance")
+;;  button should still work.  With the "auto up" switch enabled, pressing the
+;;  advance button will take you directly to the Bookkeeping and Game Adjustment
+;;  screens.
 
 ;DiagnosticTestFix EQU 1
 
 ;;  Only works if EnableMods is defined.  Restores access to diagnostic tests for
 ;;  CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is
 ;;  automatically enabled for MarqueeFix.  This is needed for any mods that overwrite
-;;  the RAM/ROM rug test area ($F09F-$F371).
+;;  the RAM/ROM rug test area ($F09F-$F370) and/or before the CMOS test screen at $F404.
+;;
+;;  When this is enabled, the game will wipe away the screen and wait forever until the
+;;  "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance
+;;  button to go through the remaining diagnostic screens.
 
 ;MarqueeFix EQU 1
 
@@ -183,7 +188,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;DifficultyMod EQU 1
 
 ;;  This reduces the difficulty of the game by modifying the enemy population values
-;;  starting at $7ABE.  You can watch my video For more detailed info on how this mod works
+;;  starting at $7ABE.  You can watch my video for more detailed info on how this mod works
 ;;  and why I chose these new values: https://youtu.be/HnfcAudPPS4
 ;;
 ;;  This mod can be enabled with other mods like MarqueeFix and ExtraShipFix.
@@ -195,9 +200,21 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  the operator message entry screen and high score entry screen use the same routines, so
 ;;  changing the value to make it go faster also affects the input for high score initials.
 ;;
-;;  Considering that RJ purposely patched this value to make it slower to edit was probably
-;;  because play-testers were messing up their high score initials with the shorter time.
+;;  I'm assuming that RJ purposely patched this value to make editing slower because
+;;  play-testers were messing up their high score initials with the shorter time.
 ;;
+
+;PauseMod EQU	1
+
+;;  Press the Player 1 button during gameplay to pause!  Pressing it again resumes
+;;  the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses
+;;  very similar code to achieve the same effect.  The "PAUSED" text displayed on screen
+;;  uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at
+;;  the start of the game.
+;;
+;;  This mod can be enabled with MarqueeFix!  However, if MarqueeFix is not defined then
+;;  you'll need to enable DiagnosticTestFix to get the diagnostics working again.
+
 
 ;  <<< EXPERIMENTAL BROKEN DEFINES >>>
 

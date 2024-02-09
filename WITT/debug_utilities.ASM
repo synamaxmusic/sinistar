@@ -245,7 +245,7 @@ BCF	MACRO	A1,A2,A3
 ;	PULLORG	ROMSAVE							;*
 ;	ENDIF	;Debug		;*****************************************
 
-	IFDEF	InfiniteShips		;*****************************************	;;Fixme was: IFDEF  Debug (duplicate symbol)
+	IFDEF	InfiniteShips	;*****************************************	;;Fixme was: IFDEF  Debug (duplicate symbol)
 	PUSHORG	ROMSAVE							;*
 	VECTOR	IniVect							;*
 	inc	Ships		;Player won't run out of ships		;*
@@ -402,10 +402,12 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 	FCB	$0	;CHECK BYTE (FUDGER) FOR THIS PART ($F000)
 	PULLORG
 	
+;;===========================================================================
+;;	
 ;;   Let's skip the ROM and RAM tests when we hit the service button.
-;;   This has the side-effect of wiping away the screen graphics as the
-;;   CMOS test runs.  Continue hitting the service button to get to the 
-;;   Game Adjustments screen.
+;;   This has the side-effect of wiping away the screen graphics then waiting
+;;   forever until the service/advance button (aka F2 in MAME) is pressed again.
+;;   Continue hitting the service button to get to the Game Adjustments screen.
 	
 	IFDEF 	DiagnosticTestFix
 	PUSHORG	$F003	;;This restores access to the diagnostic menu!
@@ -524,7 +526,8 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 ;; Void Zone Warrior Initial Population is unmodified.
 	
 	ENDIF
-	
+
+;;===========================================================================	
 	
 	IFDEF	QuickOperatorEntry
 	
@@ -534,16 +537,130 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 	
 	ENDIF
 	
+;;===========================================================================
+	
+	IFDEF	PauseMod	
+;;
+;;   First we insert a jump while the game is scanning the joystick.
+;;   We do this instead of using SPANEL because the joystick is only enabled
+;;   during gameplay, otherwise the player can pause the attract mode and
+;;   the game will never actually start.
+;;	
+	PUSHORG	$361A		;;(hijack joystick scanning routine)
+	JMP	PauseScan
+	PULLORG
+	
+;;
+;;   If the MarqueeFix mod is enabled, let's make room for it.
+;;   Doing this will overwrite ADVSWS but will still leave enough room to
+;;   leave the CMOS test alone.
+;;	
+	IFDEF	MarqueeFix
+	
+	PUSHORG $F370		;; If MarqueeFix is enabled, let's add the pause mod after it.
+	ELSE
+	PUSHORG $F09F		;; Otherwise, if the original title screen is used, just overwrite the rug tests.
+	ENDIF
+	
+;;
+;;  The PauseSTART and PauseCLR routines act very similar to how the "EMPTY" text is
+;;  drawn in-game.  We have enough room in MESSAV that we can actually give the
+;;  "PAUSED" string a new PhrNum and reference it just like all the other phrases!
+;;	
+	
+PauseSTART	
+	TEXT	WECO,$6C	;; Reuse the William Electronics "court check" vertical position, horizontal position $6C is dead center for "PAUSED"
+	lda	#SDLOFF		;; Load WECO ($45) into A
+	ldb	#SDSOFF		;; Load $6C into B
+	tfr	D,X		;; We have to transfer both A/B registers to X because we need B for color
+	WORD	YELLOW,68,PAUSED ;; Use 6x8 font and create "PAUSED" string for MESSAV
+	rts
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ROMSAVE	SET	*		;; Save the current address
+
+	ORG	PHRSAV		;; Jump over to PHRSAV to save our pointers
+	FDB	_PAUSED		
+
+PHRSAV	SET	*		;; Mark the new address for PHRSAV to add
+				;; more phrases later
+
+	ORG	ROMSAVE		;; Back to our regularly scheduled programming...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PauseCLR
+	TEXT	WECO,$6C	;; We clear the text by drawing it again 
+	lda	#SDLOFF		;;   but this time we use black as the color
+	ldb	#SDSOFF		
+	tfr	D,X		
+	WORD	BLACK,68,PAUSED	
+	rts
+	
+;;
+;;  Here is the actual code that pauses the game.  This code was originally
+;;  written in 2008 for Joust by Chris Brooks @ Coinoplove.com.  I have rewritten
+;;  it to work with Sinistar and use the modified "EMPTY" text routines above to
+;;  display the new string.
+;;	
+	
+PauseScan
+	PSHS    D 
+	LDA     PIA3		
+	ANDA    #$10
+	BEQ     PauseExit
+	ORCC    #$10
+	JSR     PauseDelay	;;go to delay subroutine
+.1S	JSR     .4S		;;feed watchdog
+	LDA     PIA3		;;did player hit P1 button?
+	ANDA    #$10
+	BNE     .1S		;;no? then go feed watchdog again
+	JSR     PauseSTART	;;yes? draw "PAUSED" text
+.3S	JSR     .4S		;;feed watchdog
+	LDA     PIA3		
+	ANDA    #$10
+	BEQ     .3S 
+	JSR     PauseDelay
+.2S	JSR     .4S
+	LDA     PIA3		
+	ANDA    #$10
+	BNE     .2S
+	JSR     PauseCLR	;;player wants to resume play, let's go clear the "PAUSED" text
+	JMP     PauseExit
+.4S	LDB     #$39		;;Watchdog food
+	STB     WDOG		;;Watchdog
+	RTS
+
+PauseDelay
+	LDD     #$0200		;;let's waste some CPU cycles so we give the player time to react
+.1S	DECB    
+	BNE     .1S 
+	DECA    
+	BNE     .1S 
+        RTS			;;let's go feed the watchdog
+	
+PauseExit PULS    D		;;grab D from stack 
+	ANDCC   #$EF
+	LDA	PIA+4		;read joystick pia (restore trashed instruction from $361A)
+	JMP     $361D		;;go back to Game Logic	
+	
+	PULLORG
+	
+	ENDIF
+	
+;;===========================================================================	
 	
 	
-;	IFDEF	QuickBuild	;*************************************************
+	
+	
+;	IFDEF	QuickBuild	;************************************************* 
 ;	PUSHORG	ROMSAVE							;*
 ;;	LOCAL								;*
 ;	VECTOR	IniVect		;****** BUILD THE SINISTAR ******	;*
 ;	RADIX	10								;;(decimal value ahead)
 ;	lda	#10							;*	;;Fixme was: lda	#20
 ;	RADIX	16								;;(back to hex)
-;WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$	
+;;WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$	
+;WITT1S	jsr	AddPart								;;(changing to AddPart seems to work a little bit better but player explosion lags and explosion sprite doesn't animate for some reason)
 ;	deca								;*
 ;	bgt	WITT1S							;*
 ;	rts								;*
