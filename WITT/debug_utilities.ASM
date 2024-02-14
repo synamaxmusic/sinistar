@@ -39,18 +39,6 @@
 ;	PULLORG
 	
 	ENDIF
-
-;;===============================================================================
-;;
-;;   If DIAG/T13 are not assembled, then force IRQ vectors so that the game
-;;   can boot in MAME.
-;;
-	
-	IFNDEF	IRQVectors
-	PUSHORG	$FFF0
-	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
-	PULLORG
-	ENDIF
 	
 	
 ;;===============================================================================	
@@ -357,6 +345,52 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 ;;
 ;;===========================================================================
 ;;
+;;   If DIAG/T13 are not assembled, then force IRQ vectors in blank ROM 11 so
+;;   that the game can still boot in MAME.
+;;
+	
+	IFNDEF	IRQVectors
+	PUSHORG	$FFF0
+	FDB	RESTART,RESTART,RESTART,RESTART,IRQ,RESTART,RESTART,RESTART
+	PULLORG
+	ENDIF
+
+;;===========================================================================
+;;
+;;  Instead of nuking the Rug ROM/RAM tests, we are going to overwrite the
+;;  cross hatch test, color bar tests and switch test instead.
+;;
+
+	IFDEF	DisableTests
+
+	PUSHORG $F470  	;; overwrite JSR instructions for SWTEST, AVWAIT, and CRTEST with NOPs
+			;; so we can skip them and overwrite $F71C - $F928
+	
+	RPT	9,NOP
+
+	PULLORG
+	
+	
+	PUSHORG $F4ED	;;replace "BSR	BARS" with NOPs so Auto cycle doesn't execute mod code
+	
+	NOP
+	NOP
+	
+	PULLORG
+	
+	
+	PUSHORG $F4F8	;; make TSTPAT skip color bar and cross hatch tests and go straight to booking
+	
+	JMP	BOOK	
+	
+	PULLORG
+
+;;  $F4FB - $F928 are now clear (gives us $42C of space)
+
+	ENDIF
+
+;;===========================================================================
+;;
 ;;   To avoid triggering KenChk, we force the program to skip the rug test
 ;;   on start up.  This is done by by overwriting the jump addresses that
 ;;   start the test with NOPs. 
@@ -524,6 +558,18 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 	PULLORG
 	
 ;; Void Zone Warrior Initial Population is unmodified.
+
+
+
+	ORG	$F35E
+	FCB	$94	;7000
+	
+	ORG	$F36E
+	FCB	$61	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$9F		;;Fixme was: $DA (Fudger byte)
+
 	
 	ENDIF
 
@@ -550,17 +596,51 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 	JMP	PauseScan
 	PULLORG
 	
+;;;
+;;;   If the MarqueeFix mod is enabled, let's make room for it.
+;;;   Doing this will overwrite ADVSWS but will still leave enough room to
+;;;   leave the CMOS test alone.
+;;;	
+;	IFDEF	MarqueeFix
+;	
+;	PUSHORG $F370		;; If MarqueeFix is enabled, let's add the pause mod after it.
+;	ELSE
+;	PUSHORG $F09F		;; Otherwise, if the original title screen is used, just overwrite the rug tests.
+;	ENDIF
+
 ;;
-;;   If the MarqueeFix mod is enabled, let's make room for it.
-;;   Doing this will overwrite ADVSWS but will still leave enough room to
-;;   leave the CMOS test alone.
-;;	
-	IFDEF	MarqueeFix
+;;  Instead of nuking the Rug ROM/RAM tests, we are going to overwrite the
+;;  cross hatch and color bar tests instead.
+;;
+
+	PUSHORG $F476  ;;overwrite "JSR	CRTEST" with NOPs so we can skip it and overwrite $F71C - $F7B8
 	
-	PUSHORG $F370		;; If MarqueeFix is enabled, let's add the pause mod after it.
-	ELSE
-	PUSHORG $F09F		;; Otherwise, if the original title screen is used, just overwrite the rug tests.
-	ENDIF
+	NOP
+	NOP
+	NOP
+	
+	PULLORG
+	
+	
+	PUSHORG $F4ED	;;replace "BSR	BARS" with NOPs so Auto cycle doesn't execute mod code
+	
+	NOP
+	NOP
+	
+	PULLORG
+	
+	PUSHORG $F4F8	;;make TSTPAT skip color bar and cross hatch tests and go straight to booking
+	
+	JMP	BOOK	
+	
+	PULLORG
+	
+	
+;;  $F4FB - $F7B7 are now clear (gives us $2BC of space)
+;;
+;;  We can finally start the Pause Mod code
+
+	PUSHORG $F4FB
 	
 ;;
 ;;  The PauseSTART and PauseCLR routines act very similar to how the "EMPTY" text is
@@ -645,6 +725,24 @@ PauseExit PULS    D		;;grab D from stack
 	
 	PULLORG
 	
+;;
+;;  Checksum fixes
+;;
+
+
+	ORG	$F356
+	FCB	$3B	;3000	;;Fixme was: $33
+
+	ORG	$F36C
+	FCB	$70	;E000	;;Fixme was: $F8
+
+	ORG	$F36E
+	FCB	$0E	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$F3		;;Fixme was: $DA (Fudger byte)
+
+
 	ENDIF
 	
 ;;===========================================================================	

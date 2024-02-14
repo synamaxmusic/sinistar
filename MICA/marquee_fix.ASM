@@ -7,38 +7,46 @@
 ;	INCLVER	SAM,SINISTAR.EQU
 
 	IFDEF	MarqueeFix
-;
-;;; Patch to avoid triggering copyright protection and to skip
-;;; ROM/RAM "Rug" test which has been overwritten by this new code.
-;	ORG	$F063
-;	NOP
-;	NOP
-;	ORG	$F069
-;	NOP
-;	NOP
-;	NOP
-;
-;;; Patch to clear out ROM checksum table
-;
-;	ORG	$F34F
-;	FDB	$0000    
-;	FDB	$1000    
-;	FDB	$2000   
-;	FDB	$3000  
-;	FDB	$4000  
-;	FDB	$5000  
-;	FDB	$6000  
-;	FDB	$7000  
-;	FDB	$8000  
-;	FDB	$9000  
-;	FDB	$A000  
-;	FDB	$B000  
-;	FDB	$C000  
-;	FDB	$D000  
-;	FDB	$E000  
-;	FDB	$F000 
-;
-	PUSHORG	$F09F								;;Fixme was: PUSHORG	ROMSAV
+	
+;;
+;;  Instead of nuking the Rug ROM/RAM tests, we are going to overwrite the
+;;  cross hatch test, color bar tests and switch test instead.
+;;
+
+	PUSHORG $F470  	;; overwrite JSR instructions for SWTEST, AVWAIT, and CRTEST with NOPs
+			;; so we can skip them and overwrite $F71C - $F928
+	
+	RPT	9,NOP
+
+	PULLORG
+	
+	
+	PUSHORG $F4ED	;;replace "BSR	BARS" with NOPs so Auto cycle doesn't execute mod code
+	
+	NOP
+	NOP
+	
+	PULLORG
+	
+	
+	PUSHORG $F4F8	;; make TSTPAT skip color bar and cross hatch tests and go straight to booking
+	
+	JMP	BOOK	
+	
+	PULLORG
+	
+	
+;;  $F4FB - $F928 are now clear (gives us $42C of space)
+	
+	
+	IFDEF	PauseMod
+	
+	PUSHORG $F569 		;; If PauseMod is enabled, let's add the title screen after it.
+	ELSE
+	PUSHORG $F4FB		;; Otherwise, let's place the title screen where the pause mod is normally stored
+	ENDIF
+	
+;	PUSHORG	$F09F								;;Fixme was: PUSHORG	ROMSAV
 
 ;******************************************************************************
 ;*
@@ -283,14 +291,26 @@ MARKEY	FCB $2A,$C3
 	PULLORG									;;Fixme was: PULLORG	ROMSAV
 	
 	
-	PUSHORG	$802E								;;Overwrite copyright message
-RAMEXITx LDB	#1	;set to read rom					;;Restore trashed instructions
-	STB	PMEMCTL
-	STB	MEMCTL
-	LDS	#HSTK	;set stack
-	JSR	EXPFONT	;expand font into static ram
-	JMP	Y	;exit
+	PUSHORG	$811E								
+	JSR	MARQUEE	;; Insert jump to Marquee in game logic
+	RADIX	10
+	RPT	23,NOP	;;    and then wipe out the old Sinistar typeface logo
+	RADIX	16
+	PULLORG
 
+	
+;;
+;;  This section is no longer needed because we're preserving the Rug tests now.
+;;	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+;	PUSHORG	$802E								;;Overwrite copyright message
+;;RAMEXITx LDB	#1	;set to read rom					;;Restore trashed instructions
+;;	STB	PMEMCTL
+;;	STB	MEMCTL
+;;	LDS	#HSTK	;set stack
+;;	JSR	EXPFONT	;expand font into static ram
+;;	JMP	Y	;exit
+;
 ;DELA1x	LDX	#$5800								;;Restore trashed instructions
 ;DELA2x	LEAX	-1,X								;;(Had to change labels to avoid double define errors)
 ;	LDB	#WDATA
@@ -300,30 +320,148 @@ RAMEXITx LDB	#1	;set to read rom					;;Restore trashed instructions
 ;	DECA
 ;	BNE	DELA1x
 ;QUIKLDR	JMP	,Y	;RETURN	 						;;JMP $49F9 (CKCMOS) does the same thing
-	
-	PULLORG
-	
-	
-	PUSHORG $F09C	;;Make rug test jump to restored instructions so the game can boot
-	JMP	RAMEXITx ;;Originally JMP DELA1x, but this is faster AND brings back "FACTORY SETTINGS RESTORED"!
-	PULLORG
+;	
+;	PULLORG
+;	
+;	
+;	PUSHORG $F09C	;;Make rug test jump to restored instructions so the game can boot
+;	JMP	DELA1x  ;;Originally JMP DELA1x, but RAMEXITx is faster AND brings back "FACTORY SETTINGS RESTORED"!
+;	PULLORG
 
-
-	PUSHORG	$811E								
-	JSR	MARQUEE	;; Insert jump to Marquee in game logic
-	RADIX	10
-	RPT	23,NOP	;;    and then wipe out the old Sinistar typeface logo
-	RADIX	16
-	PULLORG
 	
 	
-	PUSHORG	$F003	;;This restores access to the diagnostic menu!
-	JMP	DIAG3	;;Instead of JMP  ADVSWS, we're skiping the deleted RAM/ROM tests and going straight to CMOS test.
-;	JMP	AUTO2   ;;(Do we need to replace Auto-cycle?)
-	PULLORG
+;	PUSHORG	$F003	;;This restores access to the diagnostic menu!
+;	JMP	DIAG3	;;Instead of JMP  ADVSWS, we're skiping the deleted RAM/ROM tests and going straight to CMOS test.
+;;	JMP	AUTO2   ;;(Do we need to replace Auto-cycle?)
+;	PULLORG
 	
 ;	PUSHORG $F4EF  ;;Related to autocycle (need to skip ROMTST/RAMTST jumps)
 ;	LDY	#AUTO2 ;;Change #AUTCYC to #AUTO2
 ;	PULLORG
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;=============================================================================== 
+;;
+;;  Checksum fixes
+;;
+
+;;MarqueeFix ONLY
+	ORG	$F360
+	FCB	$C7	;8000	;;Fixme was: $2A
+	
+	ORG	$F36E
+	FCB	$EF	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$11		;;Fixme was: $DA (Fudger byte)
+
+;;MarqueeFix AND PauseMod	
+	 IFDEF	PauseMod
+	
+	ORG	$F360
+	FCB	$37	;8000	;;Fixme was: $2A
+	
+	ORG	$F36E
+	FCB	$F0	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$10		;;Fixme was: $DA (Fudger byte)
+	
+;;MarqueeFix AND PauseMod AND DifficultyMod 
+	  IFDEF DifficultyMod 
+	  
+	ORG	$F35E
+	FCB	$94	;7000
+	
+	ORG	$F360
+	FCB	$38	;8000	;;Fixme was: $2A
+	
+	ORG	$F36E
+	FCB	$2C	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$D4		;;Fixme was: $DA (Fudger byte)
+	
+;;  Any further mods added on after these three will require FakeChecksums enabled.	
+	  
+	  ENDIF
+	
+	 ENDIF
+
+;;=============================================================================== 
+;;
+;;  As an easter egg, we're overwriting two inside-joke initial entries 
+;;
+
+	PUSHORG $8C5F
+	
+	
+	RADIX	10
+	FCB	23,11,34	;;MAX	(Overwrite "MOM" with SynaMax's name)
+	FCB	12,23,28	;;BMR	(Overwrite "FAC" with Braedel's initials)
+	RADIX	16
+	
+	PULLORG
+
+;;=============================================================================== 
+;;
+;;  To make it easier to identify which ROM set we're running on hardware, we'll
+;;  borrow a trick from Eugene Jarvis and Larry DeMar in the Robotron Tie-Die ROMs
+;;  and use the high score to denote a "version" number.  Normally, the high score
+;;  is set to 39045.  We'll change the zero here to ID the mod combo:
+;;
+;;    39145 = Pause Mod / AMOA Graphic
+;;    39245 = Pause Mod / AMOA Graphic / DifficultyMod
+;;    39345 = Pause Mod / AMOA Graphic / DifficultyMod / QuickOperatorEntry
+;;
+
+	 IFDEF PauseMod
+	
+	ORG	$8BA1
+	FDB	$9145
+	  IFDEF	DifficultyMod
+	 
+	ORG	$8BA1
+	FDB	$9245
+	
+	   IFDEF QuickOperatorEntry
+	
+	ORG	$8BA1
+	FDB	$9345
+	
+	   ENDIF
+	  ENDIF
+	 ENDIF
 	
 	ENDIF		;* Whole file is not included if KENSMARQ is undefined
+	
+;;
+;;   To make troubleshooting and debugging much easier, I'm adding this here since
+;;   this is the last file to be assembled.
+;;	
+	
+	IFDEF	FakeChecksums
+	
+	PUSHORG ROMTAB
+	FCB	$00,$0	;0000
+	FCB	$10,$0	;1000
+	FCB	$20,$0	;2000
+	FCB	$30,$0	;3000
+	FCB	$40,$0	;4000
+	FCB	$50,$0	;5000
+	FCB	$60,$0	;6000
+	FCB	$70,$0	;7000
+	FCB	$80,$0	;8000
+	FCB	$90,$0	;9000
+	FCB	$A0,$0	;A000
+	FCB	$B0,$0	;B000
+	FCB	$C0,$0	;C000
+	FCB	$D0,$0	;D000
+	FCB	$E0,$0	;E000
+	FCB	$F0,$0	;F000
+	FCB	0
+	FCB	$0	;CHECK BYTE (FUDGER) FOR THIS PART ($F000)
+	PULLORG
+	
+	ENDIF

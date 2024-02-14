@@ -74,26 +74,48 @@
 	CPU 6809
 	
 ;===============================================================================
-;  <<< IMPORTANT DEFINES >>>
+;  				<<< DEBUG DEFINES >>>
 
 PROMS	EQU	1		;* Define before burning proms
 
-;;  PROMS is on by DEFAULT!  
+;;  PROMS is on by DEFAULT!
 ;;
 ;;  Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes
 ;;  white for a frame whenever the game starts up or transitions to a status screen.
-;;  If PROMS is not defined, then the screen flashing bug returns (to help remind us that we're
-;;  playing a dev build).
+;;  If PROMS is not defined, then the screen flashing bug returns (to help remind us that
+;;  we're playing a dev build).
 ;;  It also DISABLES KENCHK so that copyright protection doesn't trigger during debugging!
 ;;
 ;;  Note: This doesn't take affect until AOE.ASM is included, so use DisableKenChk
-;;  if magic byte $A1B3 is still showing up as non-zero during attract mode/gameplay.
+;;  if the magic byte at address $A1B3 is still showing up as non-zero during
+;;  attract mode/gameplay.
+;;
+;;  Moving this from RICHFIXE.ASM was kinda unnecessary as this define is usually left on
+;;  all the time, but I figured it would be easier to enable/disable it here rather than
+;;  having it separate from the other debug options.
 
 ;DisableKenChk EQU 1
 
 ;;  The problem with PROMS is that it is defined in RICHFIXE.ASM, which is referenced
 ;;  in AOE.ASM.  If AOE is not included in the build, then KenChk will still trigger.
 ;;  Enable this to force the copyright protection to stay off no matter what.
+;;
+;;  This can be useful for when the diagnostic rom is not included in the build.
+
+;FakeChecksums EQU 1
+
+;;  If you are including the diagnostic ROM 11 in the build, then use this for debugging.
+;;  This is really important if you want to mess around with the code or work on mods.
+;;  Also useful for enabling several different mods at once.
+;;
+;;  During power up, the ROM test uses a checksum table at $F34F to verify file integrity.
+;;  To make debugging with much easier, enable this to zero out the checksum table
+;;  and cheat the ROM test so that you can gain access to the "Game Adjustment" menu.
+;;
+;;  Zeroing out the checksums also should prevent the copyright protection from
+;;  triggering.  Look at address $A1B3 to ensure the byte is zero, otherwise the
+;;  game will start acting weird.
+;;
 
 ;NOTEST	EQU	1
 
@@ -136,43 +158,62 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  Planetoid image that was used to denote Rich's developmental build
 ;;  from the final ROM.
 
-;  <<< MOD DEFINES >>>
+;  				<<< MOD DEFINES >>>
 
-;EnableMods EQU 1
-
-;;  Turn this on if you want to enable mods like the Marquee Fix or Difficulty Mod.
-;;  Please leave PROMS defined!
 ;;
-;;  This disables the Rug test, just like NOTEST, but this also zeros out the
-;;  ROMTBL checksum table, so that we don't trigger the copyright protection.
-;;  If the ROM/RAM tests have been untouched, hitting the service (aka "advance")
-;;  button should still work.  With the "auto up" switch enabled, pressing the
-;;  advance button will take you directly to the Bookkeeping and Game Adjustment
-;;  screens.
-
-;DiagnosticTestFix EQU 1
-
-;;  Only works if EnableMods is defined.  Restores access to diagnostic tests for
-;;  CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is
-;;  automatically enabled for MarqueeFix.  This is needed for any mods that overwrite
-;;  the RAM/ROM rug test area ($F09F-$F370) and/or before the CMOS test screen at $F404.
+;;  "EnableMods" and "DiagnosticTestFix" are now deprecated.  Use "FakeChecksums"
+;;  and "DisableTests" instead.  Any modifications to the final version of the game
+;;  requires us to either change the checksums in diagnostic ROM 11 or fake them.
 ;;
-;;  When this is enabled, the game will wipe away the screen and wait forever until the
-;;  "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance
-;;  button to go through the remaining diagnostic screens.
+;;  Originally, the RAM and ROM tests in ROM 11 ($F09F - $F370) were overwritten to
+;;  fit "MarqueeFix" and "PauseMod" but this doesn't work on real hardware, as we
+;;  were running into issues with the watchdog.
+;;
+;;  Any new mods are now relocated so that they overwrite the "Cross Hatch",
+;;  Color Bars and Switch tests in the diganostics ROM ($F4FB - $F928).  To make
+;;  this space available for adding mods, uncomment the "DisableTests" define.
+;;
+;;  These mods can be combined with others, however if you are running into "ROM ERROR"
+;;  messages on power up, then enable "FakeChecksums" to fix this.
+;;
 
 ;MarqueeFix EQU 1
 
 ;;  This restores the awesome original "Marquee" title screen found in the prototype
 ;;  AMOA '82 build.  Due to space constraints, this was not included in the final build.
 ;;
-;;  To get this to work, I had to overwrite the ROM/RAM tests in ROM 11 and then 
-;;  patched ROM 9 to allow RJ's attract mode routines load the new graphics.
-;;
-;;  Finally a new patch was inserted to restore access to the Game Adjustments menu
-;;  and to prevent the game from trying to load the trashed tests upon hitting the
-;;  service button.
+;;  To get this to work, I had to overwrite the cross hatch, color bar and switch tests
+;;  in ROM 11 and then patched ROM 9 to make RJ's attract mode routines load the AMOA
+;;  graphic.
 ;;  
+;;  "DisableTests" is already enabled for this mod.  New Checksums for the ROM test
+;;  are also enabled.  Can be combined with "PauseMod" and "DifficultyMod" with valid
+;;  checksums.
+;;
+;;  Changes ROMs: 9, 11
+
+;DifficultyMod EQU 1
+
+;;  This reduces the difficulty of the game by modifying the enemy population values
+;;  starting at $7ABE.  You can watch my video for more detailed info on how this mod works
+;;  and why I chose these new values: https://youtu.be/HnfcAudPPS4
+;;
+;;  Adds valid checksums for ROM 11.
+;;
+;;  Changes ROMs: 8, 11
+
+;PauseMod EQU	1
+
+;;  Press the Player 1 button during gameplay to pause!  Pressing it again resumes
+;;  the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses
+;;  very similar code to achieve the same effect.  The "PAUSED" text displayed on screen
+;;  uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at
+;;  the start of the game.
+;;
+;;  This mod can be enabled with MarqueeFix!  "DisableTests" is already enabled for this mod.
+;;  New Checksums for the ROM test are also enabled.  
+;;
+;;  Changes ROMs: 4, 10, 11
 
 ;ExtraShipFix EQU 1
 
@@ -184,14 +225,13 @@ PROMS	EQU	1		;* Define before burning proms
 ;;
 ;;  Because this is just a one-byte edit, this can be combined with other mods like
 ;;  MarqueeFix and/or DifficultyMod.
-
-;DifficultyMod EQU 1
-
-;;  This reduces the difficulty of the game by modifying the enemy population values
-;;  starting at $7ABE.  You can watch my video for more detailed info on how this mod works
-;;  and why I chose these new values: https://youtu.be/HnfcAudPPS4
 ;;
-;;  This mod can be enabled with other mods like MarqueeFix and ExtraShipFix.
+;;  This mod is kinda not really needed, since you can just change the value in the
+;;  "Game Adjustments" menu to 5000 and then save.
+;;
+;;  No valid checksum yet for this mod, enable "FakeChecksums" to pass ROM test.
+;;
+;;  Changes ROMs: 5
 
 ;QuickOperatorEntry EQU 1
 
@@ -203,20 +243,12 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  I'm assuming that RJ purposely patched this value to make editing slower because
 ;;  play-testers were messing up their high score initials with the shorter time.
 ;;
-
-;PauseMod EQU	1
-
-;;  Press the Player 1 button during gameplay to pause!  Pressing it again resumes
-;;  the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses
-;;  very similar code to achieve the same effect.  The "PAUSED" text displayed on screen
-;;  uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at
-;;  the start of the game.
+;;  No valid checksum yet for this mod, enable "FakeChecksums" to pass ROM test.
 ;;
-;;  This mod can be enabled with MarqueeFix!  However, if MarqueeFix is not defined then
-;;  you'll need to enable DiagnosticTestFix to get the diagnostics working again.
+;;  Changes ROMs: 9
 
 
-;  <<< EXPERIMENTAL BROKEN DEFINES >>>
+;  			<<< EXPERIMENTAL BROKEN DEFINES >>>
 
 ;BargraphEnable EQU 1		;* Define this symbol to include Graphic Diagnostics
 
@@ -228,6 +260,31 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  
 ;;  This only works if DisableKenChk is on and that BOBS, AOE, DIAG, and LAST are not
 ;;  built.
+
+;  			<<< DEPRECATED!!! DON'T USE >>>
+
+;EnableMods EQU 0
+
+;;  Turn this on if you want to enable mods like the Marquee Fix or Difficulty Mod.
+;;  Please leave PROMS defined!
+;;
+;;  This disables the Rug test, just like NOTEST, but this also zeros out the
+;;  ROMTBL checksum table, so that we don't trigger the copyright protection.
+;;  If the ROM/RAM tests have been untouched, hitting the service (aka "advance")
+;;  button should still work.  With the "auto up" switch enabled, pressing the
+;;  advance button will take you directly to the Bookkeeping and Game Adjustment
+;;  screens.
+
+;DiagnosticTestFix EQU 0
+
+;;  Only works if EnableMods is defined.  Restores access to diagnostic tests for
+;;  CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is
+;;  automatically enabled for MarqueeFix.  This is needed for any mods that overwrite
+;;  the RAM/ROM rug test area ($F09F-$F370) and/or before the CMOS test screen at $F404.
+;;
+;;  When this is enabled, the game will wipe away the screen and wait forever until the
+;;  "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance
+;;  button to go through the remaining diagnostic screens.
 
 ;===============================================================================
 ;
