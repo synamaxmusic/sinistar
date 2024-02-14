@@ -68,6 +68,8 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
+* 02/13/2024 - Spent the last few days working with braedel on getting the pause mod and AMOA graphic to work on the original hardware.  The original process of overwriting the RAM/ROM tests proved to be troublesome as it was messing around with the watchdog and preventing the machine from powering up.  Instead, new mods are now relocated to overwrite the "Cross hatch", color bars and switch tests in ROM 11.  This fixes the boot issues and allows mods to finally work outside of emulation!
+
 * 02/09/2024 - I have added a new mod that allows the player to pause the game!  Simply press the player 1 button during gameplay to pause; pressing it again resumes the action.  Huge thanks to braedel and Chris Brooks over at Coinoplove.com for inspiring me to implement this new feature.
 
 * 01/30/2024 - As mentioned in the readme for my [Joust source code rewrite](https://github.com/synamaxmusic/joust), I have finally figured out how to get Tim Murphy's Walsh Function Sound Machine macros to work.  This means that we can reproduce the "Extra Ship" and "ERROAR" sound effects accurately by using these macros instead of just copying the bytes over from the sound ROM.  We are still missing a couple of macro instructions related to the pitch commands for "ERROAR" and one of the unused sounds,  as I'm still not sure how to recreate them with macros yet; however, all the data for the "Extra Ship" effect is now generated via these macros, exactly how it was done in 1982! 
