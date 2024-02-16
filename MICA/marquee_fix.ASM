@@ -389,6 +389,29 @@ MARKEY	FCB $2A,$C3
 	
 	 ENDIF
 
+;; AMOA Graphic / DifficultyMod only
+
+	IFNDEF	PauseMod
+	IFDEF	MarqueeFix
+	 IFDEF	DifficultyMod 
+	
+	ORG	$F35E
+	FCB	$94	;7000
+	
+	ORG	$F360
+	FCB	$CA	;8000	;;Fixme was: $2A
+	
+	ORG	$F36E
+	FCB	$2D	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$D3		;;Fixme was: $DA (Fudger byte)
+	
+	  ENDIF
+	 ENDIF
+	ENDIF
+
+
 ;;=============================================================================== 
 ;;
 ;;  As an easter egg, we're overwriting two inside-joke initial entries 
@@ -413,9 +436,11 @@ MARKEY	FCB $2A,$C3
 ;;
 ;;    39145 = Pause Mod / AMOA Graphic
 ;;    39245 = Pause Mod / AMOA Graphic / DifficultyMod
-;;    39345 = Pause Mod / AMOA Graphic / DifficultyMod / QuickOperatorEntry
+;;    39300 = Pause Mod / AMOA Graphic / DifficultyMod / QuickOperatorEntry (Double zeros = No Checksums)
+;;    39345 = AMOA Graphic / DifficultyMod
 ;;
 
+	IFDEF	MarqueeFix
 	 IFDEF PauseMod
 	
 	ORG	$8BA1
@@ -425,14 +450,28 @@ MARKEY	FCB $2A,$C3
 	ORG	$8BA1
 	FDB	$9245
 	
-	   IFDEF QuickOperatorEntry
+	  ENDIF
+	 ENDIF
+	ENDIF
+	
+	IFNDEF	PauseMod
+	IFDEF	MarqueeFix
+	 IFDEF	DifficultyMod  ;; AMOA Graphic / DifficultyMod only
 	
 	ORG	$8BA1
 	FDB	$9345
 	
-	   ENDIF
 	  ENDIF
 	 ENDIF
+	ENDIF
+	
+	IFDEF QuickOperatorEntry
+	
+	ORG	$8BA1
+	FDB	$9300
+	
+	ENDIF
+	
 	
 	ENDIF		;* Whole file is not included if KENSMARQ is undefined
 	
@@ -465,3 +504,4 @@ MARKEY	FCB $2A,$C3
 	PULLORG
 	
 	ENDIF
+	
