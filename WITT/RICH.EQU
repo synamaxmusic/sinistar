@@ -20,10 +20,17 @@ GMinutes	rmb	1	;* 1 Play time in minutes
 GSeconds	rmb	1	;* 2   and seconds.
 GAggression	rmb	1	;* 3 Warrior aggression (high byte)
 GDeathTime	rmb	1	;* 4 Time since Player death
+	IFDEF	BargraphAlt						;;Adding new Bargraph define to enable these
+GDistance	rmb	1	;* 5 Distance
+GANANG		rmb	0	;* 5 Animation angle of squadron leader.
+GVelocity	rmb	1	;* 6 Velocity
+GFLANG		rmb	0	;* 6 Flight angle of squadron leader.	
+	ELSE
 GDistance	rmb	0	;* 5 Distance
 GANANG		rmb	1	;* 5 Animation angle of squadron leader.
 GVelocity	rmb	0	;* 6 Velocity
 GFLANG		rmb	1	;* 6 Flight angle of squadron leader.
+	ENDIF
 	rmb	1		;* 7 Special
 	rmb	1		;* 8   Effects
 GMWaDrift	rmb	1	;* 9 The # of Drifting warriors

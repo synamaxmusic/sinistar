@@ -264,13 +264,47 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  This was originally called "DIAGNOSE" but I renamed it to BargraphEnable to better
 ;;  describe what this does.  Defining this enables a debug "BARGRAPH" display that 
 ;;  shows different parameters such as Play time in Minutes and Seconds, Warrior Aggression,
-;;  Elapsed time since player death, number of enemies, etc.  See RICH.EQU for the list
-;;  of what the different color bars represent.
+;;  Elapsed time since player death, number of enemies, etc.  
+;;
+;;  The file "RICH.EQU" has the list of what the different color bars mean but it is
+;;  inverted.  Here is the correct guide for what each bar represents:
+;;
+;;		rmb	1	* F					YELLOW (unused)
+;;		rmb	1	* E <SPECIAL EFFECT>			BLACK (unused) (The Sinistar's glowing eye color)
+;;GMWaInt	rmb	1	* D The # of Intercepting warriors	RED
+;;GMWaTail	rmb	1	* C The # of Guarding warriors		DARK RED
+;;GMWaMine	rmb	1	* B The # of Mining warriors		DARK PURPLE
+;;GMWaAttack	rmb	1	* A The # of Attacking warriors		DARK TEAL
+;;GMWaDrift	rmb	1	* 9 The # of Drifting warriors		BLUE
+;;		rmb	1	* 8   Effects				BLACK (unused)
+;;		rmb	1	* 7 Special				BLACK (unused)
+;;GFLANG	rmb	1	* 6 Flight angle of squadron leader.	BLUE-GRAY
+;;GVelocity	rmb	0	* 6 Velocity				BLUE-GRAY (unused)
+;;GANANG	rmb	1	* 5 Animation angle of squadron leader.	GRAY
+;;GDistance	rmb	0	* 5 Distance				GRAY (unused)
+;;GDeathTime	rmb	1	* 4 Time since Player death		TAN-GRAY
+;;GAggression	rmb	1	* 3 Warrior aggression (high byte)	SALMON PINK
+;;GSeconds	rmb	1	* 2   and seconds.			CREAM
+;;GMinutes	rmb	1	* 1 Play time in minutes		WHITE
 ;;  
-;;  This only works if DisableKenChk is on and that BOBS, AOE, DIAG, and LAST are not
-;;  built.
+;;  BargraphEnable only works if DisableKenChk is on and that AOE.ASM and DIAG.ASM are not
+;;  built.  Use NOTEST instead of FakeChecksums to skip ROM test. 
+;;
+;;  High score entry doesn't work but you can still insert a coin and hit the player 1 button
+;;  to start playing again.
+;;
 
-;  			<<< DEPRECATED!!! DON'T USE >>>
+;BargraphAlt EQU 1
+
+;;  In the previous list, two variables are not enabled, "GVelocity" and "GDistance".
+;;  Instead, "GFLANG" and "GANANG" for the warrior squadron leader are shown in blue-gray
+;;  and gray colors respectively.
+;;
+;;  Uncomment this define to have the BARGRAPH routine display the Velocity and Distance
+;;  parameters instead and disable the squadron leader color bars.
+;;
+
+;  			<<< DEPRECATED DEFINES BELOW!!! DON'T USE >>>
 
 ;EnableMods EQU 0
 

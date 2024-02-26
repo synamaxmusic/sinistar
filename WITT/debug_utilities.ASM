@@ -52,7 +52,7 @@
 ;	ENDIF	VERSION							;*
 ;	INCLUDE "../WITT/RICH.EQU"						;;We need Rich's work EQUs
 	
-GrafxSAV SET	$F09F								;;Let's overwrite the ROM/RAM test 
+GrafxSAV SET	$F4FB								;;Let's overwrite the cross hatch test
 
 	INCLUDE "../SAM/bargraph.ASM"		;* <<< Bar Graphs >>>	 *    
 
