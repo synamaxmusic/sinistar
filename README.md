@@ -697,15 +697,17 @@ The very first files to be processed through the assembler are routines related 
 
 Several new mods have been added for Sinistar!  To enable a mod, open up ```MAKE.ASM``` and simply remove the semi-colon in front of the define for that mod.  Then, save the file and build the game per the [build instructions](#build-instructions).  Be sure to read the instructions next to the defines for further information.
 
-### EnableMods
+### FakeChecksums
 
-Turn this on if you want to enable mods like the Marquee Fix or Difficulty Mod.  This disables the Rug test, just like NOTEST, but this also zeros out the ROMTBL checksum table, so that we don't trigger the copyright protection.
+If you are including the diagnostic ROM 11 in the build, then use this for debugging.  This is really important if you want to mess around with the code or work on mods.  Also useful for enabling several different mods at once.
 
-### DiagnosticTestFix
+During power up, the ROM test uses a checksum table at $F34F to verify file integrity.  To make debugging with much easier, enable this to zero out the checksum table and cheat the ROM test so that you can gain access to the "Game Adjustment" menu.
 
-Only works if EnableMods is defined.  Restores access to diagnostic tests for CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is automatically enabled for MarqueeFix.  This is needed for any mods that overwrite the RAM/ROM rug test area ($F09F-$F370) and/or before the CMOS test screen at $F404.
- 
-When this is enabled, the game will wipe away the screen and wait forever until the "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance button to go through the remaining diagnostic screens.
+Zeroing out the checksums also should prevent the copyright protection from triggering.  Look at address $A1B3 to ensure the byte is zero, otherwise the game will start acting weird.
+
+### DisableTests
+
+To make mods possible for Sinistar, we use the space between addresses $F4FB - $F928 in diagnostic ROM 11.  This is where the cross hatch test, color bar tests and switch tests are located.  Enable this define to make the diagnostics skip these routines and give us $42C bytes of space to overwrite.
 
 ### MarqueeFix
 
@@ -736,3 +738,23 @@ I'm assuming that RJ purposely patched this value to make editing slower because
 Press the Player 1 button during gameplay to pause!  Pressing it again resumes the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses very similar code to achieve the same effect.  The "PAUSED" text displayed on screen uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at the start of the game.
 
 This mod can be enabled with MarqueeFix!  However, if MarqueeFix is not defined then you'll need to enable DiagnosticTestFix to get the diagnostics working again.
+
+### Old deprecated defines
+
+"EnableMods" and "DiagnosticTestFix" are now deprecated.  Use "FakeChecksums" and "DisableTests" instead.  Any modifications to the final version of the game requires us to either change the checksums in diagnostic ROM 11 or fake them.
+
+Originally, the RAM and ROM tests in ROM 11 ($F09F - $F370) were overwritten to fit "MarqueeFix" and "PauseMod" but this doesn't work on real hardware, as we were running into issues with the watchdog.
+
+Any new mods are now relocated so that they overwrite the "Cross Hatch", Color Bars and Switch tests in the diganostics ROM ($F4FB - $F928).  To make this space available for adding mods, uncomment the "DisableTests" define.
+
+These mods can be combined with others, however if you are running into "ROM ERROR" messages on power up, then enable "FakeChecksums" to fix this.
+
+### EnableMods (deprecated)
+
+Turn this on if you want to enable mods like the Marquee Fix or Difficulty Mod.  This disables the Rug test, just like NOTEST, but this also zeros out the ROMTBL checksum table, so that we don't trigger the copyright protection.
+
+### DiagnosticTestFix (deprecated)
+
+Only works if EnableMods is defined.  Restores access to diagnostic tests for CMOS, Sound, Switches and Color bars by skipping the ROM/RAM tests.  This is automatically enabled for MarqueeFix.  This is needed for any mods that overwrite the RAM/ROM rug test area ($F09F-$F370) and/or before the CMOS test screen at $F404.
+ 
+When this is enabled, the game will wipe away the screen and wait forever until the "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance button to go through the remaining diagnostic screens.
