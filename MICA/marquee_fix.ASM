@@ -431,14 +431,19 @@ MARKEY	FCB $2A,$C3
 ;;
 ;;  To make it easier to identify which ROM set we're running on hardware, we'll
 ;;  borrow a trick from Eugene Jarvis and Larry DeMar in the Robotron Tie-Die ROMs
-;;  and use the high score to denote a "version" number.  Normally, the high score
-;;  is set to 39045.  We'll change the zero here to ID the mod combo:
+;;  and use the high score to denote a "version" number.  
 ;;
-;;    39145 = Pause Mod / AMOA Graphic
-;;    39245 = Pause Mod / AMOA Graphic / DifficultyMod
-;;    39300 = Pause Mod / AMOA Graphic / DifficultyMod / QuickOperatorEntry (Double zeros = No Checksums)
-;;    39345 = AMOA Graphic / DifficultyMod
+;;  Normally, the first high score entry in the "Survivors Today" table is always
+;;  set to 19045.  
 ;;
+;;  We'll change the zero here to ID the mod combo:
+;;
+;;    19145 = Pause Mod / AMOA Graphic
+;;    19245 = Pause Mod / AMOA Graphic / DifficultyMod
+;;    19300 = Pause Mod / AMOA Graphic / DifficultyMod / QuickOperatorEntry (Double zeros = FakeChecksums)
+;;    19345 = AMOA Graphic / DifficultyMod
+;;
+;;  Note: enabling MarqueeFix only doesn't change the high score entries.
 
 	IFDEF	MarqueeFix
 	 IFDEF PauseMod

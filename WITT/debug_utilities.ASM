@@ -391,6 +391,8 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 
 ;;===========================================================================
 ;;
+;;  			<<< DEPRECATED!!! DON'T USE >>>
+;;
 ;;   To avoid triggering KenChk, we force the program to skip the rug test
 ;;   on start up.  This is done by by overwriting the jump addresses that
 ;;   start the test with NOPs. 
@@ -437,6 +439,8 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 	PULLORG
 	
 ;;===========================================================================
+;;
+;;  			<<< DEPRECATED!!! DON'T USE >>>
 ;;	
 ;;   Let's skip the ROM and RAM tests when we hit the service button.
 ;;   This has the side-effect of wiping away the screen graphics then waiting

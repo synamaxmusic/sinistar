@@ -109,13 +109,22 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  Also useful for enabling several different mods at once.
 ;;
 ;;  During power up, the ROM test uses a checksum table at $F34F to verify file integrity.
-;;  To make debugging with much easier, enable this to zero out the checksum table
+;;  To make debugging with mods much easier, enable this to zero out the checksum table
 ;;  and cheat the ROM test so that you can gain access to the "Game Adjustment" menu.
 ;;
 ;;  Zeroing out the checksums also should prevent the copyright protection from
 ;;  triggering.  Look at address $A1B3 to ensure the byte is zero, otherwise the
 ;;  game will start acting weird.
 ;;
+
+;DisableTests EQU 1
+
+;;  To make mods possible for Sinistar, we use the space between addresses $F4FB - $F928
+;;  in diagnostic ROM 11. This is where the cross hatch test, color bar tests and switch
+;;  tests are located. Enable this define to make the diagnostics skip these routines and
+;;  give us $42C bytes of space to overwrite.
+;;
+;;  This is already enabled for both MarqueeFix and PauseMod.
 
 ;NOTEST	EQU	1
 
