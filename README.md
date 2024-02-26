@@ -54,14 +54,27 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
   	* [Decimal numbers](#decimal-numbers)
   	* [Common fixes](#common-fixes)
 * [Source code map](#source-code-map)
+* [Debug Options](#debug-options)
+	* [PROMS](#proms)
+	* [DisableKenChk](#disablekenchk)
+  	* [FakeChecksums](#fakechecksums)
+ 	* [DisableTests](#disabletests)
+	* [NOTEST](#notest)
+	* [SAMDEBUG](#samdebug)
+	* [InfiniteShips](#infiniteships)
+	* [NoDeath](#nodeath)
+	* [DisableSinistarCollision](#disablesinistarcollision)
+	* [Witt](#witt)
+	* [WittRock](#wittrock)
 * [Mods](#mods)
-  	* [EnableMods](#enablemods)
-	* [DiagnosticTestFix](#diagnostictestfix)
   	* [MarqueeFix](#marqueefix)
    	* [ExtraShipFix](#extrashipfix)
 	* [DifficultyMod](#difficultymod)
 	* [QuickOperatorEntry](#quickoperatorentry)
 	* [PauseMod](#pausemod)
+ 	* [Old deprecated defines](#old-deprecated-defines)
+		* [EnableMods](#enablemods-deprecated)
+		* [DiagnosticTestFix](#diagnostictestfix-deprecated)
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
@@ -693,21 +706,73 @@ The very first files to be processed through the assembler are routines related 
     * [WITT/RICH.EQU](WITT/RICH.EQU) (Work file from Rich that has equates for Bar Graphs)
 * [MICA/marquee_fix.ASM](MICA/marquee_fix.ASM) (This is a hack that restores the original MARQUEE title screen)
 
-## Mods
+## Debug Options
+  
+A lot of debug code is buried inside the original codebase so ```MAKE.ASM``` has new defines to enable these again for those that are interested.  Use ```DisableKenChk``` if you are not building the last ROM (diagnostic ROM 11), otherwise use ```FakeChecksums```.
 
-Several new mods have been added for Sinistar!  To enable a mod, open up ```MAKE.ASM``` and simply remove the semi-colon in front of the define for that mod.  Then, save the file and build the game per the [build instructions](#build-instructions).  Be sure to read the instructions next to the defines for further information.
+### PROMS
+
+PROMS is on by DEFAULT!
+
+Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes;;  white for a frame whenever the game starts up or transitions to a status screen.  If PROMS is not defined, then the screen flashing bug returns (to help remind us that we're playing a dev build).  It also DISABLES KENCHK so that copyright protection doesn't trigger during debugging!
+
+Note: This doesn't take affect until AOE.ASM is included, so use ```DisableKenChk``` if the magic byte at address $A1B3 is still showing up as non-zero during attract mode/gameplay.
+
+Moving this from RICHFIXE.ASM was kinda unnecessary as this define is usually left on all the time, but I figured it would be easier to enable/disable it here rather than having it separate from the other debug options.
+
+### DisableKenChk
+
+The problem with PROMS is that it is defined in RICHFIXE.ASM, which is referenced in AOE.ASM.  If AOE is not included in the build, then KenChk will still trigger.  Enable this to force the copyright protection to stay off no matter what.
+
+This can be useful for when the diagnostic rom is not included in the build.
 
 ### FakeChecksums
 
 If you are including the diagnostic ROM 11 in the build, then use this for debugging.  This is really important if you want to mess around with the code or work on mods.  Also useful for enabling several different mods at once.
 
-During power up, the ROM test uses a checksum table at $F34F to verify file integrity.  To make debugging with much easier, enable this to zero out the checksum table and cheat the ROM test so that you can gain access to the "Game Adjustment" menu.
+During power up, the ROM test uses a checksum table at $F34F to verify file integrity.  To make debugging with mods much easier, enable this to zero out the checksum table and cheat the ROM test so that you can gain access to the "Game Adjustment" menu.
 
 Zeroing out the checksums also should prevent the copyright protection from triggering.  Look at address $A1B3 to ensure the byte is zero, otherwise the game will start acting weird.
 
 ### DisableTests
 
 To make mods possible for Sinistar, we use the space between addresses $F4FB - $F928 in diagnostic ROM 11.  This is where the cross hatch test, color bar tests and switch tests are located.  Enable this define to make the diagnostics skip these routines and give us $42C bytes of space to overwrite.
+
+### NOTEST
+
+Uncommenting this EQU can be useful for debugging and greatly decreases wait times by skipping the power up ROM/RAM Rug Test.  It does not disable the ROM/RAM "Rug" test itself, as it is still accessible by pressing the service (aka "advance") button.
+
+### SAMDEBUG
+
+This debug define found in Sam's module allows the player to respawn forever, even if they run out of extra ships.  This only changes two bytes in the code and doesn't mess up any symbol addresses.  This was originally labeled as "DEBUG" but I renamed it to differentiate from the next two defines which were also called "DEBUG".
+
+### InfiniteShips
+
+Enable this to never run out of lives.  This is from Rich's module and while it takes up more space, it increases the player's number of ships upon every Turn initialization so the player never runs out. 
+
+### NoDeath
+
+This disables player deaths.  Warrior shots don't hurt anymore (yay!), but if the player gets caught by the Sinistar, they'll get soft-locked (boo!).
+This was taken from Rich's module as well.
+
+### DisableSinistarCollision
+
+This new hack makes the player pass through the Sinistar and prevent getting soft-locked while NoDeath is enabled.
+
+### Witt
+
+Uncomment "Witt" to force the Sinistar to spawn instantly and prevent the warriors from shooting at the player.
+
+### WittRock
+
+This new define enables a previously-unknown sprite edit of the tiny Planetoid image that was used to denote Rich's developmental build from the final ROM.
+
+![wittrock_crop](https://github.com/synamaxmusic/sinistar/assets/11140222/cff191c2-67e4-4af6-a182-f7451719dcd1)
+
+
+## Mods
+
+Several new mods have been added for Sinistar!  To enable a mod, open up ```MAKE.ASM``` and simply remove the semi-colon in front of the define for that mod.  Then, save the file and build the game per the [build instructions](#build-instructions).  Be sure to read the instructions next to the defines for further information.
 
 ### MarqueeFix
 
