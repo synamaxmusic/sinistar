@@ -81,6 +81,21 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
+* 02/26/2024 - Relocated the Bargraph debug feature over to the new allocated area in ROM 11, it seems to run a bit more stable now!
+  
+  	More importantly, I reimplmented the unused "TAIL" routine from Sam's module.  This code draws a special effect jet exhaust behind the player ship.  When I initally tried injecting this routine into the ROM data last October, it seemed to be very buggy and would crash the game.  However, after inserting TAIL back into the rewritten codebase and using Macroassembler {AS} to build it, it works way better now!  To my surprise, the blue flames that I first witnessed back in October were actually a glitch as now they're a lovely combination of red and yellow pixels, which produces a much more interesting flame effect!
+
+	![sinistar_tail_v2_60fps](https://github.com/synamaxmusic/sinistar/assets/11140222/614630af-147b-428e-834d-250d9d4afda9) 
+
+  	No wonder why Jack Haeger's marquee artwork depicts the player ship with a flame trail!
+
+	![sinistar_marquee_jet_exhaust_tail](https://github.com/synamaxmusic/sinistar/assets/11140222/463dfd13-9095-498e-9ce3-e1e85c741fca)
+
+	The tail also appears to react to how far the 49-way joystick is being pushed.  Slightly pulling on the stick results in a diminished flame tail, while not pressing it at all turns the effect off.
+
+	Use the ```SAMTAIL``` define in ```MAKE.ASM``` to build the game with this feature.  I made it to work with other mods as well, see [Mod Combos](#mod-combos) for more info.
+
+
 * 02/13/2024 - Spent the last few days working with braedel on getting the pause mod and AMOA graphic to work on the original hardware.  The original process of overwriting the RAM/ROM tests proved to be troublesome as it was messing around with the watchdog and preventing the machine from powering up.  Instead, new mods are now relocated to overwrite the "Cross hatch", color bars and switch tests in ROM 11.  This fixes the boot issues and allows mods to finally work outside of emulation!
 
 * 02/09/2024 - I have added a new mod that allows the player to pause the game!  Simply press the player 1 button during gameplay to pause; pressing it again resumes the action.  Huge thanks to braedel and Chris Brooks over at Coinoplove.com for inspiring me to implement this new feature.
