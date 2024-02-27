@@ -15,7 +15,7 @@
 ;
 ;   This source code was rewritten to target Macro Assembler {AS}.
 ;
-;   To build Sinistar, place the four folders (FALS,SAM,WITT,MICA)
+;   To build Sinistar, place the four folders (SAM,WITT,FALS,MICA)
 ;   and this MAKE.ASM file into the same directory as ASL and P2BIN.
 ;   Then, open a command prompt and type in:
 ;
@@ -25,18 +25,18 @@
 ;   Finally, split the .BIN into separate 1K ROM files:
 ;
 ;	Address:		MAME ROM set Filename:
-;	0000-0FFF = ROM 1	;sinistar_rom_1-b_16-3004-53.1d
-;	1000-1FFF = ROM 2	;sinistar_rom_2-b_16-3004-54.1c
-;	2000-2FFF = ROM 3	;sinistar_rom_3-b_16-3004-55.1a
-;	3000-3FFF = ROM 4	;sinistar_rom_4-b_16-3004-56.2d
-;	4000-4FFF = ROM 5	;sinistar_rom_5-b_16-3004-57.2c
-;	5000-5FFF = ROM 6	;sinistar_rom_6-b_16-3004-58.2a
-;	6000-6FFF = ROM 7	;sinistar_rom_7-b_16-3004-59.3d
-;	7000-7FFF = ROM 8	;sinistar_rom_8-b_16-3004-60.3c
-;	8000-8FFF = ROM 9	;sinistar_rom_9-b_16-3004-61.3a
+;	0000-0FFF = ROM 1	sinistar_rom_1-b_16-3004-53.1d
+;	1000-1FFF = ROM 2	sinistar_rom_2-b_16-3004-54.1c
+;	2000-2FFF = ROM 3	sinistar_rom_3-b_16-3004-55.1a
+;	3000-3FFF = ROM 4	sinistar_rom_4-b_16-3004-56.2d
+;	4000-4FFF = ROM 5	sinistar_rom_5-b_16-3004-57.2c
+;	5000-5FFF = ROM 6	sinistar_rom_6-b_16-3004-58.2a
+;	6000-6FFF = ROM 7	sinistar_rom_7-b_16-3004-59.3d
+;	7000-7FFF = ROM 8	sinistar_rom_8-b_16-3004-60.3c
+;	8000-8FFF = ROM 9	sinistar_rom_9-b_16-3004-61.3a
 ;	9000-DFFF =    (SPACE RESERVED FOR RAM)
-;	E000-EFFF = ROM 10	;sinistar_rom_10-b_16-3004-62.4c
-;	F000-FFFF = ROM 11	;sinistar_rom_11-b_16-3004-63.4a
+;	E000-EFFF = ROM 10	sinistar_rom_10-b_16-3004-62.4c
+;	F000-FFFF = ROM 11	sinistar_rom_11-b_16-3004-63.4a
 ;
 ;   To do this in P2BIN:
 ;
@@ -53,6 +53,7 @@
 ;    p2bin sinistar.p sinistar_rom_11-b_16-3004-63.4a -l 00 -r $F000-$FFFF
 ;
 ;===============================================================================
+;			<<< MODULES AND INCOMPLETE BUILDS >>>
 ;
 ;   Sinistar's source code is split into four "modules" (one for each programmer).
 ;
@@ -186,6 +187,39 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  messages on power up, then enable "FakeChecksums" to fix this.
 ;;
 
+;				<<< MOD COMBOS >>>
+
+;;
+;;  Several of the following mods can be combined together.  To make it easier to
+;;  identify which ROM set we're running, we'll borrow a trick from Eugene Jarvis and
+;;  Larry DeMar in the Robotron Tie-Die ROMs and use the high score to denote a
+;;  "version" number.  
+;;
+;;  Normally, the first high score entry in the "Survivors Today" table is always
+;;  set to 19045.  
+;;
+;;  We'll change the zero here to ID the mod combo:
+;;
+;;    19145 = Pause Mod / MarqueeFix
+;;    19245 = Pause Mod / MarqueeFix / DifficultyMod
+;;    19345 = MarqueeFix / DifficultyMod
+;;    19445 = Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
+;;    19545 = MarqueeFix / DifficultyMod / SAMTAIL
+;;
+;;  Note: enabling MarqueeFix only doesn't change the high score entries.
+;;
+;;  19345 and 19545 are great for arcade operators who want to install these mods but
+;;  prefer not to have players pause the game.
+;;
+;;  Disclaimer: PauseMod has the potential to cause screen burn-in if the
+;;  "PAUSED" text is displayed for an extended period of time.  I, SynaMax, assume
+;;  no responsibility or liability if the PauseMod causes burn-in damage to your monitor.
+;;
+;;  Lastly, some really creative hacking was needed in order to fit SAMTAIL alongside
+;;  these other mods.  If SAMTAIL and MarqueeFix are combined together, then the sound test
+;;  in the diagnostics ($FE6C) is overwritten and skipped.  If SAMTAIL and PauseMod are
+;;  combined, then the routine that sends a signal to the ROM board LED is overwritten ($F211).
+
 ;MarqueeFix EQU 1
 
 ;;  This restores the awesome original "Marquee" title screen found in the prototype
@@ -196,8 +230,8 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  graphic.
 ;;  
 ;;  "DisableTests" is already enabled for this mod.  New Checksums for the ROM test
-;;  are also enabled.  Can be combined with "PauseMod" and "DifficultyMod" with valid
-;;  checksums.
+;;  are also enabled.  Can be combined with "PauseMod" and/or "DifficultyMod" and/or "SAMTAIL"
+;;  with valid checksums.
 ;;
 ;;  Changes ROMs: 9, 11
 
@@ -223,6 +257,26 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  New Checksums for the ROM test are also enabled.  
 ;;
 ;;  Changes ROMs: 4, 10, 11
+
+;SAMTAIL	EQU	1
+
+;;  Taken from SAM/TAIL.SRC, this mod restores a unused jet exhaust "tail" to the player ship!
+;;
+;;  This code was first discovered back in October 2023, but it wasn't until February 2024
+;;  that the unused source code was correctly implemented into the final game.  Initially,
+;;  I thought the tail was supposed to be a blue color, but I now realized that is incorrect.
+;;  This mod produces an effect that much better resembles a rocket flame trail by using a
+;;  combination of red and yellow pixels.  The tail also appears to react to how far the
+;;  49-way joystick is being pushed.  Slightly pulling on the stick results in a diminished
+;;  flame tail, while not pressing it at all turns the effect off.
+;;
+;;  This unused feature explains why Jack Haeger's marquee artwork depicts the player ship
+;;  with a jet exhaust!
+;;
+;;  Changes ROMs: 4, 8, 9, 11
+;;
+;;  If you enable SAMTAIL by itself then you will need to turn on "FakeChecksums" and
+;;  "DisableTests", or you will get checksum errors in the ROM test.
 
 ;ExtraShipFix EQU 1
 

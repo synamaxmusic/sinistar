@@ -39,14 +39,26 @@
 ;;  $F4FB - $F928 are now clear (gives us $42C of space)
 	
 	
-	IFDEF	PauseMod
+;	IFDEF	PauseMod
+;	
+;	PUSHORG $F569 		;; If PauseMod is enabled, let's add the title screen after it.
+;	ELSE
+;	PUSHORG $F4FB		;; Otherwise, let's place the title screen where the pause mod is normally stored
+;	ENDIF
 	
-	PUSHORG $F569 		;; If PauseMod is enabled, let's add the title screen after it.
+	IFNDEF	SAMTAIL		;; If Sam's Tail code is not defined, then we proceed normally.
+	PUSHORG	MODSAV		;;Fixme was: PUSHORG	ROMSAV
+	
 	ELSE
-	PUSHORG $F4FB		;; Otherwise, let's place the title screen where the pause mod is normally stored
+	
+	ORG	$F455		;;Otherwise, let's wipe out the sound test
+;	RPT 20,NOP		;;Wipe out references to sound test
+	JMP	$F479 
+	
+	PUSHORG $FE6C		;;Overwrite sound test
 	ENDIF
 	
-;	PUSHORG	$F09F								;;Fixme was: PUSHORG	ROMSAV
+	
 
 ;******************************************************************************
 ;*
@@ -108,6 +120,11 @@ FINSIT	TEXT	$52,$CD								;;Originally TEXT  $48,$CD in AMOA build
 	
 	PULS	Y,PC
 
+
+	IFDEF	SAMTAIL		;; If SAMTAIL is defined...
+	PULLORG			;;  then we finish overwriting the sound test...
+	PUSHORG	MODSAV		;;  and go back to our allocated space for mods ($F4FB - $F928).
+	ENDIF
 
 ;******************************************************************************
 ;* THE MARKEY TABLE
@@ -288,7 +305,7 @@ MARKEY	FCB $2A,$C3
 	FCB $28,$C8
 	FCB $00 
 
-	PULLORG									;;Fixme was: PULLORG	ROMSAV
+	PULLORG	MODSAV								;;Fixme was: PULLORG	ROMSAV
 	
 	
 	PUSHORG	$811E								
@@ -383,17 +400,37 @@ MARKEY	FCB $2A,$C3
 	ORG	$FFDF
 	FCB	$D4		;;Fixme was: $DA (Fudger byte)
 	
-;;  Any further mods added on after these three will require FakeChecksums enabled.	
+;;MarqueeFix AND PauseMod AND DifficultyMod AND SAMTAIL
+	   IFDEF SAMTAIL
+	   
+	ORG	$F356
+	FCB	$DC	;3000	;;Fixme was: $33
+	
+	ORG	$F35E
+	FCB	$17	;7000
+	
+	ORG	$F360
+	FCB	$D4	;8000	;;Fixme was: $2A
+
+	ORG	$F36E
+	FCB	$C4	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$3C		;;Fixme was: $DA (Fudger byte)	
+
+;;  Any further mods added on after these will require FakeChecksums enabled.	
+
+	   ENDIF
 	  
 	  ENDIF
 	
 	 ENDIF
 
-;; AMOA Graphic / DifficultyMod only
+;; AMOA Graphic / DifficultyMod only (No PauseMod)
 
 	IFNDEF	PauseMod
-	IFDEF	MarqueeFix
-	 IFDEF	DifficultyMod 
+	 IFDEF	MarqueeFix
+	  IFDEF	DifficultyMod 
 	
 	ORG	$F35E
 	FCB	$94	;7000
@@ -407,6 +444,25 @@ MARKEY	FCB $2A,$C3
 	ORG	$FFDF
 	FCB	$D3		;;Fixme was: $DA (Fudger byte)
 	
+;; AMOA Graphic / DifficultyMod / SAMTAIL only (No PauseMod)	
+	   IFDEF SAMTAIL
+	   
+	ORG	$F356
+	FCB	$C1	;3000	;;Fixme was: $33
+	
+	ORG	$F35E
+	FCB	$17	;7000
+	
+	ORG	$F360
+	FCB	$D5	;8000	;;Fixme was: $2A
+
+	ORG	$F36E
+	FCB	$78	;F000	;;Fixme was: $57
+	
+	ORG	$FFDF
+	FCB	$88		;;Fixme was: $DA (Fudger byte)	
+	   
+	   ENDIF
 	  ENDIF
 	 ENDIF
 	ENDIF
@@ -442,6 +498,8 @@ MARKEY	FCB $2A,$C3
 ;;    19245 = Pause Mod / AMOA Graphic / DifficultyMod
 ;;    19300 = Pause Mod / AMOA Graphic / DifficultyMod / QuickOperatorEntry (Double zeros = FakeChecksums)
 ;;    19345 = AMOA Graphic / DifficultyMod
+;;    19445 = Pause Mod / AMOA Graphic / DifficultyMod / SAMTAIL
+;;    19545 = AMOA Graphic / DifficultyMod / SAMTAIL
 ;;
 ;;  Note: enabling MarqueeFix only doesn't change the high score entries.
 
@@ -455,17 +513,29 @@ MARKEY	FCB $2A,$C3
 	ORG	$8BA1
 	FDB	$9245
 	
+	   IFDEF SAMTAIL
+	   
+	ORG	$8BA1
+	FDB	$9445	   
+	   
+	   ENDIF
 	  ENDIF
 	 ENDIF
 	ENDIF
 	
 	IFNDEF	PauseMod
-	IFDEF	MarqueeFix
-	 IFDEF	DifficultyMod  ;; AMOA Graphic / DifficultyMod only
+	 IFDEF	MarqueeFix
+	  IFDEF	DifficultyMod	;; AMOA Graphic / DifficultyMod only
 	
 	ORG	$8BA1
 	FDB	$9345
 	
+	   IFDEF SAMTAIL	;; AMOA Graphic / DifficultyMod / SAMTAIL only
+	   
+	ORG	$8BA1
+	FDB	$9545   
+	   
+	   ENDIF
 	  ENDIF
 	 ENDIF
 	ENDIF

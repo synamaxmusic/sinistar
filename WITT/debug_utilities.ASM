@@ -589,6 +589,9 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 	
 ;;===========================================================================
 	
+MODSAV	SET	$F4FB		;; We're creating a new assembly counter called "MODSAV"
+				;;  to keep track of all these mods.
+	
 	IFDEF	PauseMod	
 ;;
 ;;   First we insert a jump while the game is scanning the joystick.
@@ -644,7 +647,20 @@ WITT1S	jsr	AddPiece						;*	;;Fixme was: 1$
 ;;
 ;;  We can finally start the Pause Mod code
 
-	PUSHORG $F4FB
+;	PUSHORG $F4FB
+	
+	IFNDEF	SAMTAIL		;;If Sam's Tail code is not defined, then we save at $F4FB
+	PUSHORG	MODSAV
+	ELSE			;;Otherwise, we'll run out of room so let's overwrtite the code that blinks the LED.
+	
+	ORG	$F300
+	RPT 3,NOP		;;remove JMP PULSE
+	
+	ORG	$F434
+	RPT 3,NOP		;;remove JMP PULSE
+	
+	PUSHORG $F211		;;Overwrite PULSE routine
+	ENDIF
 	
 ;;
 ;;  The PauseSTART and PauseCLR routines act very similar to how the "EMPTY" text is
@@ -727,7 +743,11 @@ PauseExit PULS    D		;;grab D from stack
 	LDA	PIA+4		;read joystick pia (restore trashed instruction from $361A)
 	JMP     $361D		;;go back to Game Logic	
 	
-	PULLORG
+	IFNDEF	SAMTAIL
+	PULLORG MODSAV		;;Reuse MODSAV for more mods
+	ELSE
+	PULLORG			;;Otherwise, let's finish up overwriting PULSE routine.
+	ENDIF
 	
 ;;
 ;;  Checksum fixes
@@ -750,6 +770,224 @@ PauseExit PULS    D		;;grab D from stack
 	ENDIF
 	
 ;;===========================================================================	
+	
+	IFDEF	SAMTAIL
+	
+;	INCLUDE	START
+;	INCLVER	SAM,SINISTAR.EQU
+;	INCLVER	SAM,PLSUNIT
+
+	PUSHORG	SRAMSAV
+TAILDAT	RMB	$140		;tail random data		;;Fixme was: TAILDAT	RMB	140
+	PULLORG	SRAMSAV
+
+	PUSHORG	BASSAVE						;;Fixme was: PUSHORG	BASSAV
+TAILL	RMB	1	;\	;tail l screen position
+TAILS	RMB	1	;/	;tail s screen position
+TAILDMA	RMB	1		;tail flavor
+PLDRWVE	RMB	2		;player erase-update-draw vector
+	PULLORG	BASSAVE						;;Fixme was: PULLORG	BASSAV
+
+	PUSHORG	RAMSAV
+TAILBUF	RMB	3*5		;tail data buffer
+	PULLORG	RAMSAV
+
+	PUSHORG	MODSAV						;;Fixme was: PUSHORG	ROMSAVE (We want to overwrite cross hatch test)
+
+;* erase tail on player ship
+ETAIL	LDX	OIDESC,Y
+	LDD	#$305!$404	;* * * FOR DMA BUG		;;Fixme was: LDD  #305!X404
+	STD	DHIGH
+	LDD	TAILL
+	STD	DDEST
+	LDD	#TAILBUF
+	STD	DSOUR
+	LDA	TAILDMA
+	ORA	#DCNS
+	STA	DCTRL
+	JMP	[PLDRWVE]
+
+;* change image of tail on player ship
+CTAIL	LDD	#ETAIL
+	STD	ODRWVEC,Y
+	LDD	#DOBJECT
+	STD	PLDRWVE
+	LDD	#TAIL
+	STD	OPDRWVE,Y
+;* draw tail in player ship
+TAIL	LDB	PLACCEL
+	LBEQ	NOPOST
+	ASLB
+	CLRA
+	ADDD	#TAILDAT
+	TFR	D,U
+	FRANDOM	OSEED1,BYTE
+	ANDA	#$3F						;;Fixme was: ANDA  #3F
+	LEAU	A,U
+	STU	DSOUR
+	LDD	#TAILBUF
+	STD	DDEST
+	LDD	#$305!$404	;* * * FOR DMA BUG		;;Fixme was: LDD  #305!X404
+	STD	DHIGH
+	LDA	PMEMCTL
+	PSHS	A
+	ANDA	#~$4						;;Fixme was: ANDA #!N4
+	STA	PMEMCTL
+	STA	MEMCTL
+	CLR	DCTRL
+	LDD	#IDSBOMB
+	STD	DSOUR
+	LDA	#DXWT+DXWB+DCNS+DZSP
+	STA	DCTRL
+;*<<< optimize this >>>
+	PULS	A
+	STA	PMEMCTL
+	STA	MEMCTL
+	LDD	#TAILBUF
+	STD	DSOUR
+	LDB	OIDESC+1,Y
+	SUBB	#IPLAYER&$FF					;;Fixme was: SUBB  #IPLAYER!.$FF
+	LSRB
+	LSRB
+	LDX	#TAILTBL
+	ABX
+	LDA	1,X
+	ADDA	OLEFT,Y
+	STA	DDEST+1
+	STA	TAILS
+	LDA	X
+	CLRB
+	ASRA
+	RORB
+	ADDD	OLPOS,Y
+	STA	DDEST
+	STA	TAILL
+	LDA	#DZSP+DSCY+DWBL	
+	BCS	.1S						;;Fixme was: BCS  1$
+	ORA	#DTFL
+.1S	STA	DCTRL						;;Fixme was: 1$
+	STA	TAILDMA
+	JMP	NOPOST
+
+;	LOCAL
+;* initialize random tail data
+	VECTOR	SYSVECT
+	LDX	#TAILDAT
+	CLRA
+	LDB	#$C0						;;Fixme was: LDB	#0C0
+	JSR	INITRAM
+	JSR	INITRAM
+	LDX	#PALETTE
+	CLR	TEMP
+TAIL1	LDA	X						;;Fixme was: 1$
+	BEQ	TAIL2
+	BITA	#$C0						;;Fixme was: BITA	#0C0
+	BEQ	TAIL6
+	BITA	#$30						;;Fixme was: BITA	#30
+	BNE	TAIL2
+TAIL6	LDA	#$40						;;Fixme was: 6$ LDA	#40
+	STA	TEMP+1
+TAIL5	RANDOM	OSEED1,BYTE					;;Fixme was: 5$
+	ANDA	#$3F						;;Fixme was: ANDA  #3F
+	JSR	SINCOS
+	CLRB
+	JSR	ASRD6
+	PSHS	D
+	RANDOM	OSEED2,BYTE
+	TFR	A,B
+	ANDB	#$7F						;;Fixme was: ANDB	#7F
+	CLRA
+	ADDD	S++
+	LSRA
+	RORB
+	LDU	#TAILDAT
+	LEAU	D,U
+	LDA	U
+	BCS	TAIL3
+	ANDA	#$0F						;;Fixme was: ANDA	#0F
+	STA	TEMP+2
+	LDA	TEMP
+	RPT	4,ASLA
+	ORA	TEMP+2	
+	BRA	TAIL4
+TAIL3	ANDA	#$F0						;;Fixme was: 3$ ANDA	#0F0
+	ORA	TEMP
+TAIL4	STA	U						;;Fixme was: 4$
+	DEC	TEMP+1
+	BNE	TAIL5
+TAIL2	INC	TEMP						;;Fixme was: 2$
+	LEAX	1,X
+	CMPX	#PALETTE+$10					;;Fixme was: CMPX  #PALETTE+10
+	BLO	TAIL1
+	RTS
+
+	VECTOR	INIVECT
+	CLRD
+	STD	TAILL		;zero tail screen position
+;*<<< add to player initialization >>>
+	LDD	#DOBJECT	;initialize player erase-update-draw vector
+	STD	PLDRWVE
+	LDD	#ETAIL		;give player erase tail erase-update-draw vector
+	STD	ODRWVEC+WPLAYER
+	LDD	#TAIL		;give player tail post-draw vector
+	STD	OPDRWVE+WPLAYER
+	RTS
+
+;;  
+;;  We're very lucky to have the original addresses here
+;;  match up with the earlier AMOA '82 build.  This helped
+;;  me figure out where the instructions were located in
+;;  the final build.  This patch was off by one byte, but
+;;  the other patch was way off.
+;;
+;;  Old patch addresses:
+;;	$3789
+;;	$6F51
+;;
+;;  New patch addresses:
+;;	$378A
+;;	$736D
+;;
+
+;* patch to player image rotation
+;	ERR	OLD ADDRESS
+	PUSHORG	$378A						;;Fixme was: PUSHORG	$3789
+	JSR	TA100S						;;Fixme was: JSR	100$
+	PULLORG
+TA100S								;;Fixme was: 100$
+;* * *
+	STX	PLDRWVE
+	LDD	#CTAIL		;give player change tail post-draw vector
+	STD	OPDRWVE,Y
+;* * *
+	RTS
+
+;* tail offset table
+TAILTBL	FDB	$FC02,$FC02,$FD01,$FDFF,$FFFE,$FFFD,$00FD,$FFFD
+	FDB	$02FB,$02FD,$05FD,$05FD,$07FE,$08FF,$0900,$0A01
+	FDB	$0A03,$0A02,$0905,$0905,$0707,$0509,$040A,$020A
+	FDB	$020A,$020A,$010A,$0009,$FF08,$FD05,$FD05,$FC02
+
+;*<<< for Noah >>>
+;	ERR	OLD ADDRESS
+	PUSHORG $736D						;;Fixme was: PUSHORG	$6F51
+	JSR	TA101S						;;Fixme was: JSR	101$
+	PULLORG
+TA101S								;;Fixme was: 101$
+;* * *
+	LDD	#NOPOST		;turn off player's tail
+	STD	OPDRWVE,X
+;* * *
+  	JSR	PLXQUE			;* START UP PLAYER EXPLOSION
+	RTS
+
+	PULLORG MODSAV						;;Fixme was: PULLORG ROMSAVE
+	
+	ENDIF
+	
+	
+	
+	
 	
 	
 	
