@@ -404,21 +404,21 @@ MARKEY	FCB $2A,$C3
 	   IFDEF SAMTAIL
 	   
 	ORG	$F356
-	FCB	$DC	;3000	;;Fixme was: $33
+	FCB	$E1	;3000	;;Fixme was: $33
 	
 	ORG	$F35E
-	FCB	$17	;7000
+	FCB	$1C	;7000
 	
 	ORG	$F360
-	FCB	$D4	;8000	;;Fixme was: $2A
+	FCB	$D9	;8000	;;Fixme was: $2A
 
 	ORG	$F36E
-	FCB	$C4	;F000	;;Fixme was: $57
+	FCB	$19	;F000	;;Fixme was: $57
 	
 	ORG	$FFDF
-	FCB	$3C		;;Fixme was: $DA (Fudger byte)	
+	FCB	$E7		;;Fixme was: $DA (Fudger byte)
 
-;;  Any further mods added on after these will require FakeChecksums enabled.	
+;;  Any further mods added on after these will require FakeChecksums enabled.
 
 	   ENDIF
 	  
@@ -448,19 +448,19 @@ MARKEY	FCB $2A,$C3
 	   IFDEF SAMTAIL
 	   
 	ORG	$F356
-	FCB	$C1	;3000	;;Fixme was: $33
+	FCB	$C6	;3000	;;Fixme was: $33
 	
 	ORG	$F35E
-	FCB	$17	;7000
+	FCB	$1C	;7000
 	
 	ORG	$F360
-	FCB	$D5	;8000	;;Fixme was: $2A
+	FCB	$DA	;8000	;;Fixme was: $2A
 
 	ORG	$F36E
-	FCB	$78	;F000	;;Fixme was: $57
+	FCB	$CD	;F000	;;Fixme was: $57
 	
 	ORG	$FFDF
-	FCB	$88		;;Fixme was: $DA (Fudger byte)	
+	FCB	$33		;;Fixme was: $DA (Fudger byte)	
 	   
 	   ENDIF
 	  ENDIF

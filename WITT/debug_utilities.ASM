@@ -890,6 +890,10 @@ TAIL6	LDA	#$40						;;Fixme was: 6$ LDA	#40
 TAIL5	RANDOM	OSEED1,BYTE					;;Fixme was: 5$
 	ANDA	#$3F						;;Fixme was: ANDA  #3F
 	JSR	SINCOS
+	;;;;;;;;;;;;;;;;;;;
+	LDB	#$39						;; We forgot to feed the watchdog!
+	STB	WDOG						;; Adding this here should fix it
+	;;;;;;;;;;;;;;;;;;;
 	CLRB
 	JSR	ASRD6
 	PSHS	D
