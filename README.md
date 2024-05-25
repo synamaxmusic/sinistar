@@ -81,6 +81,10 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
+* 05/24/2024 - I pushed an important fix for the new ```SAMTAIL``` mod.  Braedel discovered by accident that the watchdog chip was still triggering a system reset after the initial "rug screen" checksum test.  I narrowed down the problem to the initialization section of the TAIL routine where the ```INITRAM``` routine is called a lot to to generate the thruster plume graphic effect.  To insert the instructions needed to fix the issue, I found a ```CLRB``` instruction that allowed me to use the B register without messing up anything else in the routine.  According to Sean Riddle, preventing the watchdog from being triggered requires writing $39 to address $CBFF within 8 vertical blanking periods (about 133 milliseconds).  The Williams devs refer to this as "stroking" or "feeding the watchdog".  The ```TAIL``` routine was allowing just enough VBLANKs between writes to cause the watchdog to "bark" and reset the system.  Of course, this doesn't happen currently with MAME emulation so the watchdog never resets the machine, like it was doing on hardware.
+
+  The fact that I had to add the watchdog instructions to this routine make me wonder if this special effect was removed early in development before the watchdog chip was enabled.
+
 * 02/26/2024 - Relocated the Bargraph debug feature over to the new allocated area in ROM 11, it seems to run a bit more stable now!
   
   	More importantly, I reimplmented the unused "TAIL" routine from Sam's module.  This code draws a special effect jet exhaust behind the player ship.  When I initally tried injecting this routine into the ROM data last October, it seemed to be very buggy and would crash the game.  However, after inserting TAIL back into the rewritten codebase and using Macroassembler {AS} to build it, it works way better now!  To my surprise, the blue flames that I first witnessed back in October were actually a glitch as now they're a lovely combination of red and yellow pixels, which produces a much more interesting flame effect!
