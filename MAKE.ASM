@@ -73,7 +73,11 @@
 ;===============================================================================
 ;  Macro Assembler AS Instructions
 	CPU 6809
-	
+	PLAINBASE ON		; AS [1.42 Bld 262] no longer allows omission of an
+				; empty index argument on 6809. This breaks many instructions
+				; that do not use commas before registers (like LDA  U+ or CMPX  S)
+				; A lot of code changes would be needed so "plainbase" is now enabled to fix this.
+
 ;===============================================================================
 ;  				<<< DEBUG DEFINES >>>
 
