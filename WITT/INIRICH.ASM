@@ -358,8 +358,8 @@ CDTask	lda	NPlayer		;* During the credit display
 	rts
 
 ;*	TABLE
-	fdb	$5269
-.100S	fdb	$6368
+	fdb	$5269				;;The first four bytes spell out "Rich"
+.100S	fdb	$6368				;;in ASCII.
 KenTbl	fdb	$6A00		;* U
 	fdb	$0000		;* U
 	fdb	$FDA0		;* U
