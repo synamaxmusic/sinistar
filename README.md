@@ -158,8 +158,10 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 
 * 09/30/2023 - Not code-related but discovered that the Sinistar roar sound effect is actually [a recording of a gorilla entitled, "Gorilla Heavy Panting And Two Roars"](https://www.dewolfemusic.com/search.php?id=26618491&code=pTOgaZ) from a De Wolfe Sound Effects library originally released in 1975 (DW/FX LP No. 16 "Zoo Animals - Wildlife", track 12 on side A).
-* 09/05/2023 - Started reverse-engineering the population tables for enemies and created [a repository for all my RE notes](https://github.com/synamaxmusic/sinistar-notes).
-* May 2023 - Started looking over the original codebase for the first time.
+* 09/05/2023 - Started testing different tunings on on the enemy population tables and created [a repository for all my RE notes](https://github.com/synamaxmusic/sinistar-notes).
+* 07/07/2023 - Began studying the inital enemy population tables found in the source code.
+* 05/07/2023 - Started looking over the original Sinistar codebase for the first time.
+* 03/27/2023 - I began my reverse engineering work on Sinistar's separate sound ROM.
 
 ## Overview
 
