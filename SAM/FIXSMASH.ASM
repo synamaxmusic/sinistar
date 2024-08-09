@@ -15,23 +15,23 @@
 ;;
 ;;===============================================================================
 
-;	INCLUDE	START
-;	INCLVER	SAM,SINISTAR.EQU
-FIXSMASH									
+;       INCLUDE START
+;       INCLVER SAM,SINISTAR.EQU
+FIXSMASH
 
 ;* patch offscreen routine to keep player on screen
-	PUSHORG	CPLAYER+OOFFSCR							;;($4BCF)
-	FDB	ZFORCEON							;;Fixme was: FDB  FORCEON
-	PULLORG
+        PUSHORG CPLAYER+OOFFSCR                                                 ;;($4BCF)
+        FDB     ZFORCEON                                                        ;;Fixme was: FDB  FORCEON
+        PULLORG
 
-;* * *	PUSHORG	ROMSAVE
-	PUSHORG	HISAV
+;* * *  PUSHORG ROMSAVE
+        PUSHORG HISAV
 ;* keep player on screen
-ZFORCEON LDD	#387A		;stick the player at mid screen			;;Fixme was: FORCEON LDD  #387A  ;;($E1C7)
-	STD	OBOTTOM,Y
-	STB	OSPOS,Y
-	CLR	OSTATUS,Y	;clear his clipping flags
-	JMP	[OPDRWVE,Y]	;execute post-display routine, uses A,B,X,U
+ZFORCEON LDD    #387A           ;stick the player at mid screen                 ;;Fixme was: FORCEON LDD  #387A  ;;($E1C7)
+        STD     OBOTTOM,Y
+        STB     OSPOS,Y
+        CLR     OSTATUS,Y       ;clear his clipping flags
+        JMP     [OPDRWVE,Y]     ;execute post-display routine, uses A,B,X,U
 
-;* * *	PULLORG	ROMSAVE
-	PULLORG	HISAV
+;* * *  PULLORG ROMSAVE
+        PULLORG HISAV

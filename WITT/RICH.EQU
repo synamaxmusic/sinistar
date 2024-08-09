@@ -1,73 +1,73 @@
-;rich.equ	SET	*
-;	NLIST
-;	include	[sam]start
-;	INCLVER	SAM,Sinistar.equ
-;	INCLVER	RICH,Rich.sym
+;rich.equ       SET     *
+;       NLIST
+;       include [sam]start
+;       INCLVER SAM,Sinistar.equ
+;       INCLVER RICH,Rich.sym
 ;*****
 ;*
 ;* NOT FOR RELEASE
 ;*
 ;*****
-CIRCATTACK	EQU	1	;* Attack type for conditional assembly
-LOOPATTACK	EQU	2	;* Attack type for conditional assembly
-ZOOMATTACK	EQU	3	;* Attack type for conditional assembly
-ATTACK	EQU	CIRCATTACK
+CIRCATTACK      EQU     1       ;* Attack type for conditional assembly
+LOOPATTACK      EQU     2       ;* Attack type for conditional assembly
+ZOOMATTACK      EQU     3       ;* Attack type for conditional assembly
+ATTACK  EQU     CIRCATTACK
 
-	IFDEF	BargraphEnable						;;Fixme was: IFDEF	DIAGNOSE
-	PUSHORG	0
-	rmb	1		;* 0 Invisible graph
-GMinutes	rmb	1	;* 1 Play time in minutes
-GSeconds	rmb	1	;* 2   and seconds.
-GAggression	rmb	1	;* 3 Warrior aggression (high byte)
-GDeathTime	rmb	1	;* 4 Time since Player death
-	IFDEF	BargraphAlt						;;Adding new Bargraph define to enable these
-GDistance	rmb	1	;* 5 Distance
-GANANG		rmb	0	;* 5 Animation angle of squadron leader.
-GVelocity	rmb	1	;* 6 Velocity
-GFLANG		rmb	0	;* 6 Flight angle of squadron leader.	
-	ELSE
-GDistance	rmb	0	;* 5 Distance
-GANANG		rmb	1	;* 5 Animation angle of squadron leader.
-GVelocity	rmb	0	;* 6 Velocity
-GFLANG		rmb	1	;* 6 Flight angle of squadron leader.
-	ENDIF
-	rmb	1		;* 7 Special
-	rmb	1		;* 8   Effects
-GMWaDrift	rmb	1	;* 9 The # of Drifting warriors
-GMWaAttack	rmb	1	;* A The # of Attacking warriors
-GMWaMine	rmb	1	;* B The # of Mining warriors
-GMWaTail	rmb	1	;* C The # of Guarding warriors
-GMWaInt		rmb	1	;* D The # of Intercepting warriors
-		rmb	1	;* E <SPECIAL EFFECT>
-		rmb	1	;* F
-	IF 	$10-* < 0						;;Fixme was: IFLT	$10-*
-	ERROR	Too Many Diagnostic Bars				;;Fixme was: ERR
-	ENDIF	;0to15.
-	PULLORG
-	ENDIF	;Diagnose
+        IFDEF   BargraphEnable                                          ;;Fixme was: IFDEF      DIAGNOSE
+        PUSHORG 0
+        rmb     1               ;* 0 Invisible graph
+GMinutes        rmb     1       ;* 1 Play time in minutes
+GSeconds        rmb     1       ;* 2   and seconds.
+GAggression     rmb     1       ;* 3 Warrior aggression (high byte)
+GDeathTime      rmb     1       ;* 4 Time since Player death
+        IFDEF   BargraphAlt                                             ;;Adding new Bargraph define to enable these
+GDistance       rmb     1       ;* 5 Distance
+GANANG          rmb     0       ;* 5 Animation angle of squadron leader.
+GVelocity       rmb     1       ;* 6 Velocity
+GFLANG          rmb     0       ;* 6 Flight angle of squadron leader.
+        ELSE
+GDistance       rmb     0       ;* 5 Distance
+GANANG          rmb     1       ;* 5 Animation angle of squadron leader.
+GVelocity       rmb     0       ;* 6 Velocity
+GFLANG          rmb     1       ;* 6 Flight angle of squadron leader.
+        ENDIF
+        rmb     1               ;* 7 Special
+        rmb     1               ;* 8   Effects
+GMWaDrift       rmb     1       ;* 9 The # of Drifting warriors
+GMWaAttack      rmb     1       ;* A The # of Attacking warriors
+GMWaMine        rmb     1       ;* B The # of Mining warriors
+GMWaTail        rmb     1       ;* C The # of Guarding warriors
+GMWaInt         rmb     1       ;* D The # of Intercepting warriors
+                rmb     1       ;* E <SPECIAL EFFECT>
+                rmb     1       ;* F
+        IF      $10-* < 0                                               ;;Fixme was: IFLT       $10-*
+        ERROR   Too Many Diagnostic Bars                                ;;Fixme was: ERR
+        ENDIF   ;0to15.
+        PULLORG
+        ENDIF   ;Diagnose
 ;***
-;*	Offsets from TEMP
+;*      Offsets from TEMP
 ;***
-	PUSHORG	0
-	IFDEF	BargraphEnable						;;Fixme was: IFDEF	DIAGNOSE
-TGMWaDrift	rmb	1	;* The # of Drifting warriors
-TGMWaAttack	rmb	1	;* The # of Attacking warriors
-TGMWaMine	rmb	1	;* The # of Mining warriors
-TGMWaTail	rmb	1	;* The # of Guarding warriors
-TGMWaInt	rmb	1	;* The # of Intercepting warriors
-	ENDIF	;Diagnose
-;**OTopVel	rmb	2	;* <VERSION11> Top velocity of craft (for CHASE)
-	PULLORG
+        PUSHORG 0
+        IFDEF   BargraphEnable                                          ;;Fixme was: IFDEF      DIAGNOSE
+TGMWaDrift      rmb     1       ;* The # of Drifting warriors
+TGMWaAttack     rmb     1       ;* The # of Attacking warriors
+TGMWaMine       rmb     1       ;* The # of Mining warriors
+TGMWaTail       rmb     1       ;* The # of Guarding warriors
+TGMWaInt        rmb     1       ;* The # of Intercepting warriors
+        ENDIF   ;Diagnose
+;**OTopVel      rmb     2       ;* <VERSION11> Top velocity of craft (for CHASE)
+        PULLORG
 
-zAOrbit	EQU	5		;* Warrior attacks				;;Fixme was: zAOrbit	EQU	5.
-zDOrbit	EQU	1		;* Worker drifts                                ;;Fixme was: zDOrbit	EQU	1.
-zIOrbit	EQU	3		;* Inner                                        ;;Fixme was: zIOrbit	EQU	3.
-zOOrbit	EQU	5		;* Outer                                        ;;Fixme was: zOOrbit	EQU	5.
-zSOrbit	EQU	9		;* Workers with crystals circle Sinistar        ;;Fixme was: zSOrbit	EQU	9.
+zAOrbit EQU     5               ;* Warrior attacks                              ;;Fixme was: zAOrbit    EQU     5.
+zDOrbit EQU     1               ;* Worker drifts                                ;;Fixme was: zDOrbit    EQU     1.
+zIOrbit EQU     3               ;* Inner                                        ;;Fixme was: zIOrbit    EQU     3.
+zOOrbit EQU     5               ;* Outer                                        ;;Fixme was: zOOrbit    EQU     5.
+zSOrbit EQU     9               ;* Workers with crystals circle Sinistar        ;;Fixme was: zSOrbit    EQU     9.
 
-;	LIST
+;       LIST
 ;****
-;*	<<< For V16 >>>
+;*      <<< For V16 >>>
 ;****
-;	SYMVER	OMWATAIL,6
-;OMWaGuard	EQU	OMWaTail
+;       SYMVER  OMWATAIL,6
+;OMWaGuard      EQU     OMWaTail

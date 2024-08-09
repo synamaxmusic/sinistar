@@ -12,16 +12,16 @@
 ;;
 ;;===============================================================================
 
-	PUSHORG	ROMSAVE
-	VECTOR	POWVECT
-;	SYMVER	KENCHK,KENCHK
-	clr	KENCHK
-	rts
-	VECTOR	IniVect
-	clr	KenChk
-	rts
-	PULLORG	ROMSAVE
-;	SYMVER	ZAPSIN,ZAPSini
-	PUSHORG	ZAPSini		;* In the PowVect routine, ignore the
-	tst	$0		;*   copyright violation test routine.
-	PULLORG
+        PUSHORG ROMSAVE
+        VECTOR  POWVECT
+;       SYMVER  KENCHK,KENCHK
+        clr     KENCHK
+        rts
+        VECTOR  IniVect
+        clr     KenChk
+        rts
+        PULLORG ROMSAVE
+;       SYMVER  ZAPSIN,ZAPSini
+        PUSHORG ZAPSini         ;* In the PowVect routine, ignore the
+        tst     $0              ;*   copyright violation test routine.
+        PULLORG

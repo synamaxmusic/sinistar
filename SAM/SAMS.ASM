@@ -1,1 +1,1 @@
-	INCLUDE S2.ASM
+        INCLUDE S2.ASM

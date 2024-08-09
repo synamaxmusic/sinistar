@@ -1,7 +1,7 @@
 ;**********
-;*		N1.SRC - Noah's current version release
+;*              N1.SRC - Noah's current version release
 ;**********
 
-;	INCLUDE "../SAM/START.ASM"
+;       INCLUDE "../SAM/START.ASM"
 
-	INCLUDE "../FALS/N1SYM.ASM"
+        INCLUDE "../FALS/N1SYM.ASM"

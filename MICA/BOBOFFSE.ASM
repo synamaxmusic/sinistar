@@ -1,91 +1,91 @@
-;	INCLUDE	[SAM]START
-;	INCLVER	SAM,SINISTAR.EQU
+;       INCLUDE [SAM]START
+;       INCLVER SAM,SINISTAR.EQU
 
 ;* These define the offsets into the Player Explosion fragment table
-	PUSHORG	0
+        PUSHORG 0
 
-OPXPSP	RMB	2		;Fragment screen position
-OPXPMM	RMB	2		;Fragment momentum (velocity)
+OPXPSP  RMB     2               ;Fragment screen position
+OPXPMM  RMB     2               ;Fragment momentum (velocity)
 
-	PULLORG	OPXPSZ
+        PULLORG OPXPSZ
 
 ;* These define the offsets into the Player Explosion Task RAM space
-	PUSHORG	OMTLEN
+        PUSHORG OMTLEN
 
-OPXPCK	RMB	1		;Pick index for which image to display
-OPXALV	RMB	1		;Count for number of turns that task is alive
-OPXOTB	RMB	PXPPCT*OPXPSZ*PXPWVS	;Fragment table
+OPXPCK  RMB     1               ;Pick index for which image to display
+OPXALV  RMB     1               ;Count for number of turns that task is alive
+OPXOTB  RMB     PXPPCT*OPXPSZ*PXPWVS    ;Fragment table
 
-	PULLORG	OPXRRQ
+        PULLORG OPXRRQ
 
 ;* These define the offsets into the Warrior Explosion fragment table
-	PUSHORG	0
+        PUSHORG 0
 
-OWXPSP	RMB	2		;Fragment screen position
-OWXPMM	RMB	2		;Fragment momentum (velocity)
+OWXPSP  RMB     2               ;Fragment screen position
+OWXPMM  RMB     2               ;Fragment momentum (velocity)
 
-	PULLORG	OWXPSZ
+        PULLORG OWXPSZ
 
 ;* These define the offsets into the Warrior Explosion Task RAM space
-	PUSHORG	OMTLEN
+        PUSHORG OMTLEN
 
-OWXPCK	RMB	1		;Pick index for which image to display
-OWXALV	RMB	1		;Count for number of turns that task is alive
-OWXOTB	RMB	WRXPCT*OWXPSZ	;Fragment table
+OWXPCK  RMB     1               ;Pick index for which image to display
+OWXALV  RMB     1               ;Count for number of turns that task is alive
+OWXOTB  RMB     WRXPCT*OWXPSZ   ;Fragment table
 
-	PULLORG	OWXRRQ
+        PULLORG OWXRRQ
 
 ;* These define the offsets into the Sinistar Explosion Task RAM space
-	PUSHORG	OMTLEN
+        PUSHORG OMTLEN
 
-OSXIVL	RMB	1		;Explosion Increment Value
-OSXALV	RMB	1		;Turns that Explosion Stays Alive
-OSXIPT	RMB	2		;Pointer to the Sinistar RAM image
+OSXIVL  RMB     1               ;Explosion Increment Value
+OSXALV  RMB     1               ;Turns that Explosion Stays Alive
+OSXIPT  RMB     2               ;Pointer to the Sinistar RAM image
 
-	PULLORG	OSXRRQ
+        PULLORG OSXRRQ
 
 
 
 ;* These are for the High Score To Date master task
-	PUSHORG	OTIMER
+        PUSHORG OTIMER
 
-OHSMP1	RMB	2
-OHSMP2	RMB	2
-OHSMFLG	RMB	1
+OHSMP1  RMB     2
+OHSMP2  RMB     2
+OHSMFLG RMB     1
 
-OHSMNP	RMB	1
-	PULLORG	OHSMMR
+OHSMNP  RMB     1
+        PULLORG OHSMMR
 
 
 
 ;* These are for the High Score To Date slave task
-	PUSHORG	OTIMER
+        PUSHORG OTIMER
 
-OHSCPS	RMB	1
-OHSCLT	RMB	1
+OHSCPS  RMB     1
+OHSCLT  RMB     1
 
-OHSTPTR	RMB	2
-OHSPSCR	RMB	2
+OHSTPTR RMB     2
+OHSPSCR RMB     2
 
-OHSBNC	RMB	1
-OHSETM	RMB	1
+OHSBNC  RMB     1
+OHSETM  RMB     1
 
-OHSRTN	RMB	2
+OHSRTN  RMB     2
 
-OHSINIT	RMB	OPENLEN
+OHSINIT RMB     OPENLEN
 
-OHSESZ	RMB	1
-OHSPPR	RMB	2
-OHSBADR	RMB	2
-	PULLORG	OHSTDMR
+OHSESZ  RMB     1
+OHSPPR  RMB     2
+OHSBADR RMB     2
+        PULLORG OHSTDMR
 
 
-	PUSHORG	0
-OPEXPOS	RMB	2
-OPEXVEL	RMB	2
-	PULLORG
+        PUSHORG 0
+OPEXPOS RMB     2
+OPEXVEL RMB     2
+        PULLORG
 
-	PUSHORG	OMTLEN
-OPEXCTR	RMB	1
-OPEXWSP	RMB	PLEXWSZ*PLEXWCT*4
-	PULLORG	OPEXTSZ
+        PUSHORG OMTLEN
+OPEXCTR RMB     1
+OPEXWSP RMB     PLEXWSZ*PLEXWCT*4
+        PULLORG OPEXTSZ

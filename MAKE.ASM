@@ -1,15 +1,15 @@
 ;
 ;
-;	 SSSS  IIIII  N   N  IIIII   SSSS  TTTTT   AAA   RRRR
-;	S        I    NN  N    I    S        T    A   A  R   R
-;	 SSS     I    N N N    I     SSS     T    AAAAA  RRRR
-;	    S    I    N  NN    I        S    T    A   A  R  R
-;	SSSS   IIIII  N   N  IIIII  SSSS     T    A   A  R   R
+;        SSSS  IIIII  N   N  IIIII   SSSS  TTTTT   AAA   RRRR
+;       S        I    NN  N    I    S        T    A   A  R   R
+;        SSS     I    N N N    I     SSS     T    AAAAA  RRRR
+;           S    I    N  NN    I        S    T    A   A  R  R
+;       SSSS   IIIII  N   N  IIIII  SSSS     T    A   A  R   R
 ;
 ;
 ;    A game by Sam Dicker, Noah Falstein, Bob Mical and Richard Witt
 ;
-;	    Source code rewrite by SynaMax, started 11/6/23
+;           Source code rewrite by SynaMax, started 11/6/23
 ;
 ;===============================================================================
 ;
@@ -24,19 +24,19 @@
 ;
 ;   Finally, split the .BIN into separate 1K ROM files:
 ;
-;	Address:		MAME ROM set Filename:
-;	0000-0FFF = ROM 1	sinistar_rom_1-b_16-3004-53.1d
-;	1000-1FFF = ROM 2	sinistar_rom_2-b_16-3004-54.1c
-;	2000-2FFF = ROM 3	sinistar_rom_3-b_16-3004-55.1a
-;	3000-3FFF = ROM 4	sinistar_rom_4-b_16-3004-56.2d
-;	4000-4FFF = ROM 5	sinistar_rom_5-b_16-3004-57.2c
-;	5000-5FFF = ROM 6	sinistar_rom_6-b_16-3004-58.2a
-;	6000-6FFF = ROM 7	sinistar_rom_7-b_16-3004-59.3d
-;	7000-7FFF = ROM 8	sinistar_rom_8-b_16-3004-60.3c
-;	8000-8FFF = ROM 9	sinistar_rom_9-b_16-3004-61.3a
-;	9000-DFFF =    (SPACE RESERVED FOR RAM)
-;	E000-EFFF = ROM 10	sinistar_rom_10-b_16-3004-62.4c
-;	F000-FFFF = ROM 11	sinistar_rom_11-b_16-3004-63.4a
+;       Address:                MAME ROM set Filename:
+;       0000-0FFF = ROM 1       sinistar_rom_1-b_16-3004-53.1d
+;       1000-1FFF = ROM 2       sinistar_rom_2-b_16-3004-54.1c
+;       2000-2FFF = ROM 3       sinistar_rom_3-b_16-3004-55.1a
+;       3000-3FFF = ROM 4       sinistar_rom_4-b_16-3004-56.2d
+;       4000-4FFF = ROM 5       sinistar_rom_5-b_16-3004-57.2c
+;       5000-5FFF = ROM 6       sinistar_rom_6-b_16-3004-58.2a
+;       6000-6FFF = ROM 7       sinistar_rom_7-b_16-3004-59.3d
+;       7000-7FFF = ROM 8       sinistar_rom_8-b_16-3004-60.3c
+;       8000-8FFF = ROM 9       sinistar_rom_9-b_16-3004-61.3a
+;       9000-DFFF =    (SPACE RESERVED FOR RAM)
+;       E000-EFFF = ROM 10      sinistar_rom_10-b_16-3004-62.4c
+;       F000-FFFF = ROM 11      sinistar_rom_11-b_16-3004-63.4a
 ;
 ;   To do this in P2BIN:
 ;
@@ -53,7 +53,7 @@
 ;    p2bin sinistar.p sinistar_rom_11-b_16-3004-63.4a -l 00 -r $F000-$FFFF
 ;
 ;===============================================================================
-;			<<< MODULES AND INCOMPLETE BUILDS >>>
+;                       <<< MODULES AND INCOMPLETE BUILDS >>>
 ;
 ;   Sinistar's source code is split into four "modules" (one for each programmer).
 ;
@@ -72,16 +72,16 @@
 ;
 ;===============================================================================
 ;  Macro Assembler AS Instructions
-	CPU 6809
-	PLAINBASE ON		; AS [1.42 Bld 262] no longer allows omission of an
-				; empty index argument on 6809. This breaks many instructions
-				; that do not use commas before registers (like LDA  U+ or CMPX  S)
-				; A lot of code changes would be needed so "plainbase" is now enabled to fix this.
+        CPU 6809
+        PLAINBASE ON            ; AS [1.42 Bld 262] no longer allows omission of an
+                                ; empty index argument on 6809. This breaks many instructions
+                                ; that do not use commas before registers (like LDA  U+ or CMPX  S)
+                                ; A lot of code changes would be needed so "plainbase" is now enabled to fix this.
 
 ;===============================================================================
-;  				<<< DEBUG DEFINES >>>
+;                               <<< DEBUG DEFINES >>>
 
-PROMS	EQU	1		;* Define before burning proms
+PROMS   EQU     1               ;* Define before burning proms
 
 ;;  PROMS is on by DEFAULT!
 ;;
@@ -131,13 +131,13 @@ PROMS	EQU	1		;* Define before burning proms
 ;;
 ;;  This is already enabled for both MarqueeFix and PauseMod.
 
-;NOTEST	EQU	1
+;NOTEST EQU     1
 
 ;;  Uncommenting this EQU can be useful for debugging and greatly decreases wait times
 ;;  by skipping the power up ROM/RAM Rug Test.  It does not disable the ROM/RAM "Rug" test
 ;;  itself, as it is still accessible by pressing the service (aka "advance") button.
 
-;SAMDEBUG EQU	1
+;SAMDEBUG EQU   1
 
 ;;  This debug define found in Sam's module allows the player to respawn forever, even
 ;;  if they run out of extra ships.  This only changes two bytes in the code and doesn't
@@ -148,31 +148,31 @@ PROMS	EQU	1		;* Define before burning proms
 
 ;;  Enable this to never run out of lives.  This is from Rich's module and while it
 ;;  takes up more space, it increases the player's number of ships upon every Turn
-;;  initialization so the player never runs out. 
+;;  initialization so the player never runs out.
 
-;NoDeath	EQU	1
+;NoDeath        EQU     1
 
 ;;  This disables player deaths.  Warrior shots don't hurt anymore (yay!), but if
 ;;  the player gets caught by the Sinistar, they'll get soft-locked (boo!).
 ;;  This was taken from Rich's module as well.
 
-;DisableSinistarCollision EQU	1
+;DisableSinistarCollision EQU   1
 
 ;;  This new hack makes the player pass through the Sinistar and prevent getting
 ;;  soft-locked while NoDeath is enabled.
 
-;Witt	EQU	1
+;Witt   EQU     1
 
 ;;  Uncomment "Witt" to force the Sinistar to spawn instantly and prevent the
 ;;  warriors from shooting at the player.
 
-;WittRock EQU	1
+;WittRock EQU   1
 
 ;;  This new define enables a previously-unknown sprite edit of the tiny
 ;;  Planetoid image that was used to denote Rich's developmental build
 ;;  from the final ROM.
 
-;  				<<< MOD DEFINES >>>
+;                               <<< MOD DEFINES >>>
 
 ;;
 ;;  "EnableMods" and "DiagnosticTestFix" are now deprecated.  Use "FakeChecksums"
@@ -191,16 +191,16 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  messages on power up, then enable "FakeChecksums" to fix this.
 ;;
 
-;				<<< MOD COMBOS >>>
+;                               <<< MOD COMBOS >>>
 
 ;;
 ;;  Several of the following mods can be combined together.  To make it easier to
 ;;  identify which ROM set we're running, we'll borrow a trick from Eugene Jarvis and
 ;;  Larry DeMar in the Robotron Tie-Die ROMs and use the high score to denote a
-;;  "version" number.  
+;;  "version" number.
 ;;
 ;;  Normally, the first high score entry in the "Survivors Today" table is always
-;;  set to 19045.  
+;;  set to 19045.
 ;;
 ;;  We'll change the zero here to ID the mod combo:
 ;;
@@ -232,7 +232,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  To get this to work, I had to overwrite the cross hatch, color bar and switch tests
 ;;  in ROM 11 and then patched ROM 9 to make RJ's attract mode routines load the AMOA
 ;;  graphic.
-;;  
+;;
 ;;  "DisableTests" is already enabled for this mod.  New Checksums for the ROM test
 ;;  are also enabled.  Can be combined with "PauseMod" and/or "DifficultyMod" and/or "SAMTAIL"
 ;;  with valid checksums.
@@ -249,7 +249,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;;
 ;;  Changes ROMs: 8, 11
 
-;PauseMod EQU	1
+;PauseMod EQU   1
 
 ;;  Press the Player 1 button during gameplay to pause!  Pressing it again resumes
 ;;  the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses
@@ -258,11 +258,11 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  the start of the game.
 ;;
 ;;  This mod can be enabled with MarqueeFix!  "DisableTests" is already enabled for this mod.
-;;  New Checksums for the ROM test are also enabled.  
+;;  New Checksums for the ROM test are also enabled.
 ;;
 ;;  Changes ROMs: 4, 10, 11
 
-;SAMTAIL	EQU	1
+;SAMTAIL        EQU     1
 
 ;;  Taken from SAM/TAIL.SRC, this mod restores a unused jet exhaust "tail" to the player ship!
 ;;
@@ -315,38 +315,38 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  Changes ROMs: 9
 
 
-;  			<<< EXPERIMENTAL BROKEN DEFINES >>>
+;                       <<< EXPERIMENTAL BROKEN DEFINES >>>
 
-;BargraphEnable EQU 1		;* Define this symbol to include Graphic Diagnostics
+;BargraphEnable EQU 1           ;* Define this symbol to include Graphic Diagnostics
 
 ;;  This was originally called "DIAGNOSE" but I renamed it to BargraphEnable to better
-;;  describe what this does.  Defining this enables a debug "BARGRAPH" display that 
+;;  describe what this does.  Defining this enables a debug "BARGRAPH" display that
 ;;  shows different parameters such as Play time in Minutes and Seconds, Warrior Aggression,
-;;  Elapsed time since player death, number of enemies, etc.  
+;;  Elapsed time since player death, number of enemies, etc.
 ;;
 ;;  The file "RICH.EQU" has the list of what the different color bars mean but it is
 ;;  inverted.  Here is the correct guide for what each bar represents:
 ;;
-;;		rmb	1	* F					YELLOW (unused)
-;;		rmb	1	* E <SPECIAL EFFECT>			BLACK (unused) (The Sinistar's glowing eye color)
-;;GMWaInt	rmb	1	* D The # of Intercepting warriors	RED
-;;GMWaTail	rmb	1	* C The # of Guarding warriors		DARK RED
-;;GMWaMine	rmb	1	* B The # of Mining warriors		DARK PURPLE
-;;GMWaAttack	rmb	1	* A The # of Attacking warriors		DARK TEAL
-;;GMWaDrift	rmb	1	* 9 The # of Drifting warriors		BLUE
-;;		rmb	1	* 8   Effects				BLACK (unused)
-;;		rmb	1	* 7 Special				BLACK (unused)
-;;GFLANG	rmb	1	* 6 Flight angle of squadron leader.	BLUE-GRAY
-;;GVelocity	rmb	0	* 6 Velocity				BLUE-GRAY (unused)
-;;GANANG	rmb	1	* 5 Animation angle of squadron leader.	GRAY
-;;GDistance	rmb	0	* 5 Distance				GRAY (unused)
-;;GDeathTime	rmb	1	* 4 Time since Player death		TAN-GRAY
-;;GAggression	rmb	1	* 3 Warrior aggression (high byte)	SALMON PINK
-;;GSeconds	rmb	1	* 2   and seconds.			CREAM
-;;GMinutes	rmb	1	* 1 Play time in minutes		WHITE
-;;  
+;;              rmb     1       * F                                     YELLOW (unused)
+;;              rmb     1       * E <SPECIAL EFFECT>                    BLACK (unused) (The Sinistar's glowing eye color)
+;;GMWaInt       rmb     1       * D The # of Intercepting warriors      RED
+;;GMWaTail      rmb     1       * C The # of Guarding warriors          DARK RED
+;;GMWaMine      rmb     1       * B The # of Mining warriors            DARK PURPLE
+;;GMWaAttack    rmb     1       * A The # of Attacking warriors         DARK TEAL
+;;GMWaDrift     rmb     1       * 9 The # of Drifting warriors          BLUE
+;;              rmb     1       * 8   Effects                           BLACK (unused)
+;;              rmb     1       * 7 Special                             BLACK (unused)
+;;GFLANG        rmb     1       * 6 Flight angle of squadron leader.    BLUE-GRAY
+;;GVelocity     rmb     0       * 6 Velocity                            BLUE-GRAY (unused)
+;;GANANG        rmb     1       * 5 Animation angle of squadron leader. GRAY
+;;GDistance     rmb     0       * 5 Distance                            GRAY (unused)
+;;GDeathTime    rmb     1       * 4 Time since Player death             TAN-GRAY
+;;GAggression   rmb     1       * 3 Warrior aggression (high byte)      SALMON PINK
+;;GSeconds      rmb     1       * 2   and seconds.                      CREAM
+;;GMinutes      rmb     1       * 1 Play time in minutes                WHITE
+;;
 ;;  BargraphEnable only works if DisableKenChk is on and that AOE.ASM and DIAG.ASM are not
-;;  built.  Use NOTEST instead of FakeChecksums to skip ROM test. 
+;;  built.  Use NOTEST instead of FakeChecksums to skip ROM test.
 ;;
 ;;  High score entry doesn't work but you can still insert a coin and hit the player 1 button
 ;;  to start playing again.
@@ -362,7 +362,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;;  parameters instead and disable the squadron leader color bars.
 ;;
 
-;  			<<< DEPRECATED DEFINES BELOW!!! DON'T USE >>>
+;                       <<< DEPRECATED DEFINES BELOW!!! DON'T USE >>>
 
 ;EnableMods EQU 0
 
@@ -396,12 +396,12 @@ PROMS	EQU	1		;* Define before burning proms
 ;  SSSS   A   A  M   M
 ;
 
-	INCLUDE SAM/MESSAGE.ASM		;;This is based off of code from Joust but modified to work wtih a vertical screen
-	INCLUDE SAM/EQUATES.ASM
+        INCLUDE SAM/MESSAGE.ASM         ;;This is based off of code from Joust but modified to work wtih a vertical screen
+        INCLUDE SAM/EQUATES.ASM
 
-	INCLUDE SAM/IMAGE.ASM		;;Sprites by Jack Haeger
-	INCLUDE	SAM/SAMS.ASM
-	
+        INCLUDE SAM/IMAGE.ASM           ;;Sprites by Jack Haeger
+        INCLUDE SAM/SAMS.ASM
+
 ;===============================================================================
 ;
 ;  RRRR   IIIII   CCCC  H   H
@@ -411,10 +411,10 @@ PROMS	EQU	1		;* Define before burning proms
 ;  R   R  IIIII   CCCC  H   H
 ;
 
-	INCLUDE	WITT/new_equates.ASM	;;Added to support longer symbol names
+        INCLUDE WITT/new_equates.ASM    ;;Added to support longer symbol names
 
-	INCLUDE WITT/RICHS.ASM
-	INCLUDE WITT/RICHS2.ASM		;;(Control Panel Button handling with Easter Egg routine)
+        INCLUDE WITT/RICHS.ASM
+        INCLUDE WITT/RICHS2.ASM         ;;(Control Panel Button handling with Easter Egg routine)
 
 ;===============================================================================
 ;
@@ -425,7 +425,7 @@ PROMS	EQU	1		;* Define before burning proms
 ;  N   N   OOO   A   A  H   H
 ;
 
-	INCLUDE FALS/NOAHS.ASM
+        INCLUDE FALS/NOAHS.ASM
 
 ;===============================================================================
 ;
@@ -435,42 +435,42 @@ PROMS	EQU	1		;* Define before burning proms
 ;  B   B  O   O  B   B
 ;  BBBB    OOO   BBBB
 ;
-	
-	INCLUDE MICA/BOBS.ASM
+
+        INCLUDE MICA/BOBS.ASM
 
 ;===============================================================================
 ;
 ;  FFFFF  IIIII  X   X  EEEEE   SSSS
-;  F	    I     X X   E      S    
-;  FFF      I      X    EEEE    SSS 
+;  F        I     X X   E      S
+;  FFF      I      X    EEEE    SSS
 ;  F        I     X X   E          S
-;  F      IIIII  X   X  EEEEE  SSSS 
+;  F      IIIII  X   X  EEEEE  SSSS
 ;
 
-	INCLUDE WITT/AOE.ASM		
-	
+        INCLUDE WITT/AOE.ASM
+
 ;===============================================================================
-;  
+;
 ;  DDDD   IIIII   AAA    GGGG
-;  D   D    I    A   A  G    
+;  D   D    I    A   A  G
 ;  D   D    I    AAAAA  G GGG
 ;  D   D    I    A   A  G   G
-;  DDDD   IIIII  A   A   GGG 	
+;  DDDD   IIIII  A   A   GGG
 ;
 
-	INCLUDE SAM/DIAG.ASM
-	INCLUDE FALS/LAST.ASM		;;Final patches found in Revision 3 rom, can be built without DIAG.ASM
-	
+        INCLUDE SAM/DIAG.ASM
+        INCLUDE FALS/LAST.ASM           ;;Final patches found in Revision 3 rom, can be built without DIAG.ASM
+
 ;===============================================================================
 ;
-;  EEEEE  X   X  TTTTT  RRRR    AAA    SSSS  
-;  E       X X     T    R   R  A   A  S      
-;  EEEE     X      T    RRRR   AAAAA   SSS   
-;  E       X X     T    R  R   A   A      S  
-;  EEEEE  X   X    T    R   R  A   A  SSSS   
+;  EEEEE  X   X  TTTTT  RRRR    AAA    SSSS
+;  E       X X     T    R   R  A   A  S
+;  EEEE     X      T    RRRR   AAAAA   SSS
+;  E       X X     T    R  R   A   A      S
+;  EEEEE  X   X    T    R   R  A   A  SSSS
 ;
-	
-	INCLUDE WITT/debug_utilities.ASM
-	INCLUDE MICA/marquee_fix.ASM
-	
-	END
+
+        INCLUDE WITT/debug_utilities.ASM
+        INCLUDE MICA/marquee_fix.ASM
+
+        END
