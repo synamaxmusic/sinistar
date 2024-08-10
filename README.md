@@ -58,7 +58,6 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 	* [PROMS](#proms)
 	* [DisableKenChk](#disablekenchk)
   	* [FakeChecksums](#fakechecksums)
- 	* [DisableTests](#disabletests)
 	* [NOTEST](#notest)
 	* [SAMDEBUG](#samdebug)
 	* [InfiniteShips](#infiniteships)
@@ -67,14 +66,20 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 	* [Witt](#witt)
 	* [WittRock](#wittrock)
 * [Mods](#mods)
+   	* [DisableTests](#disabletests)
+* [Mod Combos](#mod-combos)
   	* [MarqueeFix](#marqueefix)
-   	* [ExtraShipFix](#extrashipfix)
 	* [DifficultyMod](#difficultymod)
-	* [QuickOperatorEntry](#quickoperatorentry)
 	* [PauseMod](#pausemod)
- 	* [Old deprecated defines](#old-deprecated-defines)
-		* [EnableMods](#enablemods-deprecated)
-		* [DiagnosticTestFix](#diagnostictestfix-deprecated)
+	* [SAMTAIL](#samtail)
+   	* [ExtraShipFix](#extrashipfix)
+	* [QuickOperatorEntry](#quickoperatorentry)
+* [Experimental Debug Options](#experimental-debug-options)
+  	* [BargraphEnable](#bargraphenable)
+  	* [BargraphAlt](#bargraphalt)
+* [Old deprecated defines](#old-deprecated-defines)
+	* [EnableMods](#enablemods-deprecated)
+	* [DiagnosticTestFix](#diagnostictestfix-deprecated)
 <!-- vim-markdown-toc -->
 
 ## Important Milestones
@@ -84,6 +89,8 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 * 08/09/2024 - When I first uploaded the codebase to Github, I was disappointed to see that there were a lot of spacing issues everywhere.  Tabs were used extensively in the original code so when I did the rewrite, I copied what the programmers did.  Unfortunately, all these tabs (other than the leading indentations) were ruining the code formatting; but then the code would display correctly in the online editor.
 
   I wasn't sure how to fix this for the longest time and I've been pushing it off until today.  I'm forever grateful to the devs of Notepad++ because I was able to quickly go through the entire codebase and convert all the tabs into spaces using that text editor's powerful macro playback features.  Before doing all of this, I confirmed in a separate test branch that the tab conversion indeed fixed the issue.  All extra trailing spaces have been removed as well.  The codebase is so much nicer to look at now and can be compared side-to-side with the original codebase from historicalsource!
+
+  Another thing that I changed was moving all the debug and mod options into a brand new file called, `mods.ASM`.  This reduces a lot of clutter in `MAKE.ASM`.
 
 * 06/21/2024 - I have a surprise announcement!  Sinistar's early "prototype" AMOA build from November 1982 is now rebuildable from the source code!  In order to do this, I created a new repository and uploaded the AMOA edits there.  This was done to keep the current codebase from getting too messy as there were a lot of edits that had to be made; it took ten days to get the ROMs to match up!  With this code, we can finally start to completely understand what exactly changed between versions, other than the obvious missing stuff like the Sinistar biting the player ship.  You can view the code here: https://github.com/synamaxmusic/sinistar-amoa
 
@@ -737,13 +744,21 @@ The very first files to be processed through the assembler are routines related 
 
 ## Debug Options
   
-A lot of debug code is buried inside the original codebase so ```MAKE.ASM``` has new defines to enable these again for those that are interested.  Use ```DisableKenChk``` if you are not building the last ROM (diagnostic ROM 11), otherwise use ```FakeChecksums```.
+A lot of debug code is buried inside the original codebase so ```mods.ASM``` has new defines to enable these again for those that are interested.  Use ```DisableKenChk``` if you are not building the last ROM (diagnostic ROM 11), otherwise use ```FakeChecksums```.
 
 ### PROMS
 
 PROMS is on by DEFAULT!
 
-Taken from WITT/RICHFIXE.ASM, this fixes a bug where the screen flashes;;  white for a frame whenever the game starts up or transitions to a status screen.  If PROMS is not defined, then the screen flashing bug returns (to help remind us that we're playing a dev build).  It also DISABLES KENCHK so that copyright protection doesn't trigger during debugging!
+Taken from WITT/RICHFIXE.ASM
+
+During development, a routine in EXECJNK called "VRLOAD" was used for overload handling. If the program is unable to finish processing everything in the executive loop before drawing the next frame on the CRT screen, then the game would get overloaded and slow down would occur.
+
+To immediately signal when a overload occurs, VRLOAD causes the screen to flash white for a frame.  This is most noticable whenever the game starts up or transitions to a status screen.  In the final game, NOPs are used to patch over the instructions that flash the screen white.
+
+If PROMS is not defined, then the screen flashing returns.
+
+It also disables KENCHK so that copyright protection doesn't trigger during debugging.
 
 Note: This doesn't take affect until AOE.ASM is included, so use ```DisableKenChk``` if the magic byte at address $A1B3 is still showing up as non-zero during attract mode/gameplay.
 
@@ -757,21 +772,21 @@ This can be useful for when the diagnostic rom is not included in the build.
 
 ### FakeChecksums
 
+Taken from SAM/T13.ASM
+
 If you are including the diagnostic ROM 11 in the build, then use this for debugging.  This is really important if you want to mess around with the code or work on mods.  Also useful for enabling several different mods at once.
 
 During power up, the ROM test uses a checksum table at $F34F to verify file integrity.  To make debugging with mods much easier, enable this to zero out the checksum table and cheat the ROM test so that you can gain access to the "Game Adjustment" menu.
 
 Zeroing out the checksums also should prevent the copyright protection from triggering.  Look at address $A1B3 to ensure the byte is zero, otherwise the game will start acting weird.
 
-### DisableTests
-
-To make mods possible for Sinistar, we use the space between addresses $F4FB - $F928 in diagnostic ROM 11.  This is where the cross hatch test, color bar tests and switch tests are located.  Enable this define to make the diagnostics skip these routines and give us $42C bytes of space to overwrite.
-
 ### NOTEST
 
 Uncommenting this EQU can be useful for debugging and greatly decreases wait times by skipping the power up ROM/RAM Rug Test.  It does not disable the ROM/RAM "Rug" test itself, as it is still accessible by pressing the service (aka "advance") button.
 
 ### SAMDEBUG
+
+Recommended for invincible cheat
 
 This debug define found in Sam's module allows the player to respawn forever, even if they run out of extra ships.  This only changes two bytes in the code and doesn't mess up any symbol addresses.  This was originally labeled as "DEBUG" but I renamed it to differentiate from the next two defines which were also called "DEBUG".
 
@@ -801,11 +816,80 @@ This new define enables a previously-unknown sprite edit of the tiny Planetoid i
 
 ## Mods
 
-Several new mods have been added for Sinistar!  To enable a mod, open up ```MAKE.ASM``` and simply remove the semi-colon in front of the define for that mod.  Then, save the file and build the game per the [build instructions](#build-instructions).  Be sure to read the instructions next to the defines for further information.
+Several new mods have been added for Sinistar!  To enable a mod, open up ```mods.ASM``` and simply remove the semi-colon in front of the define for that mod.  Then, save the file and build the game per the [build instructions](#build-instructions).  Be sure to read the instructions next to the defines for further information.
+
+Use "DisableTests" below to make mods possible in Sinistar.  Several of the following mods can be combined together (see MOD COMBOS below).
+
+Originally, I had the RAM and ROM tests in ROM 11 ($F09F - $F370) overwritten to fit "MarqueeFix" and "PauseMod" but this doesn't work on real hardware, as we were running into issues with the watchdog chip.
+
+Any new mods are now relocated so that they overwrite the CRT Test Pattern, Color Bars and Switch tests in the diganostics ROM ($F4FB - $F928).  To make this space available for adding mods, uncomment the "DisableTests" define.
+
+Again, these mods can be combined with others, however if you are running into "ROM ERROR" messages on power up, then enable "FakeChecksums" to fix this.
+
+
+### DisableTests
+
+To make mods possible for Sinistar, we use the space between addresses $F4FB - $F928 in diagnostic ROM 11.  This is where the cross hatch test, color bar tests and switch tests are located.  Enable this define to make the diagnostics skip these routines and give us $42C bytes of space to overwrite.
+
+This is already enabled for both MarqueeFix and PauseMod.
+
+## Mod Combos
+
+To make it easier to identify which ROM set we're running, we'll borrow a trick from Eugene Jarvis and Larry DeMar in the Robotron Tie-Die ROMs and use the high score to denote a "version" number.
+
+Normally, the first high score entry in the "Survivors Today" table is always set to 19045.
+
+We'll change the zero here to ID the mod combo:
+
+* 19145 = Pause Mod / MarqueeFix
+* 19245 = Pause Mod / MarqueeFix / DifficultyMod
+* 19345 = MarqueeFix / DifficultyMod
+* 19445 = Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
+* 19545 = MarqueeFix / DifficultyMod / SAMTAIL
+
+Note: only enabling MarqueeFix doesn't change the high score entries.
+
+19345 and 19545 are great for arcade operators who want to install these mods but prefer not to have players pause the game.
+
+Disclaimer: PauseMod has the potential to cause screen burn-in if the "PAUSED" text is displayed for an extended period of time.  I, SynaMax, assume no responsibility or liability if the PauseMod causes burn-in damage to your monitor.
+
+Lastly, some really creative hacking was needed in order to fit SAMTAIL alongside these other mods.  If SAMTAIL and MarqueeFix are combined together, then the sound test in the diagnostics ($FE6C) is overwritten and skipped.  If SAMTAIL and PauseMod are combined, then the routine that sends a signal to the ROM board LED is overwritten ($F211).
 
 ### MarqueeFix
 
-This restores the awesome original "Marquee" title screen found in the prototype AMOA '82 build.  Due to space constraints, this was not included in the final version of the game.
+This restores the awesome original "Marquee" title screen found in the prototype AMOA '82 build.  Due to space constraints, this was not included in the final build.
+
+To get this to work, I had to overwrite the cross hatch, color bar and switch tests in ROM 11 and then patched ROM 9 to make RJ's attract mode routines load the AMOA graphic.
+
+"DisableTests" is already enabled for this mod.  New Checksums for the ROM test are also enabled.  Can be combined with "PauseMod" and/or "DifficultyMod" and/or "SAMTAIL" with valid checksums.
+
+Changes ROMs: 9, 11
+
+### DifficultyMod
+
+This reduces the difficulty of the game by modifying the enemy population values starting at $7ABE.  You can watch my video for more detailed info on how this mod works and why I chose these new values: https://youtu.be/HnfcAudPPS4
+
+Adds valid checksums for ROM 11.
+
+Changes ROMs: 8, 11
+
+### PauseMod
+
+Press the Player 1 button during gameplay to pause!  Pressing it again resumes the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses very similar code to achieve the same effect.  The "PAUSED" text displayed on screen uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at the start of the game.
+
+This mod can be enabled with MarqueeFix!  "DisableTests" is already enabled for this mod.  New Checksums for the ROM test are also enabled.
+
+Changes ROMs: 4, 10, 11
+
+### SAMTAIL
+
+Taken from SAM/TAIL.SRC, this mod restores a unused jet exhaust "tail" to the player ship!
+
+This code was first discovered back in October 2023, but it wasn't until February 2024 that the unused source code was correctly implemented into the final game.
+
+Changes ROMs: 4, 8, 9, 11
+
+If you enable SAMTAIL by itself then you will need to turn on "FakeChecksums" and "DisableTests", or you will get checksum errors in the ROM test.
 
 ### ExtraShipFix
 
@@ -815,11 +899,11 @@ You'll need to do a factory reset or clear/delete your NVRAM in order for the ne
 
 Because this is just a one-byte edit, this can be combined with other mods like MarqueeFix and/or DifficultyMod.
 
-### DifficultyMod
+This mod is kinda not really needed, since you can just change the value in the "Game Adjustments" menu to 5000 and then save.
 
-This reduces the difficulty of the game by modifying the enemy population values starting at $7ABE.  You can watch my video for more detailed info on how this mod works and why I chose these new values: https://youtu.be/HnfcAudPPS4
+No valid checksum yet for this mod, enable "FakeChecksums" to pass ROM test
 
-This mod can be enabled with other mods like MarqueeFix and ExtraShipFix.
+Changes ROMs: 5
 
 ### QuickOperatorEntry
 
@@ -827,11 +911,53 @@ This one-byte mod makes it much quicker to edit the title screen's operator mess
 
 I'm assuming that RJ purposely patched this value to make editing slower because play-testers were messing up their high score initials with the shorter time.
 
-### PauseMod
+No valid checksum yet for this mod, enable "FakeChecksums" to pass ROM test
 
-Press the Player 1 button during gameplay to pause!  Pressing it again resumes the game.  This mod was inspired by the Joust Pause Mod found on Coinoplove.com and uses very similar code to achieve the same effect.  The "PAUSED" text displayed on screen uses a routine inspired by Witt's code responsible for drawing the "EMPTY" text at the start of the game.
+Changes ROMs: 9
 
-This mod can be enabled with MarqueeFix!  However, if MarqueeFix is not defined then you'll need to enable DiagnosticTestFix to get the diagnostics working again.
+## Experimental Debug Options
+
+The Bargraph is really cool as it was used during development to monitor several variables during gameplay.  This routine is not in the final game and can only be found in the original codebase.  It works by drawing several different color bars over the player two section of the HUD/scanner area.  Unfortunately, the code is a bit buggy and can cause the game to crash.  I'm hoping that the bargraph becomes more stable in the future after some further debugging.
+
+### BargraphEnable
+
+```
+;* Define this symbol to include Graphic Diagnostics
+```
+
+This was originally called "DIAGNOSE" but I renamed it to BargraphEnable to better describe what this does.  Defining this enables a debug "BARGRAPH" display that shows different parameters such as Play time in Minutes and Seconds, Warrior Aggression, Elapsed time since player death, number of enemies, etc.
+
+The file "RICH.EQU" has the list of what the different color bars mean but it is inverted.  Here is the correct guide for what each bar represents:
+
+```
+              rmb     1       * F                                     YELLOW (unused)
+              rmb     1       * E <SPECIAL EFFECT>                    BLACK (unused) (The Sinistar's glowing eye color)
+GMWaInt       rmb     1       * D The # of Intercepting warriors      RED
+GMWaTail      rmb     1       * C The # of Guarding warriors          DARK RED
+GMWaMine      rmb     1       * B The # of Mining warriors            DARK PURPLE
+GMWaAttack    rmb     1       * A The # of Attacking warriors         DARK TEAL
+GMWaDrift     rmb     1       * 9 The # of Drifting warriors          BLUE
+              rmb     1       * 8   Effects                           BLACK (unused)
+              rmb     1       * 7 Special                             BLACK (unused)
+GFLANG        rmb     1       * 6 Flight angle of squadron leader.    BLUE-GRAY
+GVelocity     rmb     0       * 6 Velocity                            BLUE-GRAY (unused)
+GANANG        rmb     1       * 5 Animation angle of squadron leader. GRAY
+GDistance     rmb     0       * 5 Distance                            GRAY (unused)
+GDeathTime    rmb     1       * 4 Time since Player death             TAN-GRAY
+GAggression   rmb     1       * 3 Warrior aggression (high byte)      SALMON PINK
+GSeconds      rmb     1       * 2   and seconds.                      CREAM
+GMinutes      rmb     1       * 1 Play time in minutes                WHITE
+```
+
+BargraphEnable only works if DisableKenChk is on and that AOE.ASM and DIAG.ASM are not built.  Use NOTEST instead of FakeChecksums to skip ROM test.
+
+High score entry doesn't work but you can still insert a coin and hit the player 1 button to start playing again.
+
+### BargraphAlt
+
+In the previous list, two variables are not enabled, "GVelocity" and "GDistance". Instead, "GFLANG" and "GANANG" for the warrior squadron leader are shown in blue-gray and gray colors respectively.
+
+Uncomment this define to have the BARGRAPH routine display the Velocity and Distance parameters instead and disable the squadron leader color bars.
 
 ### Old deprecated defines
 
