@@ -814,7 +814,7 @@ Bumout
 ;*
         CMPX    #WPLAYER
         BNE     .22S
-        JSR     PLXQUE                  ;* START UP PLAYER EXPLOSION
+        JSR     PLXQUE                  ;* START UP PLAYER EXPLOSION            ;; TAIL overwrites this instruction
         BRA     .23S
 .22S    LDD     OCHAR,X
         CMPD    #CWARRIOR                                                       ;;Fixme was: CMPD  #CWARRI

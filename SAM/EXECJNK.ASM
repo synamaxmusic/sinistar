@@ -298,7 +298,7 @@ SCROLL  LDA     PANMASK         ;scrolling and stars on?
         BEQ     .5S
         STX     ONIDESC,Y       ;yes, setup to change image
         LDX     #CHGOBJ
-        STX     ODRWVEC,Y
+        STX     ODRWVEC,Y                                                                       ;; TAIL overwrites this instruction
 .5S     LDA     OLPOS,Y         ;compute scanner screen l edges
         RPT     1,LSRA
         NEGA
