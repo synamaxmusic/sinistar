@@ -323,7 +323,7 @@ RCNT2   RMB     1                                               ;;($2C)
 ;*
 ;*FILTERED NOISE ROUTINE PARAMETERS
 ;*
-        ORG    LOCRAM
+        ORG     LOCRAM
 FMAX    RMB     1                       ;MAXIMUM_FREQUENCY      ;;($0E)
 FHI     RMB     1                       ;FREQUENCY              ;;($0F)
 FLO     RMB     1                                               ;;($10)
@@ -337,7 +337,7 @@ DSFLG   RMB     1                       ;DISTORTION FLAG        ;;($14)
 ;*
         ORG     ROM
 
-        IFDEF SpeechTest
+        IFDEF   SpeechTest
         FCB     $E4
         ELSE
         IFNDEF  ChecksumFix
@@ -367,7 +367,7 @@ SETUP   SEI                             ;SET INTERRUPT MASK
         STAA    1,X                     ;PROGRAM A SIDE
         STAB    2,X                     ;;(new instruction) (store in port B PIA1)
         LDX     #ENDRAM
-RAMCLR  CLR 0,X                         ;;(wipe out the RAM)
+RAMCLR  CLR     0,X                     ;;(wipe out the RAM)
         DEX
         BNE     RAMCLR                  ;;(are we done yet?)
         LDAA    #$3C                    ;;(grab number for the random generator)
