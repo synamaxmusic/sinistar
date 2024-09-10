@@ -467,6 +467,29 @@ MARKEY  FCB $2A,$C3
          ENDIF
         ENDIF
 
+;; AMOA Graphic / SAMTAIL / ExtraShipFix ("Perfect" ROM set)
+        IFDEF   ExtraShipFix    ;; We're assuming that we're building V19645.
+                                ;; Otherwise, we'll need fake checksums on
+                                ;; overwrite these checksums for V19645
+        ORG     $F356
+        FCB     $C6     ;3000   ;;Fixme was: $33
+
+        ORG     $F358
+        FCB     $C4     ;4000
+
+        ORG     $F35E
+        FCB     $E1     ;7000
+
+        ORG     $F360
+        FCB     $DB     ;8000   ;;Fixme was: $2A
+
+        ORG     $F36E
+        FCB     $68     ;F000   ;;Fixme was: $57
+
+        ORG     $FFDF
+        FCB     $98             ;;Fixme was: $DA (Fudger byte)
+
+        ENDIF
 
 ;;===============================================================================
 ;;
@@ -500,6 +523,7 @@ MARKEY  FCB $2A,$C3
 ;;    19345 = AMOA Graphic / DifficultyMod
 ;;    19445 = Pause Mod / AMOA Graphic / DifficultyMod / SAMTAIL
 ;;    19545 = AMOA Graphic / DifficultyMod / SAMTAIL
+;;    19645 = AMOA Graphic / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
 ;;
 ;;  Note: enabling MarqueeFix only doesn't change the high score entries.
 
@@ -547,6 +571,12 @@ MARKEY  FCB $2A,$C3
 
         ENDIF
 
+        IFDEF ExtraShipFix
+
+        ORG     $8BA1
+        FDB     $9645
+
+        ENDIF
 
         ENDIF           ;* Whole file is not included if KENSMARQ is undefined
 

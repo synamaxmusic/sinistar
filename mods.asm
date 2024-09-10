@@ -202,6 +202,10 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;    19345 = MarqueeFix / DifficultyMod
 ;;    19445 = Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
 ;;    19545 = MarqueeFix / DifficultyMod / SAMTAIL
+;;    19645 = MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
+;;
+;;  Important: 19645 requires a factory reset in order to copy the new default
+;;  Extra Ship value to NVRAM.
 ;;
 ;;  Note: only enabling MarqueeFix doesn't change the high score entries.
 ;;
@@ -297,7 +301,10 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;  This mod is kinda not really needed, since you can just change the value in
 ;;  the "Game Adjustments" menu to 5000 and then save.
 ;;
-;;  No valid checksum yet for this mod, enable "FakeChecksums" to pass ROM test
+;;  The only time this mod is being used is for V19645.
+;;
+;;  If enabled, then the checksums for V19645 mod will be used, but otherwise
+;;  there are no valid checksums yet for this mod, so enable "FakeChecksums"
 ;;
 ;;                                              Changes ROMs: 5
 
