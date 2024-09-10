@@ -86,6 +86,8 @@ For the first time ever, the source code for the sound and speech ROMs are inclu
 
 {Warning: flashing images below)
 
+* 09/10/2024 - Added a new mod combo that enables Sam's "TAIL" routine, the Marquee title screen fix, and changes the default value of the additional points per extra ship factor from 30,000 to 5,000 (which was confirmed by Noah to be a quick way of increasing the game's difficulty without messing up the game's tuning).  This mod combo (19645) is probably the closest we'll get to making a "perfect" ROM set: it has the originally intended special graphics that were removed and it has Noah's final tuning of the enemy populations, but now it's much easier to score lives by default.  Note: it is required to do a factory reset to make sure the new default value for the extra ships is copied over to NVRAM.
+
 * 08/09/2024 - When I first uploaded the codebase to Github, I was disappointed to see that there were a lot of spacing issues everywhere.  Tabs were used extensively in the original code so when I did the rewrite, I copied what the programmers did.  Unfortunately, all these tabs (other than the leading indentations) were ruining the code formatting; but then the code would display correctly in the online editor.
 
   I wasn't sure how to fix this for the longest time and I've been pushing it off until today.  I'm forever grateful to the devs of Notepad++ because I was able to quickly go through the entire codebase and convert all the tabs into spaces using that text editor's powerful macro playback features.  Before doing all of this, I confirmed in a separate test branch that the tab conversion indeed fixed the issue.  All extra trailing spaces have been removed as well.  The codebase is so much nicer to look at now and can be compared side-to-side with the original codebase from historicalsource!
@@ -846,6 +848,9 @@ We'll change the zero here to ID the mod combo:
 * 19345 = MarqueeFix / DifficultyMod
 * 19445 = Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
 * 19545 = MarqueeFix / DifficultyMod / SAMTAIL
+* 19645 = MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
+
+Important: 19645 requires a factory reset in order to copy the new default Extra Ship value to NVRAM.
 
 Note: only enabling MarqueeFix doesn't change the high score entries.
 
