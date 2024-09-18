@@ -158,34 +158,24 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;   M   M  O   O  D   D      S
 ;;   M   M   OOO   DDDD   SSSS
 ;;
-;;  Use "DisableTests" below to make mods possible in Sinistar.  Several of the
-;;  following mods can be combined together (see MOD COMBOS below).
-;;
-;;  Originally, I had the RAM and ROM tests in ROM 11 ($F09F - $F370)
-;;  overwritten to fit "MarqueeFix" and "PauseMod" but this doesn't work on
-;;  real hardware, as we were running into issues with the watchdog chip.
-;;
-;;  Any new mods are now relocated so that they overwrite the CRT Test Pattern,
-;;  Color Bars and Switch tests in the diganostics ROM ($F4FB - $F928).  To
-;;  make this space available for adding mods, uncomment the "DisableTests"
-;;  define.
-;;
-;;  Again, these mods can be combined with others, however if you are running
-;;  into "ROM ERROR" messages on power up, then enable "FakeChecksums" to fix
-;;  this.
-;;
-
-;DisableTests EQU 1
-
-;;  To make mods possible for Sinistar, we use the space between addresses
-;;  $F4FB - $F928 in diagnostic ROM 11. This is where the cross hatch test,
-;;  color bar tests and switch tests are located. Enable this define to make
-;;  the diagnostics skip these routines and give us $42C bytes of space to
-;;  overwrite.
-;;
-;;  This is already enabled for both MarqueeFix and PauseMod.
+;;  Several of the following mods have been combined together (see MOD COMBOS
+;;  below).  This makes it easier to enable multiple mods at once by
+;;  uncommenting one line instead of up to 5 lines.  Only one mod combo should
+;;  be defined at a time.
 
 ;                               <<< MOD COMBOS >>>
+
+;;  To enable, simply remove the first semi-colon in front of the mod combo you
+;;  want to use.  Only one mod combo should be defined:
+
+;V19145 EQU     1       ;; Pause Mod / MarqueeFix
+;V19245 EQU     1       ;; Pause Mod / MarqueeFix / DifficultyMod
+;V19345 EQU     1       ;; MarqueeFix / DifficultyMod
+;V19445 EQU     1       ;; Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
+;V19545 EQU     1       ;; MarqueeFix / DifficultyMod / SAMTAIL
+;V19645 EQU     1       ;; MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
+
+;                         <<< IMPORTANT MOD NOTES >>>
 
 ;;
 ;;  To make it easier to identify which ROM set we're running, we'll borrow a
@@ -202,15 +192,22 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;    19345 = MarqueeFix / DifficultyMod
 ;;    19445 = Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
 ;;    19545 = MarqueeFix / DifficultyMod / SAMTAIL
-;;    19645 = MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
+;;    19645 = MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs) [Factory reset required]
 ;;
-;;  Important: 19645 requires a factory reset in order to copy the new default
+;;  19645 requires a factory reset in order to copy the new default
 ;;  Extra Ship value to NVRAM.
 ;;
 ;;  Note: only enabling MarqueeFix doesn't change the high score entries.
 ;;
 ;;  19345 and 19545 are great for arcade operators who want to install these
 ;;  mods but prefer not to have players pause the game.
+;;
+;;  ExtraShipFix is not enabled for the other ROMs because of the factory reset
+;;  and it's kinda wasteful to do a ROM swap for a one-byte edit.  To do the 
+;;  same effect with the other mod combos, simply change the "Additional Extra
+;;  Ship Point Factor" to it's original value of 5,000 and then save.  This mod
+;;  is only included in V19645 to create a "perfect" ROM set that automatically
+;;  sets the new default value.
 ;;
 ;;  Disclaimer: PauseMod has the potential to cause screen burn-in if the
 ;;  "PAUSED" text is displayed for an extended period of time.  I, SynaMax,
@@ -222,6 +219,40 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;  together, then the sound test in the diagnostics ($FE6C) is overwritten and
 ;;  skipped.  If SAMTAIL and PauseMod are combined, then the routine that sends
 ;;  a signal to the ROM board LED is overwritten ($F211).
+
+;                               <<< HOW MODS WORK >>>
+
+;;
+;;  Use "DisableTests" below to make mods possible in Sinistar.
+;;
+;;  Originally, I had the RAM and ROM tests in ROM 11 ($F09F - $F370)
+;;  overwritten to fit "MarqueeFix" and "PauseMod" but this doesn't work on
+;;  real hardware, as we were running into issues with the watchdog chip.
+;;
+;;  Any new mods are now relocated so that they overwrite the CRT Test Pattern,
+;;  Color Bars and Switch tests in the diganostics ROM ($F4FB - $F928).  To
+;;  make this space available for adding mods, uncomment the "DisableTests"
+;;  define.
+;;
+;;  Again, these mods can be combined with others, however if you are running
+;;  into "ROM ERROR" messages on power up, then enable "FakeChecksums" to fix
+;;  this.
+;;
+
+
+;                               <<< MOD DEFINES >>>
+
+;DisableTests EQU 1
+
+;;  To make mods possible for Sinistar, we use the space between addresses
+;;  $F4FB - $F928 in diagnostic ROM 11. This is where the cross hatch test,
+;;  color bar tests and switch tests are located. Enable this define to make
+;;  the diagnostics skip these routines and give us $42C bytes of space to
+;;  overwrite.
+;;
+;;  This is already enabled for both MarqueeFix and PauseMod.
+;;
+;;                                              Changes ROMs: 11
 
 ;MarqueeFix EQU 1
 
@@ -396,3 +427,62 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;  When this is enabled, the game will wipe away the screen and wait forever until the
 ;;  "advance" button (aka F2 in MAME) is pressed again.  Keep pressing the advance
 ;;  button to go through the remaining diagnostic screens.
+
+;;-----------------------------------------------------------------------------
+;;
+;;  To make mod combos work, these IFDEFs enable several defines at once to
+;;  make it easier for building modded ROMs.
+;;
+
+        IFDEF   V19145          ;; Pause Mod / MarqueeFix
+
+DisableTests EQU 1
+MarqueeFix EQU 1
+PauseMod EQU   1
+
+        ENDIF
+
+        IFDEF   V19245          ;; Pause Mod / MarqueeFix / DifficultyMod
+
+DisableTests EQU 1
+MarqueeFix EQU 1
+DifficultyMod EQU 1
+PauseMod EQU   1
+
+        ENDIF
+
+        IFDEF   V19345          ;; MarqueeFix / DifficultyMod
+
+DisableTests EQU 1
+MarqueeFix EQU 1
+DifficultyMod EQU 1
+
+        ENDIF
+
+        IFDEF   V19445          ;; Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
+
+DisableTests EQU 1
+MarqueeFix EQU 1
+DifficultyMod EQU 1
+PauseMod EQU   1
+SAMTAIL        EQU     1
+
+        ENDIF
+
+        IFDEF   V19545          ;; MarqueeFix / DifficultyMod / SAMTAIL
+
+DisableTests EQU 1
+MarqueeFix EQU 1
+DifficultyMod EQU 1
+SAMTAIL        EQU     1
+
+        ENDIF
+
+        IFDEF   V19645          ;; MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
+
+DisableTests EQU 1
+MarqueeFix EQU 1
+SAMTAIL        EQU     1
+ExtraShipFix EQU 1
+
+        ENDIF

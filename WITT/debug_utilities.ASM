@@ -654,10 +654,10 @@ MODSAV  SET     $F4FB           ;; We're creating a new assembly counter called 
         ELSE                    ;;Otherwise, we'll run out of room so let's overwrtite the code that blinks the LED.
 
         ORG     $F300
-        RPT 3,NOP               ;;remove JMP PULSE
+        RPT     3,NOP           ;;remove JMP PULSE
 
         ORG     $F434
-        RPT 3,NOP               ;;remove JMP PULSE
+        RPT     3,NOP           ;;remove JMP PULSE
 
         PUSHORG $F211           ;;Overwrite PULSE routine
         ENDIF
@@ -982,8 +982,17 @@ TA101S                                                          ;;Fixme was: 101
         LDD     #NOPOST         ;turn off player's tail
         STD     OPDRWVE,X
 ;* * *
+        ;;;;;;;;;;;;;;;;;;;                                     ;; New code so SAMTAIL can be
+        IFNDEF  PLXQUE                                          ;; built without RJ's module
+        RPT     3,NOP
+        RTS
+        ELSE
+        ;;;;;;;;;;;;;;;;;;;
         JSR     PLXQUE                  ;* START UP PLAYER EXPLOSION
         RTS
+        ;;;;;;;;;;;;;;;;;;;
+        ENDIF
+        ;;;;;;;;;;;;;;;;;;;
 
         PULLORG MODSAV                                          ;;Fixme was: PULLORG ROMSAVE
 
