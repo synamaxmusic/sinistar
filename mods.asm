@@ -35,6 +35,8 @@
 ;;   NoDeath
 ;;   Witt
 ;;   WittRock
+;;   WittBombs
+;;   WittBuild
 ;;
 ;;   A couple of helper defines are included to make the original code work:
 ;;
@@ -149,6 +151,26 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;  This new define enables a previously-unknown sprite edit of the tiny
 ;;  Planetoid image that was used to denote Rich's developmental build
 ;;  from the final ROM.
+
+;WittBombs EQU   1
+
+;;  Forget "add-a-ball", the newest innovation is "add-a-bomb"!
+;;
+;;  Found in Rich's commented out debug code in WITT/AOE.ASM, this cheat allows
+;;  the player to add bombs using the player 2 button!  Also restores debug text
+;;  that Rich used during development.  The default Sinibomb message is replaced
+;;  with "DEVELOPMENT BOMBS ADDED".  When no more bombs can be added, the
+;;  message area displays a funny Star Trek reference: "CAPTAIN OUR BOMB BAY IS FULL".
+;;
+
+;WittBuild EQU   1
+
+;;  MUST BE ENABLED WITH WittBombs
+;;
+;;  This additional cheat forces the game to add a Sinistar piece after filling up
+;;  the bomb-bay with the P2 button.  This define is nested instead of the code for
+;;  WittBombs, so it must be enabled for WittBuild to work.  It also overrides the
+;;  Star Trek message and replaces it with "DEVELOPMENT PIECE ADDED".
 
 ;===============================================================================
 ;;

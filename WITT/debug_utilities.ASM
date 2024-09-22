@@ -204,8 +204,8 @@ BCF     MACRO   A1,A2,A3
 ;       IFDEF   Debug           ;*****************************************
 ;       PUSHORG ROMSAVE                                                 ;*
 ;;*     Routine Witt1                                                   ;*
-;;*     lda     #$FF                                                    ;*
-;;*     sta     PANMASK                                                 ;*
+;;*     lda     #$FF                                                    ;*      ;; Here, Rich is enabling all the mask bits (including unused ones)
+;;*     sta     PANMASK                                                 ;*      ;; for the control panel buttons.  This is to enable P2 button during gameplay
 ;;*     puls    Y                                                       ;*
 ;;*     jmp     DIE                                                     ;*
 ;;*                                                                     ;*
@@ -999,7 +999,169 @@ TA101S                                                          ;;Fixme was: 101
         ENDIF
 
 
+        IFDEF   WittBombs
 
+;;==============================================================================
+
+        CODEPAGE WILLIASCII             ;; This will make it easier to add more
+        CHARSET '0',$00                 ;; phrase strings to the game
+        CHARSET '1',$01
+        CHARSET '2',$02
+        CHARSET '3',$03
+        CHARSET '4',$04
+        CHARSET '5',$05
+        CHARSET '6',$06
+        CHARSET '7',$07
+        CHARSET '8',$08
+        CHARSET '9',$09
+        CHARSET '\32',$0A       ;;Space
+        CHARSET 'A',$0B
+        CHARSET 'B',$0C
+        CHARSET 'C',$0D
+        CHARSET 'D',$0E
+        CHARSET 'E',$0F
+        CHARSET 'F',$10
+        CHARSET 'G',$11
+        CHARSET 'H',$12
+        CHARSET 'I',$13
+        CHARSET 'J',$14
+        CHARSET 'K',$15
+        CHARSET 'L',$16
+        CHARSET 'M',$17
+        CHARSET 'N',$18
+        CHARSET 'O',$19
+        CHARSET 'P',$1A
+        CHARSET 'Q',$1B
+        CHARSET 'R',$1C
+        CHARSET 'S',$1D
+        CHARSET 'T',$1E
+        CHARSET 'U',$1F
+        CHARSET 'V',$20
+        CHARSET 'W',$21
+        CHARSET 'X',$22
+        CHARSET 'Y',$23
+        CHARSET 'Z',$24
+;       CHARSET 'CBARRW'        EQU     $25
+;       CHARSET 'CEQU'  EQU     $26
+        CHARSET '-',$27
+;       CHARSET 'CQUE'  EQU     $28
+        CHARSET '!',$29
+        CHARSET '(',$2A
+        CHARSET ')',$2B
+        CHARSET '\H',$2C        ;;Apostrophe
+        CHARSET ',',$2D
+        CHARSET '.',$2E
+
+;;==============================================================================
+
+        PUSHORG MODSAV
+
+;;
+;;  Here we patch in our new Witt1 routine that enables all buttons
+;;  (including P2 button) during gameplay.
+;;
+        Routine Witt1                                                   ;*
+        lda     #$FF                                                    ;*      ;; Here, Rich is enabling all the mask bits (including unused ones)
+        sta     PANMASK                                                 ;*      ;; for the control panel buttons.  This is to enable P2 button during gameplay
+        puls    Y                                                       ;*
+        jmp     DIE                                                     ;*
+
+;;==============================================================================
+
+;;
+;;  Now, let's define our words and store them here instead of MESSAV & PHRSAV.
+;;
+        CODEPAGE WILLIASCII     ;Turn on Williams Character Set Table
+
+_CAPTAIN FCC     "CAPTAIN"
+        FCB     $8A
+
+_OUR    FCC     "OUR"
+        FCB     $8A
+
+_BOMB   FCC     "BOMB"
+        FCB     $8A
+
+_BAY    FCC     "BAY"
+        FCB     $8A
+
+;;_IS is already defined!
+
+_FULL   FCC     "FULL"
+        FCB     $8A
+
+_DEVELOPMENT FCC "DEVELOPMENT"
+        FCB     $8A
+
+_PIECE  FCC     "PIECE"
+        FCB     $8A
+
+_ADDED  FCC     "ADDED"
+        FCB     $8A
+
+_BOMBS  FCC     "BOMBS"
+        FCB     $8A
+
+        CHARSET                 ;Going back to regular ASCII
+
+        PULLORG MODSAV
+
+;; Phrase pointers go here (thank goodness we have enough space for these in ROM 10)
+
+        PUSHORG PHRSAV
+
+        FDB     _CAPTAIN
+        FDB     _OUR
+        FDB     _BOMB
+        FDB     _BAY
+        FDB     _FULL
+        FDB     _DEVELOPMENT
+
+        IFDEF   WittBuild
+        FDB     _PIECE
+        FDB     _ADDED
+        ELSE
+        FDB     _BOMBS
+        FDB     _ADDED
+        ENDIF
+
+        PULLORG PHRSAV
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Now we can finally proceed with Rich's retargeted code.
+;;
+
+        PUSHORG MODSAV
+
+        BSWITCH  START2,CLOSE    ;* Fake out pickup                     ;*      ;;Fixme was: SWITCH  START2,CLOSE
+        LDA     BOMBS           ;get sinibomb count                     ;*
+        INCA                    ;add one                                ;*
+        cmpa    #MAXBOMBS       ;* If too many bombs are being held     ;*
+        ble     WITDBG1         ;*   then the crystal cannot be picked  ;*
+        DISPLAY BLUE                                                    ;*      ;;Fixme was: DISPLAY
+        PHRASE  BLUE,35,CAPTAIN,OUR                                     ;*
+        PHRASE  BLUE,35,BOMB,BAY,IS,FULL                                ;*
+
+        IFDEF   WittBuild
+
+        jsr     addpart                                                 ;*      ;; Add a Sinistar piece when bombs are full!
+        DISPLAY WHITE                                                   ;*      ;;Fixme was: DISPLAY
+        PHRASE  WHITE,35,DEVELOPMENT                                    ;*
+        PHRASE  WHITE,35,PIECE,ADDED                                    ;*
+
+        ENDIF
+
+        rts                                                             ;*
+WITDBG1 STA     BOMBS           ;save new sinibomb count                 *      ;;Fixme was: 1$
+        LDB     #DWBL           ;get dma constant to write sbomb display *
+        JSR     UPBOMBS         ;update sinibomb display, save Y, uses A *
+        DISPLAY TANGREY                                                 ;*      ;;Fixme was: DISPLAY
+        PHRASE  TANGREY,35,DEVELOPMENT                                  ;*
+        PHRASE  TANGREY,35,BOMBS,ADDED                                  ;*
+        rts                                                             ;*
+        PULLORG MODSAV                                                  ;*      ;;Fixme was: PULLORG ROMSAVE
+        ENDIF   ;Debug          ;*****************************************
 
 
 
