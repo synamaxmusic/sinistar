@@ -127,6 +127,13 @@ SPECFN  RMB     2       ;RESTORE FACTORY SETTINGS
         RMB     2       ;CLEAR AUDIT TOTALS
         RMB     2       ;INITIALIZE HIGH SCORE TABLE
         RMB     2       ;INTIATE AUTO CYCLE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        IFDEF   PauseAdjust
+
+        RMB     2       ; ENABLE PAUSE
+
+        ENDIF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         RMB     2       ;ENTER ATTRACT MODE MESSAGE
 ENDADJ  EQU     *
 OPL1    RMB     2

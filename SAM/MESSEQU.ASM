@@ -72,6 +72,13 @@ MSREST  RMB     1       ;'RESTORE FACTORY SETTINGS'
 MSCLER  RMB     1       ;'CLEAR BOOKKEEPING TOTALS'
 MSHIGH  RMB     1       ;'HIGH SCORE TABLE RESET'
 MSAUTO  RMB     1       ;'AUTO CYCLE'
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        IFDEF   PauseAdjust
+
+MSPAUS  RMB     1       ;; ENABLE PAUSE
+
+        ENDIF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 MSSETA  RMB     1       ;'SET ATTRACT MODE MESSAGE'
 MSSADJ  RMB     1       ;'USE 'MOVE' TO SELECT '
 MSCADJ  RMB     1       ;'USE 'CREDIT' BUTTONS TO CHANGE THE VALUE'

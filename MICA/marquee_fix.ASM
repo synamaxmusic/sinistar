@@ -8,6 +8,7 @@
 
         IFDEF   MarqueeFix
 
+         IFNDEF  T13MODDED
 ;;
 ;;  Instead of nuking the Rug ROM/RAM tests, we are going to overwrite the
 ;;  cross hatch test, color bar tests and switch test instead.
@@ -56,7 +57,14 @@
         JMP     $F479
 
         PUSHORG $FE6C           ;;Overwrite sound test
-        ENDIF
+
+        ENDIF ;SAMTAIL
+
+        ELSE
+
+        PUSHORG MODSAV
+
+        ENDIF ;T13MODDED
 
 
 
@@ -120,10 +128,11 @@ FINSIT  TEXT    $52,$CD                                                         
 
         PULS    Y,PC
 
-
+        IFNDEF  T13MODDED
         IFDEF   SAMTAIL         ;; If SAMTAIL is defined...
         PULLORG                 ;;  then we finish overwriting the sound test...
         PUSHORG MODSAV          ;;  and go back to our allocated space for mods ($F4FB - $F928).
+        ENDIF
         ENDIF
 
 ;******************************************************************************
@@ -580,6 +589,76 @@ MARKEY  FCB $2A,$C3
 
         ENDIF           ;* Whole file is not included if KENSMARQ is undefined
 
+        IFDEF   V19845
+
+FCKSUM  EQU     $F6
+FUDGER  EQU     $100-FCKSUM
+;FUDGER  EQU     $00
+
+;; Change high score number to 19845
+        PUSHORG $8BA1
+        FDB     $9845
+        PULLORG
+
+
+        PUSHORG ROMTAB
+        FCB     $00,$C6  ;0000
+        FCB     $10,$62  ;1000
+        FCB     $20,$A9  ;2000  ;;NEW
+        FCB     $30,$79  ;3000  ;;NEW
+        FCB     $40,$D2  ;4000  ;;NEW
+        FCB     $50,$25  ;5000  ;;NEW
+        FCB     $60,$42  ;6000  ;;NEW
+        FCB     $70,$93  ;7000  ;;NEW
+        FCB     $80,$A7  ;8000  ;;NEW
+        FCB     $90,$0   ;9000
+        FCB     $A0,$0   ;A000
+        FCB     $B0,$0   ;B000
+        FCB     $C0,$0   ;C000
+        FCB     $D0,$0   ;D000
+        FCB     $E0,$42  ;E000  ;;NEW
+        FCB     $F0,FCKSUM  ;F000  ;;NEW
+        FCB     0
+        FCB     FUDGER      ;CHECK BYTE (FUDGER) FOR THIS PART ($F000)
+        PULLORG
+
+        ENDIF
+
+        IFDEF   V19855
+
+FCKSUM  EQU     $61
+FUDGER  EQU     $100-FCKSUM
+;FUDGER  EQU     $00
+
+;; Change high score number to 19855
+        PUSHORG $8BA1
+        FDB     $9855
+        PULLORG
+
+
+        PUSHORG ROMTAB
+        FCB     $00,$C6  ;0000
+        FCB     $10,$62  ;1000
+        FCB     $20,$24  ;2000  ;;NEW
+        FCB     $30,$59  ;3000  ;;NEW
+        FCB     $40,$D2  ;4000  ;;NEW
+        FCB     $50,$25  ;5000  ;;NEW
+        FCB     $60,$34  ;6000  ;;NEW
+        FCB     $70,$93  ;7000  ;;NEW
+        FCB     $80,$B7  ;8000  ;;NEW
+        FCB     $90,$0   ;9000
+        FCB     $A0,$0   ;A000
+        FCB     $B0,$0   ;B000
+        FCB     $C0,$0   ;C000
+        FCB     $D0,$0   ;D000
+        FCB     $E0,$42  ;E000  ;;NEW
+        FCB     $F0,FCKSUM  ;F000  ;;NEW
+        FCB     0
+        FCB     FUDGER      ;CHECK BYTE (FUDGER) FOR THIS PART ($F000)
+        PULLORG
+
+        ENDIF
+
 ;;
 ;;   To make troubleshooting and debugging much easier, I'm adding this here since
 ;;   this is the last file to be assembled.
@@ -609,4 +688,3 @@ MARKEY  FCB $2A,$C3
         PULLORG
 
         ENDIF
-

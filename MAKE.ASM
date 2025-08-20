@@ -168,7 +168,25 @@
 ;  DDDD   IIIII  A   A   GGG
 ;
 
+;; In order for mods to work, we have to overwrite the diagnostics.  In the
+;; early days of this project, I used really hacky ways of overwriting the
+;; various test routines.  Eventually, I switched over to a new source file
+;; that comments out a bunch of diag code to make room for new stuff.
+
+;; PauseAdjust is a define that's used to enable or disable the pause option
+;; in the "Game Adjustments" screen.  Special edits had to be made to get this
+;; working so NoPauseAdjust is used for mods that don't use the Pause option.
+
+        ifdef   NoPauseAdjust
+        INCLUDE SAM/t13mod.asm          ;; T13Modded (No Pause option)
+        endif
+
+        ifdef   PauseAdjust
+        INCLUDE SAM/t13mod_pause.asm    ;; T13Modded (Enable Pause option)
+        else
         INCLUDE SAM/DIAG.ASM            ;; Diagnostic ROM 11
+        endif
+
         INCLUDE FALS/LAST.ASM           ;; Final patches found in Revision 3 rom
                                         ;; (can be built without DIAG.ASM)
 
@@ -180,6 +198,8 @@
 ;  E       X X     T    R  R   A   A      S
 ;  EEEEE  X   X    T    R   R  A   A  SSSS
 ;
+
+;; New code and mods can be found here.
 
         INCLUDE WITT/debug_utilities.ASM
         INCLUDE MICA/marquee_fix.ASM

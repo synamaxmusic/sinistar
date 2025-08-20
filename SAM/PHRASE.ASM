@@ -313,6 +313,15 @@ MSHGH   FCC     "HIGH SCORE TABLE RESET"
 MSAT    FCC     "AUTO CYCLE"
         RORG -1
         FCB CE+CEND
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        IFDEF   PauseAdjust
+
+MPAUS   FCC     "PAUSE"
+        RORG -1
+        FCB CE+CEND
+
+        ENDIF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 MSSTA   FCC     "SET ATTRACT MODE MESSAGE"
         RORG -1
         FCB CE+CEND
@@ -419,6 +428,13 @@ PHRASE  FDB     INDIC   ;'INITIAL TESTS INDICATE'
         FDB     MSCLR   ;'CLEAR BOOKKEEPING TOTALS'
         FDB     MSHGH   ;'HIGH SCORE TABLE RESET'
         FDB     MSAT    ;'AUTO CYCLE'
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        IFDEF   PauseAdjust
+
+        FDB     MPAUS   ;; ENABLE PAUSE
+
+        ENDIF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         FDB     MSSTA   ;'SET ATTRACT MODE MESSAGE'
         FDB     MSSDJ   ;'USE 'MOVE' TO SELECT '
         FDB     MSCDJ   ;'USE 'FIRE-SINIBOMB' BUTTONS TO CHANGE THE VALUE'
