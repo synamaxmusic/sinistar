@@ -589,6 +589,43 @@ MARKEY  FCB $2A,$C3
 
         ENDIF           ;* Whole file is not included if KENSMARQ is undefined
 
+
+        IFDEF   V19745
+
+FCKSUM  EQU     $8E
+FUDGER  EQU     $100-FCKSUM
+;FUDGER  EQU     $00
+
+;; Change high score number to 19745
+        PUSHORG $8BA1
+        FDB     $9745
+        PULLORG
+
+
+        PUSHORG ROMTAB
+        FCB     $00,$F2  ;0000  ;;NEW
+        FCB     $10,$62  ;1000
+        FCB     $20,$A5  ;2000  ;;NEW
+        FCB     $30,$E6  ;3000  ;;NEW
+        FCB     $40,$EF  ;4000
+        FCB     $50,$FC  ;5000
+        FCB     $60,$1A  ;6000
+        FCB     $70,$E1  ;7000  ;;NEW
+        FCB     $80,$DC  ;8000  ;;NEW
+        FCB     $90,$0   ;9000
+        FCB     $A0,$0   ;A000
+        FCB     $B0,$0   ;B000
+        FCB     $C0,$0   ;C000
+        FCB     $D0,$0   ;D000
+        FCB     $E0,$16  ;E000  ;;NEW
+        FCB     $F0,FCKSUM  ;F000  ;;NEW
+        FCB     0
+        FCB     FUDGER      ;CHECK BYTE (FUDGER) FOR THIS PART ($F000)
+        PULLORG
+
+        ENDIF
+
+
         IFDEF   V19845
 
 FCKSUM  EQU     $F6

@@ -162,6 +162,14 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;  with "DEVELOPMENT BOMBS ADDED".  When no more bombs can be added, the
 ;;  message area displays a funny Star Trek reference: "CAPTAIN OUR BOMB BAY IS FULL".
 ;;
+;;  NOTE: 
+;;  There is a BUG with these debug routines that can be disaterous.
+;;
+;;  If the user hits the Player 1 button during gameplay and there's more than
+;;  one credit inserted, then the game will restart from the beginning.  This
+;;  also overrides PauseMod which can be very upsetting if the player wanted to
+;;  save their progress.  USE WITH CAUTION!
+
 
 ;WittBuild EQU   1
 
@@ -171,6 +179,8 @@ PROMS   EQU     1               ;* Define before burning proms
 ;;  the bomb-bay with the P2 button.  This define is nested instead of the code for
 ;;  WittBombs, so it must be enabled for WittBuild to work.  It also overrides the
 ;;  Star Trek message and replaces it with "DEVELOPMENT PIECE ADDED".
+
+;WitPop  EQU     1
 
 ;===============================================================================
 ;;
@@ -196,6 +206,10 @@ PROMS   EQU     1               ;* Define before burning proms
 ;V19445 EQU     1       ;; Pause Mod / MarqueeFix / DifficultyMod / SAMTAIL
 ;V19545 EQU     1       ;; MarqueeFix / DifficultyMod / SAMTAIL
 ;V19645 EQU     1       ;; MarqueeFix / SAMTAIL / ExtraShipFix (Closest to "Perfect" ROMs)
+;V19745 EQU     1       ;; MarqueeFix / SAMTAIL / WittBombs / WittBuild / WittRock
+;V19845 EQU     1       ;; ShieldMod / MarqueeFix / SAMTAIL / AttractTAIL / Pause Mod
+;V19855 EQU     1       ;; ShieldMod (2 player patch) / MarqueeFix / SAMTAIL / AttractTAIL / Pause Mod
+
 
 ;                         <<< IMPORTANT MOD NOTES >>>
 
@@ -508,3 +522,46 @@ SAMTAIL        EQU     1
 ExtraShipFix EQU 1
 
         ENDIF
+
+        IFDEF   V19745          ;; Witt's Debug Features
+
+MarqueeFix      EQU     1
+SAMTAIL         EQU     1
+;AttractTAIL     EQU     1
+WittBombs       EQU     1
+WittBuild       EQU     1
+WittRock        EQU     1
+
+        ENDIF
+
+        IFDEF   V19845          ;; Shield Mod / TAIL (Attract Mode fix) / MarqueeFix / Pause Mod
+
+MarqueeFix      EQU     1
+PauseMod        EQU     1
+PauseAdjust     EQU     1
+SAMTAIL         EQU     1
+AttractTAIL     EQU     1
+;WittBombs       EQU     1
+;WittBuild       EQU     1
+ExtraShipFix    EQU     1
+ShieldMod       EQU     1
+SynaMaxEgg      EQU     1
+
+        ENDIF
+
+        IFDEF   V19855          ;; Revision for Shield mod (2 player fix)
+
+MarqueeFix      EQU     1
+PauseMod        EQU     1
+PauseAdjust     EQU     1
+SAMTAIL         EQU     1
+AttractTAIL     EQU     1
+ExtraShipFix    EQU     1
+ShieldMod       EQU     1
+SynaMaxEgg      EQU     1
+
+        ENDIF
+
+
+
+
